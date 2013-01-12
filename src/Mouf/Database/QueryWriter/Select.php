@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * The Select class represents a SQL Select statement

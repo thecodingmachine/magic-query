@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * Classes implementing this interface can be added in the columns list of a SQL statement.

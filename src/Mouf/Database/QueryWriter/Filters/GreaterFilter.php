@@ -17,15 +17,15 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The EqualFilter class translates into an "=" SQL statement (or a "IS NULL" statement if the value to compare is null).
+ * The GreaterFilter class translates into an ">" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class EqualFilter implements FilterInterface {
+class GreaterFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
 	private $value;
@@ -82,7 +82,7 @@ class EqualFilter implements FilterInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function EqualFilter($tableName=null, $columnName=null, $value=null) {
+	public function GreaterFilter($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value = $value;
@@ -101,12 +101,10 @@ class EqualFilter implements FilterInterface {
 		
 
 		if ($this->value === null) {
-			$str_value = ' IS NULL';
-		} else {
-			$str_value = "=".$dbConnection->quoteSmart($this->value);
+			throw new Exception("Error in GreaterFilter: trying to compare $this->tableName.$this->columnName with NULL.");
 		}
 
-		return $this->tableName.'.'.$this->columnName.$str_value;
+		return $this->tableName.'.'.$this->columnName.">".$dbConnection->quoteSmart($this->value);
 	}
 
 	/**

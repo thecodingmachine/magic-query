@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * Represents a LEFT JOIN, JOIN, RIGHT JOIN or OUTER JOIN in a SELECT query.
@@ -47,7 +47,7 @@ class Join implements TableReferenceInterface {
 	
 	/**
 	 * (non-PHPdoc)
-	 * @see database\querywriter.SqlRenderInterface::toSql()
+	 * @see Mouf\Database\QueryWriter.SqlRenderInterface::toSql()
 	 */
 	public function toSql(\DB_ConnectionInterface $dbConnection) {
 		$sql = "(".$this->left->toSql($dbConnection);

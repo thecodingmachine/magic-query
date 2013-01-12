@@ -1,8 +1,8 @@
 {
-    "name": "mouf/database.querywritter",
-    "description": "TODO",
-    "keywords": ["security", "user", "user management"],
-    "homepage": "https://github.com/thecodingmachine/database.querywritter",
+    "name": "mouf/database.querywriter",
+    "description": "This package contains classes useful to generate SQL statements such as SELECT queries, etc...",
+    "keywords": ["database", "query", "mouf"],
+    "homepage": "https://github.com/thecodingmachine/database.querywriter",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -13,7 +13,9 @@
         }
     ],
     "require": {
-    	"php": ">=5.3.0"
+    	"php": ">=5.3.0",
+    	"mouf/database.dbconnection": "~2.0",
+    	"mouf/utils.common.connectioninterface": "~2.0"
     },
     "autoload": {
         "psr-0": {

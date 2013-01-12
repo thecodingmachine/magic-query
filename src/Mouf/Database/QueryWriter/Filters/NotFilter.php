@@ -17,51 +17,28 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The GreaterOrEqualFilter class translates into an ">=" SQL statement.
+ * The NotFilter class translates into an "NOT" SQL statement: it reverses the filter.
  * 
  * @Component
  * @author David Négrier
  */
-class GreaterOrEqualFilter implements FilterInterface {
-	private $tableName;
-	private $columnName;
-	private $value;
+class NotFilter implements FilterInterface {
+	private $filter;
+
+	/**
+	 * The filter the not will be applied to.
+	 * 
+	 * @Property
+	 * @Compulsory
+	 * @param FilterInterface $filter
+	 */
+	public function setFilter(FilterInterface $filter) {
+		$this->filter = $filter;
+	}
 	
-	/**
-	 * The table name (or alias if any) to use in the filter.
-	 * 
-	 * @Property
-	 * @Compulsory
-	 * @param string $tableName
-	 */
-	public function setTableName($tableName) {
-		$this->tableName = $tableName;
-	}
-
-	/**
-	 * The column name (or alias if any) to use in the filter.
-	 * 
-	 * @Property
-	 * @Compulsory
-	 * @param string $columnName
-	 */
-	public function setColumnName($columnName) {
-		$this->columnName = $columnName;
-	}
-
-	/**
-	 * The value to compare to in the filter.
-	 * 
-	 * @Property
-	 * @param string $value
-	 */
-	public function setValue($value) {
-		$this->value = $value;
-	}
-
 	private $enableCondition;
 	
 	/**
@@ -74,19 +51,14 @@ class GreaterOrEqualFilter implements FilterInterface {
 		$this->enableCondition = $enableCondition;
 	}
 	
-
 	/**
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param string $tableName
-	 * @param string $columnName
-	 * @param string $value
+	 * @param FilterInterface $filter
 	 */
-	public function GreaterOrEqualFilter($tableName=null, $columnName=null, $value=null) {
-		$this->tableName = $tableName;
-		$this->columnName = $columnName;
-		$this->value = $value;
+	public function NotFilter($filter=null) {
+		$this->filter = $filter;
 	}
 
 	/**
@@ -101,11 +73,7 @@ class GreaterOrEqualFilter implements FilterInterface {
 		}
 		
 
-		if ($this->value === null) {
-			throw new Exception("Error in GreaterOrEqualFilter: trying to compare $this->tableName.$this->columnName with NULL.");
-		}
-
-		return $this->tableName.'.'.$this->columnName.">=".$dbConnection->quoteSmart($this->value);
+		return 'NOT ('.$this->filter->toSql($dbConnection).')';
 	}
 
 	/**
@@ -117,6 +85,6 @@ class GreaterOrEqualFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		return array($this->tableName);
+		return $this->filter->getUsedTables();
 	}
 }

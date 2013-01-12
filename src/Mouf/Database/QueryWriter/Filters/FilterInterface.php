@@ -17,7 +17,7 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
  * Represents a SQL statement that can appear in a WHERE clause (or in a ON clause).
@@ -25,7 +25,7 @@ namespace database\querywriter\filters;
  * @author David Negrier
  * @Component
  */
-interface FilterInterface extends \database\querywriter\SqlRenderInterface {
+interface FilterInterface extends \Mouf\Database\QueryWriter\SqlRenderInterface {
 	
 	/**
 	 * Returns the tables used in the filter in an array.

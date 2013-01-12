@@ -17,15 +17,15 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The LessOrEqualFilter class translates into an "<=" SQL statement (or a "IS NULL" statement if the value to compare is null).
+ * The DifferentFilter class translates into an "<>" SQL statement (or a "IS NOT NULL" statement if the value to compare is null).
  * 
  * @Component
  * @author David Négrier
  */
-class LessOrEqualFilter implements FilterInterface {
+class DifferentFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
 	private $value;
@@ -61,7 +61,7 @@ class LessOrEqualFilter implements FilterInterface {
 	public function setValue($value) {
 		$this->value = $value;
 	}
-
+	
 	private $enableCondition;
 	
 	/**
@@ -74,6 +74,7 @@ class LessOrEqualFilter implements FilterInterface {
 		$this->enableCondition = $enableCondition;
 	}
 	
+
 	/**
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
@@ -82,7 +83,7 @@ class LessOrEqualFilter implements FilterInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function LessOrEqualFilter($tableName=null, $columnName=null, $value=null) {
+	public function DifferentFilter($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value = $value;
@@ -101,10 +102,12 @@ class LessOrEqualFilter implements FilterInterface {
 		
 
 		if ($this->value === null) {
-			throw new Exception("Error in LessOrEqualFilter: trying to compare $this->tableName.$this->columnName with NULL.");
+			$str_value = ' IS NOT NULL';
+		} else {
+			$str_value = "<>".$dbConnection->quoteSmart($this->value);
 		}
 
-		return $this->tableName.'.'.$this->columnName."<=".$dbConnection->quoteSmart($this->value);
+		return $this->tableName.'.'.$this->columnName.$str_value;
 	}
 
 	/**

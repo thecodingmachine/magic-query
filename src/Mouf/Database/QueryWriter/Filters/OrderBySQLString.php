@@ -17,7 +17,7 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
 * The OrderBySQLString class translates an ORDER BY [table_name].[column_name] [ASC|DESC] SQL statement.

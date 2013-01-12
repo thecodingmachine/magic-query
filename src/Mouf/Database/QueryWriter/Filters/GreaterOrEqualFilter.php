@@ -17,18 +17,18 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The InFilter class translates into an "IN" SQL statement.
+ * The GreaterOrEqualFilter class translates into an ">=" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class InFilter implements FilterInterface {
+class GreaterOrEqualFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
-	private $values;
+	private $value;
 	
 	/**
 	 * The table name (or alias if any) to use in the filter.
@@ -53,16 +53,15 @@ class InFilter implements FilterInterface {
 	}
 
 	/**
-	 * The values to compare to in the filter.
+	 * The value to compare to in the filter.
 	 * 
 	 * @Property
-	 * @Compulsory
-	 * @param array<string> $values
+	 * @param string $value
 	 */
-	public function setValues($values) {
-		$this->values = $values;
+	public function setValue($value) {
+		$this->value = $value;
 	}
-	
+
 	private $enableCondition;
 	
 	/**
@@ -74,6 +73,7 @@ class InFilter implements FilterInterface {
 	public function setEnableCondition($enableCondition) {
 		$this->enableCondition = $enableCondition;
 	}
+	
 
 	/**
 	 * Default constructor to build the filter.
@@ -81,12 +81,12 @@ class InFilter implements FilterInterface {
 	 * 
 	 * @param string $tableName
 	 * @param string $columnName
-	 * @param array<string> $values
+	 * @param string $value
 	 */
-	public function InFilter($tableName=null, $columnName=null, $values=array()) {
+	public function GreaterOrEqualFilter($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
-		$this->values = $values;
+		$this->value = $value;
 	}
 
 	/**
@@ -101,21 +101,11 @@ class InFilter implements FilterInterface {
 		}
 		
 
-		if (!is_array($this->values)) {
-			$this->values = array($this->values);
+		if ($this->value === null) {
+			throw new Exception("Error in GreaterOrEqualFilter: trying to compare $this->tableName.$this->columnName with NULL.");
 		}
 
-		$values_sql = array();
-
-		foreach ($this->values as $value) {
-			if ($value === null) {
-				$values_sql[] = 'NULL';
-			} else {
-				$values_sql[] = $dbConnection->quoteSmart($value);
-			}
-		}
-
-		return $this->tableName.'.'.$this->columnName.' IN ('.implode(',',$values_sql).")";
+		return $this->tableName.'.'.$this->columnName.">=".$dbConnection->quoteSmart($this->value);
 	}
 
 	/**

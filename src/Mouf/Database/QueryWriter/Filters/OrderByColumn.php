@@ -17,18 +17,18 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The GreaterFilter class translates into an ">" SQL statement.
+ * The OrderByColumn class translates an ORDER BY [table_name].[column_name] [ASC|DESC] SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class GreaterFilter implements FilterInterface {
+class OrderByColumn implements OrderByInterface {
 	private $tableName;
 	private $columnName;
-	private $value;
+	private $order;
 	
 	/**
 	 * The table name (or alias if any) to use in the filter.
@@ -56,10 +56,12 @@ class GreaterFilter implements FilterInterface {
 	 * The value to compare to in the filter.
 	 * 
 	 * @Property
-	 * @param string $value
+	 * @Compulsory
+	 * @OneOf ("ASC","DESC")
+	 * @param string $order
 	 */
-	public function setValue($value) {
-		$this->value = $value;
+	public function setOrder($order = "ASC") {
+		$this->order = $order;
 	}
 
 	private $enableCondition;
@@ -82,31 +84,26 @@ class GreaterFilter implements FilterInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function GreaterFilter($tableName=null, $columnName=null, $value=null) {
+	public function __construct($tableName=null, $columnName=null, $order=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
-		$this->value = $value;
+		$this->order = $order;
 	}
 
 	/**
-	 * Returns the SQL of the filter (the SQL WHERE clause).
+	 * Returns a list of ORDER BY statements to be applied.
+	 * Each statement will be in the form: table_name.column_name [ASC|DESC]
 	 *
-	 * @param \DB_ConnectionInterface $dbConnection
-	 * @return string
+	 * @return array<string>
 	 */
-	public function toSql(\DB_ConnectionInterface $dbConnection) {
+	public function toSqlStatementsArray() {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
-			return "";
+			return array();
 		}
-		
-
-		if ($this->value === null) {
-			throw new Exception("Error in GreaterFilter: trying to compare $this->tableName.$this->columnName with NULL.");
-		}
-
-		return $this->tableName.'.'.$this->columnName.">".$dbConnection->quoteSmart($this->value);
+			
+		return array($this->tableName.'.'.$this->columnName.' '.$this->order);
 	}
-
+	
 	/**
 	 * Returns the tables used in the filter in an array.
 	 *
@@ -116,6 +113,10 @@ class GreaterFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
+		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
+			return array();
+		}
+		
 		return array($this->tableName);
 	}
 }

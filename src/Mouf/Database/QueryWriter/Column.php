@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * The Column class represents one or many columns to be retrieved in a SQL Select statement
@@ -50,7 +50,7 @@ class Column implements SelectExpressionInterface {
 	
 	/**
 	 * (non-PHPdoc)
-	 * @see database\querywriter.SqlRenderInterface::toSql()
+	 * @see Mouf\Database\QueryWriter.SqlRenderInterface::toSql()
 	 */
 	public function toSql(\DB_ConnectionInterface $dbConnection) {
 		$sql = "";

@@ -17,18 +17,18 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The OrderByColumn class translates an ORDER BY [table_name].[column_name] [ASC|DESC] SQL statement.
+ * The EqualFilter class translates into an "=" SQL statement (or a "IS NULL" statement if the value to compare is null).
  * 
  * @Component
  * @author David Négrier
  */
-class OrderByColumn implements OrderByInterface {
+class EqualFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
-	private $order;
+	private $value;
 	
 	/**
 	 * The table name (or alias if any) to use in the filter.
@@ -56,12 +56,10 @@ class OrderByColumn implements OrderByInterface {
 	 * The value to compare to in the filter.
 	 * 
 	 * @Property
-	 * @Compulsory
-	 * @OneOf ("ASC","DESC")
-	 * @param string $order
+	 * @param string $value
 	 */
-	public function setOrder($order = "ASC") {
-		$this->order = $order;
+	public function setValue($value) {
+		$this->value = $value;
 	}
 
 	private $enableCondition;
@@ -84,26 +82,33 @@ class OrderByColumn implements OrderByInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function __construct($tableName=null, $columnName=null, $order=null) {
+	public function EqualFilter($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
-		$this->order = $order;
+		$this->value = $value;
 	}
 
 	/**
-	 * Returns a list of ORDER BY statements to be applied.
-	 * Each statement will be in the form: table_name.column_name [ASC|DESC]
+	 * Returns the SQL of the filter (the SQL WHERE clause).
 	 *
-	 * @return array<string>
+	 * @param \DB_ConnectionInterface $dbConnection
+	 * @return string
 	 */
-	public function toSqlStatementsArray() {
+	public function toSql(\DB_ConnectionInterface $dbConnection) {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
-			return array();
+			return "";
 		}
-			
-		return array($this->tableName.'.'.$this->columnName.' '.$this->order);
+		
+
+		if ($this->value === null) {
+			$str_value = ' IS NULL';
+		} else {
+			$str_value = "=".$dbConnection->quoteSmart($this->value);
+		}
+
+		return $this->tableName.'.'.$this->columnName.$str_value;
 	}
-	
+
 	/**
 	 * Returns the tables used in the filter in an array.
 	 *
@@ -113,10 +118,6 @@ class OrderByColumn implements OrderByInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
-			return array();
-		}
-		
 		return array($this->tableName);
 	}
 }

@@ -17,18 +17,19 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The LikeFilter class translates into an "LIKE" SQL statement.
+ * The BetweenFilter class translates into an "BETWEEN" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class LikeFilter implements FilterInterface {
+class BetweenFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
-	private $value;
+	private $value1;
+	private $value2;
 	
 	/**
 	 * The table name (or alias if any) to use in the filter.
@@ -53,13 +54,25 @@ class LikeFilter implements FilterInterface {
 	}
 
 	/**
-	 * The value to compare to in the filter.
+	 * The lower bound value to compare to in the between filter.
 	 * 
 	 * @Property
-	 * @param string $value
+	 * @Compulsory
+	 * @param string $value1
 	 */
-	public function setValue($value) {
-		$this->value = $value;
+	public function setValue1($value1) {
+		$this->value1 = $value1;
+	}
+
+	/**
+	 * The higher bound value to compare to in the between filter.
+	 * 
+	 * @Property
+	 * @Compulsory
+	 * @param string $value2
+	 */
+	public function setValue2($value2) {
+		$this->value2 = $value2;
 	}
 	
 	private $enableCondition;
@@ -73,6 +86,7 @@ class LikeFilter implements FilterInterface {
 	public function setEnableCondition($enableCondition) {
 		$this->enableCondition = $enableCondition;
 	}
+	
 
 	/**
 	 * Default constructor to build the filter.
@@ -82,10 +96,11 @@ class LikeFilter implements FilterInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function LikeFilter($tableName=null, $columnName=null, $value=null) {
+	public function BetweenFilter($tableName=null, $columnName=null, $value1=null, $value2=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
-		$this->value = $value;
+		$this->value1 = $value1;
+		$this->value2 = $value2;		
 	}
 
 	/**
@@ -100,13 +115,13 @@ class LikeFilter implements FilterInterface {
 		}
 		
 
-		if ($this->value === null) {
-			throw new Exception("Error in LikeFilter: trying to compare $this->tableName.$this->columnName with NULL.");
+		if ($this->value1 === null || $this->value2 === null) {
+			throw new Exception('Error in BetweenFilter: one of the value passed is NULL.');
 		}
 
-		return $this->tableName.'.'.$this->columnName." LIKE ".$dbConnection->quoteSmart($this->value);
+		return $this->tableName.'.'.$this->columnName.' BETWEEN '.$dbConnection->quoteSmart($this->value1)." AND ".$dbConnection->quoteSmart($this->value2);
 	}
-
+	
 	/**
 	 * Returns the tables used in the filter in an array.
 	 *

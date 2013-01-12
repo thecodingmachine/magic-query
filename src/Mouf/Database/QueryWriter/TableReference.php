@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * Represents a SQL table in a SELECT query.

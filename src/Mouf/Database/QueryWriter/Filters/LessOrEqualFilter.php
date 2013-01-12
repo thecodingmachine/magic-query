@@ -17,28 +17,51 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The OrFilter class translates into an "Or" SQL statement between many filters.
+ * The LessOrEqualFilter class translates into an "<=" SQL statement (or a "IS NULL" statement if the value to compare is null).
  * 
  * @Component
  * @author David Négrier
  */
-class OrFilter implements FilterInterface {
-	private $filters;
-
+class LessOrEqualFilter implements FilterInterface {
+	private $tableName;
+	private $columnName;
+	private $value;
+	
 	/**
-	 * The filters that will be "OR"ed.
+	 * The table name (or alias if any) to use in the filter.
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param array<FilterInterface> $filter
+	 * @param string $tableName
 	 */
-	public function setFilters($filters) {
-		$this->filter = $filter;
+	public function setTableName($tableName) {
+		$this->tableName = $tableName;
 	}
-	
+
+	/**
+	 * The column name (or alias if any) to use in the filter.
+	 * 
+	 * @Property
+	 * @Compulsory
+	 * @param string $columnName
+	 */
+	public function setColumnName($columnName) {
+		$this->columnName = $columnName;
+	}
+
+	/**
+	 * The value to compare to in the filter.
+	 * 
+	 * @Property
+	 * @param string $value
+	 */
+	public function setValue($value) {
+		$this->value = $value;
+	}
+
 	private $enableCondition;
 	
 	/**
@@ -55,10 +78,14 @@ class OrFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param array<FilterInterface> $filter
+	 * @param string $tableName
+	 * @param string $columnName
+	 * @param string $value
 	 */
-	public function OrFilter($filters=null) {
-		$this->filters = $filters;
+	public function LessOrEqualFilter($tableName=null, $columnName=null, $value=null) {
+		$this->tableName = $tableName;
+		$this->columnName = $columnName;
+		$this->value = $value;
 	}
 
 	/**
@@ -73,25 +100,11 @@ class OrFilter implements FilterInterface {
 		}
 		
 
-		if (!is_array($this->filters)) {
-			$this->filters = array($this->filters);
+		if ($this->value === null) {
+			throw new Exception("Error in LessOrEqualFilter: trying to compare $this->tableName.$this->columnName with NULL.");
 		}
 
-		$filters_sql = array();
-
-		foreach ($this->filters as $filter) {
-			if (!$filter instanceof FilterInterface) {
-				throw new Exception("Error in OrFilter: One of the parameters is not a filter.");
-			}
-
-			$filters_sql[] = "(".$filter->toSql($dbConnection).")";
-		}
-
-		if (count($filters_sql)>0) {
-			return '('.implode(' OR ',$filters_sql).')';
-		} else {
-			return '';
-		}
+		return $this->tableName.'.'.$this->columnName."<=".$dbConnection->quoteSmart($this->value);
 	}
 
 	/**
@@ -103,12 +116,6 @@ class OrFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		$tables = array();
-		foreach ($this->filters as $filter) {
-			$tables = array_merge($tables,$filter->getUsedTables());
-		}
-		// Remove tables in double.
-		$tables = array_flip(array_flip($tables));
-		return $tables;
+		return array($this->tableName);
 	}
 }

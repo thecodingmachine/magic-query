@@ -1,5 +1,5 @@
 <?php
-namespace database\querywriter;
+namespace Mouf\Database\QueryWriter;
 
 /**
  * Objects implementing SqlRenderInterface can be rendered with the toSql method.

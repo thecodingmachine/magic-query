@@ -17,31 +17,51 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The SqlStringFilter class is directly put in the WHERE clause.
- * IMPORTANT! When you refer a column in this class, you should refer it as [table_name].[column_name].
- * Qualifying the column name with the table name will help TDBM know that the table is used and will allow
- * TDBM to infer the FROM section of the SELECT statement from the WHERE clause.
+ * The LessFilter class translates into an "<" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class SqlStringFilter implements FilterInterface {
-	private $sqlString;
+class LessFilter implements FilterInterface {
+	private $tableName;
+	private $columnName;
+	private $value;
 	
 	/**
-	 * The SQL string to put in the where clause.
+	 * The table name (or alias if any) to use in the filter.
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param string $sqlString
+	 * @param string $tableName
 	 */
-	public function setSqlString($sqlString) {
-		$this->sqlString = $sqlString;
+	public function setTableName($tableName) {
+		$this->tableName = $tableName;
 	}
-	
+
+	/**
+	 * The column name (or alias if any) to use in the filter.
+	 * 
+	 * @Property
+	 * @Compulsory
+	 * @param string $columnName
+	 */
+	public function setColumnName($columnName) {
+		$this->columnName = $columnName;
+	}
+
+	/**
+	 * The value to compare to in the filter.
+	 * 
+	 * @Property
+	 * @param string $value
+	 */
+	public function setValue($value) {
+		$this->value = $value;
+	}
+
 	private $enableCondition;
 	
 	/**
@@ -58,10 +78,14 @@ class SqlStringFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param string $sqlString
+	 * @param string $tableName
+	 * @param string $columnName
+	 * @param string $value
 	 */
-	public function SqlStringFilter($sqlString=null) {
-		$this->sqlString = $sqlString;
+	public function LessFilter($tableName=null, $columnName=null, $value=null) {
+		$this->tableName = $tableName;
+		$this->columnName = $columnName;
+		$this->value = $value;
 	}
 
 	/**
@@ -76,7 +100,11 @@ class SqlStringFilter implements FilterInterface {
 		}
 		
 
-		return $this->sqlString;
+		if ($this->value === null) {
+			throw new Exception("Error in LessFilter: trying to compare $this->tableName.$this->columnName with NULL.");
+		}
+
+		return $this->tableName.'.'.$this->columnName."<".$dbConnection->quoteSmart($this->value);
 	}
 
 	/**
@@ -88,42 +116,6 @@ class SqlStringFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		// Let's parse the SQL string and find all xxx.yyy tokens not enclosed in quotes.
-
-		// First, let's remove all the stuff in quotes:
-
-		// Let's remove all the \' found
-		$work_str = str_replace("\\'",'',$this->sqlString);
-		// Now, let's split the string using '
-		$work_table = explode("'", $work_str);
-
-		if (count($work_table)==0)
-		return '';
-
-		// if we start with a ', let's remove the first text
-		if (strstr($work_str,"'")===0)
-		array_shift($work_table);
-			
-		if (count($work_table)==0)
-		return '';
-
-		// Now, let's take only the stuff outside the quotes.
-		$work_str2 = '';
-
-		$i=0;
-		foreach ($work_table as $str_fragment) {
-			if (($i % 2) == 0)
-			$work_str2 .= $str_fragment.' ';
-			$i++;
-		}
-
-		// Now, let's run a regexp to find all the strings matching the pattern xxx.yyy
-		//preg_match_all('/(\w+)\.(?:\w+)/', $work_str2,$capture_result);
-		preg_match_all('/([a-zA-Z_](?:[a-zA-Z0-9_]*))\.(?:[a-zA-Z_](?:[a-zA-Z0-9_]*))/', $work_str2,$capture_result);
-
-		$tables_used = $capture_result[1];
-		// remove doubles:
-		$tables_used = array_flip(array_flip($tables_used));
-		return $tables_used;
+		return array($this->tableName);
 	}
 }

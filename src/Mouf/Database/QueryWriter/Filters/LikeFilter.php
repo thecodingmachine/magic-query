@@ -17,15 +17,15 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The LessFilter class translates into an "<" SQL statement.
+ * The LikeFilter class translates into an "LIKE" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class LessFilter implements FilterInterface {
+class LikeFilter implements FilterInterface {
 	private $tableName;
 	private $columnName;
 	private $value;
@@ -61,7 +61,7 @@ class LessFilter implements FilterInterface {
 	public function setValue($value) {
 		$this->value = $value;
 	}
-
+	
 	private $enableCondition;
 	
 	/**
@@ -73,7 +73,7 @@ class LessFilter implements FilterInterface {
 	public function setEnableCondition($enableCondition) {
 		$this->enableCondition = $enableCondition;
 	}
-	
+
 	/**
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
@@ -82,7 +82,7 @@ class LessFilter implements FilterInterface {
 	 * @param string $columnName
 	 * @param string $value
 	 */
-	public function LessFilter($tableName=null, $columnName=null, $value=null) {
+	public function LikeFilter($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value = $value;
@@ -101,10 +101,10 @@ class LessFilter implements FilterInterface {
 		
 
 		if ($this->value === null) {
-			throw new Exception("Error in LessFilter: trying to compare $this->tableName.$this->columnName with NULL.");
+			throw new Exception("Error in LikeFilter: trying to compare $this->tableName.$this->columnName with NULL.");
 		}
 
-		return $this->tableName.'.'.$this->columnName."<".$dbConnection->quoteSmart($this->value);
+		return $this->tableName.'.'.$this->columnName." LIKE ".$dbConnection->quoteSmart($this->value);
 	}
 
 	/**

@@ -17,25 +17,25 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The NotFilter class translates into an "NOT" SQL statement: it reverses the filter.
+ * The OrFilter class translates into an "Or" SQL statement between many filters.
  * 
  * @Component
  * @author David Négrier
  */
-class NotFilter implements FilterInterface {
-	private $filter;
+class OrFilter implements FilterInterface {
+	private $filters;
 
 	/**
-	 * The filter the not will be applied to.
+	 * The filters that will be "OR"ed.
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param FilterInterface $filter
+	 * @param array<FilterInterface> $filter
 	 */
-	public function setFilter(FilterInterface $filter) {
+	public function setFilters($filters) {
 		$this->filter = $filter;
 	}
 	
@@ -55,10 +55,10 @@ class NotFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param FilterInterface $filter
+	 * @param array<FilterInterface> $filter
 	 */
-	public function NotFilter($filter=null) {
-		$this->filter = $filter;
+	public function OrFilter($filters=null) {
+		$this->filters = $filters;
 	}
 
 	/**
@@ -73,7 +73,25 @@ class NotFilter implements FilterInterface {
 		}
 		
 
-		return 'NOT ('.$this->filter->toSql($dbConnection).')';
+		if (!is_array($this->filters)) {
+			$this->filters = array($this->filters);
+		}
+
+		$filters_sql = array();
+
+		foreach ($this->filters as $filter) {
+			if (!$filter instanceof FilterInterface) {
+				throw new Exception("Error in OrFilter: One of the parameters is not a filter.");
+			}
+
+			$filters_sql[] = "(".$filter->toSql($dbConnection).")";
+		}
+
+		if (count($filters_sql)>0) {
+			return '('.implode(' OR ',$filters_sql).')';
+		} else {
+			return '';
+		}
 	}
 
 	/**
@@ -85,6 +103,12 @@ class NotFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		return $this->filter->getUsedTables();
+		$tables = array();
+		foreach ($this->filters as $filter) {
+			$tables = array_merge($tables,$filter->getUsedTables());
+		}
+		// Remove tables in double.
+		$tables = array_flip(array_flip($tables));
+		return $tables;
 	}
 }

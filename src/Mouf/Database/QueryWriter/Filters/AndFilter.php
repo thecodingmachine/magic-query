@@ -17,78 +17,50 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace database\querywriter\filters;
+namespace Mouf\Database\QueryWriter\Filters;
 
 /**
- * The DifferentFilter class translates into an "<>" SQL statement (or a "IS NOT NULL" statement if the value to compare is null).
+ * The AndFilter class translates into an "AND" SQL statement between many filters.
  * 
  * @Component
  * @author David Négrier
  */
-class DifferentFilter implements FilterInterface {
-	private $tableName;
-	private $columnName;
-	private $value;
-	
+class AndFilter implements FilterInterface {
+	private $filters;
+
 	/**
-	 * The table name (or alias if any) to use in the filter.
+	 * The filters that will be "AND"ed.
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param string $tableName
+	 * @param array<FilterInterface> $filters
 	 */
-	public function setTableName($tableName) {
-		$this->tableName = $tableName;
-	}
-
-	/**
-	 * The column name (or alias if any) to use in the filter.
-	 * 
-	 * @Property
-	 * @Compulsory
-	 * @param string $columnName
-	 */
-	public function setColumnName($columnName) {
-		$this->columnName = $columnName;
-	}
-
-	/**
-	 * The value to compare to in the filter.
-	 * 
-	 * @Property
-	 * @param string $value
-	 */
-	public function setValue($value) {
-		$this->value = $value;
+	public function setFilters($filters) {
+		$this->filters = $filters;
 	}
 	
+	/**
+	 * Default constructor to build the filter.
+	 * All parameters are optional and can later be set using the setters.
+	 * 
+	 * @param array<FilterInterface> $filters
+	 */
+	public function AndFilter($filters=null) {
+		$this->filters = $filters;
+	}
+
 	private $enableCondition;
-	
+
 	/**
 	 * You can use an object implementing the ConditionInterface to activate this filter conditionnally.
-	 * If you do not specify any condition, the filter will always be used.
-	 *
+	 * If you do not specify any condition, the filter will always be used. 
+	 * 
 	 * @param ConditionInterface $enableCondition
 	 */
 	public function setEnableCondition($enableCondition) {
 		$this->enableCondition = $enableCondition;
 	}
 	
-
-	/**
-	 * Default constructor to build the filter.
-	 * All parameters are optional and can later be set using the setters.
-	 * 
-	 * @param string $tableName
-	 * @param string $columnName
-	 * @param string $value
-	 */
-	public function DifferentFilter($tableName=null, $columnName=null, $value=null) {
-		$this->tableName = $tableName;
-		$this->columnName = $columnName;
-		$this->value = $value;
-	}
-
 	/**
 	 * Returns the SQL of the filter (the SQL WHERE clause).
 	 *
@@ -100,14 +72,25 @@ class DifferentFilter implements FilterInterface {
 			return "";
 		}
 		
-
-		if ($this->value === null) {
-			$str_value = ' IS NOT NULL';
-		} else {
-			$str_value = "<>".$dbConnection->quoteSmart($this->value);
+		if (!is_array($this->filters)) {
+			$this->filters = array($this->filters);
 		}
 
-		return $this->tableName.'.'.$this->columnName.$str_value;
+		$filters_sql = array();
+
+		foreach ($this->filters as $filter) {
+			if (!$filter instanceof \Mouf\Database\QueryWriter\Filters\FilterInterface) {
+				throw new \Exception("Error in AndFilter: One of the parameters is not a filter.");
+			}
+
+			$filters_sql[] = "(".$filter->toSql($dbConnection).")";
+		}
+
+		if (count($filters_sql)>0) {
+			return '('.implode(' AND ',$filters_sql).')';
+		} else {
+			return '';
+		}
 	}
 
 	/**
@@ -119,6 +102,13 @@ class DifferentFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return array();
 		}
-		return array($this->tableName);
+		
+		$tables = array();
+		foreach ($this->filters as $filter) {
+			$tables = array_merge($tables,$filter->getUsedTables());
+		}
+		// Remove tables in double.
+		$tables = array_flip(array_flip($tables));
+		return $tables;
 	}
 }
