@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 /**
  * The Column class represents one or many columns to be retrieved in a SQL Select statement
  * 
@@ -52,7 +54,7 @@ class Column implements SelectExpressionInterface {
 	 * (non-PHPdoc)
 	 * @see Mouf\Database\QueryWriter.SqlRenderInterface::toSql()
 	 */
-	public function toSql(\DB_ConnectionInterface $dbConnection) {
+	public function toSql(ConnectionInterface $dbConnection) {
 		$sql = "";
 		if ($this->tableName) {
 			$sql .= $dbConnection->escapeDBItem($this->tableName).".";

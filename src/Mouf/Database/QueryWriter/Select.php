@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 /**
  * The Select class represents a SQL Select statement
  * 
@@ -14,7 +16,7 @@ class Select {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @var \DB_ConnectionInterface
+	 * @var ConnectionInterface
 	 */
 	public $connection;
 	
@@ -49,7 +51,7 @@ class Select {
 	 * The where condition.
 	 * 
 	 * @Property
-	 * @var filters\FilterInterface
+	 * @var Filters\FilterInterface
 	 */
 	public $where;
 	
@@ -65,7 +67,7 @@ class Select {
 	 * The having condition.
 	 * 
 	 * @Property
-	 * @var filters\FilterInterface
+	 * @var Filters\FilterInterface
 	 */
 	public $having;
 	

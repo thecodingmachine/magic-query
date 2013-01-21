@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 /**
  * Represents a SQL table in a SELECT query.
  * 
@@ -32,7 +34,7 @@ class TableReference implements TableReferenceInterface {
 	 * Renders the object as a SQL string
 	 * @return string
 	 */
-	public function toSql(\DB_ConnectionInterface $dbConnection) {
+	public function toSql(ConnectionInterface $dbConnection) {
 		$sql = $dbConnection->escapeDBItem($this->tableName);
 		if ($this->alias) {
 			$sql .= " AS ".$dbConnection->escapeDBItem($this->alias);
