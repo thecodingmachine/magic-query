@@ -19,6 +19,8 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 /**
  * The LessFilter class translates into an "<" SQL statement.
  * 
@@ -91,10 +93,10 @@ class LessFilter implements FilterInterface {
 	/**
 	 * Returns the SQL of the filter (the SQL WHERE clause).
 	 *
-	 * @param \DB_ConnectionInterface $dbConnection
+	 * @param ConnectionInterface $dbConnection
 	 * @return string
 	 */
-	public function toSql(\DB_ConnectionInterface $dbConnection) {
+	public function toSql(ConnectionInterface $dbConnection) {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return "";
 		}

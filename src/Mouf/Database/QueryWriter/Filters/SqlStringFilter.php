@@ -19,6 +19,8 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 /**
  * The SqlStringFilter class is directly put in the WHERE clause.
  * IMPORTANT! When you refer a column in this class, you should refer it as [table_name].[column_name].
@@ -67,10 +69,10 @@ class SqlStringFilter implements FilterInterface {
 	/**
 	 * Returns the SQL of the filter (the SQL WHERE clause).
 	 *
-	 * @param \DB_ConnectionInterface $dbConnection
+	 * @param ConnectionInterface $dbConnection
 	 * @return string
 	 */
-	public function toSql(\DB_ConnectionInterface $dbConnection) {
+	public function toSql(ConnectionInterface $dbConnection) {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return "";
 		}

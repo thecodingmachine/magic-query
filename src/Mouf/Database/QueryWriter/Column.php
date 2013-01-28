@@ -14,7 +14,7 @@ class Column implements SelectExpressionInterface {
 	/**
 	 * Optional table name
 	 * 
-	 * @Property
+	 * @Important
 	 * @var string
 	 */
 	public $tableName;
@@ -23,8 +23,7 @@ class Column implements SelectExpressionInterface {
 	 * The name of the column.
 	 * Use "*" to retrieve all columns.
 	 * 
-	 * @Property
-	 * @Compulsory
+	 * @Important
 	 * @var string
 	 */
 	public $columnName;
@@ -32,7 +31,6 @@ class Column implements SelectExpressionInterface {
 	/**
 	 * Optional alias name
 	 * 
-	 * @Property
 	 * @var string
 	 */
 	public $alias;
