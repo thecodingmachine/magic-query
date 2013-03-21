@@ -33,8 +33,7 @@ class AndFilter implements FilterInterface {
 	/**
 	 * The filters that will be "AND"ed.
 	 * 
-	 * @Property
-	 * @Compulsory
+	 * @Important
 	 * @param array<FilterInterface> $filters
 	 */
 	public function setFilters($filters) {
