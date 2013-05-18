@@ -19,6 +19,10 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\ScalarValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
@@ -58,7 +62,7 @@ class EqualFilter implements FilterInterface {
 	 * The value to compare to in the filter.
 	 * 
 	 * @Property
-	 * @param string $value
+	 * @param string|ScalarValueInterface|Param $value
 	 */
 	public function setValue($value) {
 		$this->value = $value;
@@ -80,11 +84,14 @@ class EqualFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param string $tableName
-	 * @param string $columnName
-	 * @param string $value
+	 * @Important $tableName
+	 * @Important $columnName
+	 * @Important $value
+	 * @param string $tableName The name of the table or alias the equals applies on
+	 * @param string $columnName The name of the column
+	 * @param string|ScalarValueInterface|Param $value The value
 	 */
-	public function EqualFilter($tableName=null, $columnName=null, $value=null) {
+	public function __construct($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value = $value;
@@ -105,7 +112,7 @@ class EqualFilter implements FilterInterface {
 		if ($this->value === null) {
 			$str_value = ' IS NULL';
 		} else {
-			$str_value = "=".$dbConnection->quoteSmart($this->value);
+			$str_value = "=".SqlValueUtils::toSql($this->value);
 		}
 
 		return $this->tableName.'.'.$this->columnName.$str_value;

@@ -57,9 +57,10 @@ class NotFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+	 * @Important $filter
 	 * @param FilterInterface $filter
 	 */
-	public function NotFilter($filter=null) {
+	public function __construct($filter=null) {
 		$this->filter = $filter;
 	}
 

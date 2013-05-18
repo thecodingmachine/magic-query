@@ -80,6 +80,9 @@ class OrderByColumn implements OrderByInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+ 	 * @Important $tableName
+	 * @Important $columnName
+	 * @Important $value
 	 * @param string $tableName
 	 * @param string $columnName
 	 * @param string $value

@@ -19,7 +19,12 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\StringValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
+
 
 /**
  * The SqlStringFilter class is directly put in the WHERE clause.
@@ -38,7 +43,7 @@ class SqlStringFilter implements FilterInterface {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param string $sqlString
+	 * @param string|StringValueInterface $sqlString
 	 */
 	public function setSqlString($sqlString) {
 		$this->sqlString = $sqlString;
@@ -60,9 +65,9 @@ class SqlStringFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param string $sqlString
+	 * @param string|StringValueInterface $sqlString
 	 */
-	public function SqlStringFilter($sqlString=null) {
+	public function __construct($sqlString=null) {
 		$this->sqlString = $sqlString;
 	}
 
@@ -78,7 +83,7 @@ class SqlStringFilter implements FilterInterface {
 		}
 		
 
-		return $this->sqlString;
+		return ValueUtils::val($this->sqlString);
 	}
 
 	/**
@@ -95,7 +100,7 @@ class SqlStringFilter implements FilterInterface {
 		// First, let's remove all the stuff in quotes:
 
 		// Let's remove all the \' found
-		$work_str = str_replace("\\'",'',$this->sqlString);
+		$work_str = str_replace("\\'",'',ValueUtils::val($this->sqlString));
 		// Now, let's split the string using '
 		$work_table = explode("'", $work_str);
 

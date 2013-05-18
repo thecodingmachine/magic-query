@@ -35,7 +35,7 @@ class OrFilter implements FilterInterface {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param array<FilterInterface> $filter
+	 * @param array<FilterInterface> $filters
 	 */
 	public function setFilters($filters) {
 		$this->filter = $filter;
@@ -57,9 +57,10 @@ class OrFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+	 * @Important $filter
 	 * @param array<FilterInterface> $filter
 	 */
-	public function OrFilter($filters=null) {
+	public function __construct($filters=null) {
 		$this->filters = $filters;
 	}
 

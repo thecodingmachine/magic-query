@@ -19,6 +19,10 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\ScalarValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
@@ -60,7 +64,7 @@ class BetweenFilter implements FilterInterface {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param string $value1
+	 * @param string|ScalarValueInterface|Param $value1
 	 */
 	public function setValue1($value1) {
 		$this->value1 = $value1;
@@ -71,7 +75,7 @@ class BetweenFilter implements FilterInterface {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param string $value2
+	 * @param string|ScalarValueInterface|Param $value2
 	 */
 	public function setValue2($value2) {
 		$this->value2 = $value2;
@@ -94,11 +98,16 @@ class BetweenFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+	 * @Important $tableName
+	 * @Important $columnName
+	 * @Important $value1
+	 * @Important $value2
 	 * @param string $tableName
 	 * @param string $columnName
-	 * @param string $value
+	 * @param string|ScalarValueInterface|Param $value1
+	 * @param string|ScalarValueInterface|Param $value2
 	 */
-	public function BetweenFilter($tableName=null, $columnName=null, $value1=null, $value2=null) {
+	public function __construct($tableName=null, $columnName=null, $value1=null, $value2=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value1 = $value1;
@@ -115,13 +124,15 @@ class BetweenFilter implements FilterInterface {
 		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
 			return "";
 		}
-		
 
-		if ($this->value1 === null || $this->value2 === null) {
+		$value1 = ValueUtils::val($this->value1);
+		$value2 = ValueUtils::val($this->value2);
+
+		if ($value1 === null || $value2 === null) {
 			throw new Exception('Error in BetweenFilter: one of the value passed is NULL.');
 		}
 
-		return $this->tableName.'.'.$this->columnName.' BETWEEN '.$dbConnection->quoteSmart($this->value1)." AND ".$dbConnection->quoteSmart($this->value2);
+		return $this->tableName.'.'.$this->columnName.' BETWEEN '.SqlValueUtils::toSql($this->value1)." AND ".SqlValueUtils::toSql($this->value2);
 	}
 	
 	/**

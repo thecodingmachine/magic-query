@@ -19,6 +19,10 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\ScalarValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
@@ -58,7 +62,7 @@ class LessFilter implements FilterInterface {
 	 * The value to compare to in the filter.
 	 * 
 	 * @Property
-	 * @param string $value
+	 * @param string|ScalarValueInterface|Param $value
 	 */
 	public function setValue($value) {
 		$this->value = $value;
@@ -80,11 +84,14 @@ class LessFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+	 * @Important $tableName
+	 * @Important $columnName
+	 * @Important $value
 	 * @param string $tableName
 	 * @param string $columnName
-	 * @param string $value
+	 * @param string|ScalarValueInterface|Param $value
 	 */
-	public function LessFilter($tableName=null, $columnName=null, $value=null) {
+	public function __construct($tableName=null, $columnName=null, $value=null) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->value = $value;
@@ -106,7 +113,7 @@ class LessFilter implements FilterInterface {
 			throw new Exception("Error in LessFilter: trying to compare $this->tableName.$this->columnName with NULL.");
 		}
 
-		return $this->tableName.'.'.$this->columnName."<".$dbConnection->quoteSmart($this->value);
+		return $this->tableName.'.'.$this->columnName."<".SqlValueUtils::toSql($this->value);
 	}
 
 	/**

@@ -19,6 +19,12 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\ArrayValueInterface;
+
+use Mouf\Utils\Value\ScalarValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
@@ -59,7 +65,7 @@ class InFilter implements FilterInterface {
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param array<string> $values
+	 * @param array<string>|array<ScalarValueInterface>|ArrayValueInterface $values
 	 */
 	public function setValues($values) {
 		$this->values = $values;
@@ -81,11 +87,14 @@ class InFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
+	 * @Important $tableName
+	 * @Important $columnName
+	 * @Important $values
 	 * @param string $tableName
 	 * @param string $columnName
-	 * @param array<string> $values
+	 * @param array<string>|array<ScalarValueInterface> $values
 	 */
-	public function InFilter($tableName=null, $columnName=null, $values=array()) {
+	public function __construct($tableName=null, $columnName=null, $values=array()) {
 		$this->tableName = $tableName;
 		$this->columnName = $columnName;
 		$this->values = $values;
@@ -109,11 +118,11 @@ class InFilter implements FilterInterface {
 
 		$values_sql = array();
 
-		foreach ($this->values as $value) {
+		foreach (ValueUtils::val($this->values) as $value) {
 			if ($value === null) {
 				$values_sql[] = 'NULL';
 			} else {
-				$values_sql[] = $dbConnection->quoteSmart($value);
+				$values_sql[] = $dbConnection->quoteSmart(ValueUtils::val($value));
 			}
 		}
 

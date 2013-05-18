@@ -46,7 +46,7 @@ class AndFilter implements FilterInterface {
 	 * 
 	 * @param array<FilterInterface> $filters
 	 */
-	public function AndFilter($filters=null) {
+	public function __construct($filters=null) {
 		$this->filters = $filters;
 	}
 
