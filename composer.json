@@ -3,7 +3,7 @@
     "description": "This package contains classes useful to generate SQL statements such as SELECT queries, etc...",
     "keywords": ["database", "query", "mouf"],
     "homepage": "https://github.com/thecodingmachine/database.querywriter",
-    "type": "library",
+    "type": "mouf-library",
     "license": "MIT",
     "authors": [
         {

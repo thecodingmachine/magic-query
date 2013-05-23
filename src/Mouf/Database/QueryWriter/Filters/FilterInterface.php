@@ -19,13 +19,15 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Database\QueryWriter\Expressions\ExpressionInterface;
+
 /**
  * Represents a SQL statement that can appear in a WHERE clause (or in a ON clause).
  * 
  * @author David Negrier
  * @Component
  */
-interface FilterInterface extends \Mouf\Database\QueryWriter\ExpressionInterface {
+interface FilterInterface extends ExpressionInterface {
 	
 	/**
 	 * Returns the tables used in the filter in an array.
