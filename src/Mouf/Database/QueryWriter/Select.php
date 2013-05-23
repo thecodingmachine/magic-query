@@ -7,7 +7,7 @@ use Mouf\Database\DBConnection\ConnectionInterface;
  * The Select class represents a SQL Select statement
  * 
  * @author David Negrier
- * @Component
+ * @ExtendedAction {"name":"Generate from SQL", "url":"parseselect/", "default":false}
  */
 class Select {
 	

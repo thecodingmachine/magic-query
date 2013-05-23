@@ -21,49 +21,56 @@ namespace Mouf\Database\QueryWriter\Filters;
 
 use Mouf\Database\QueryWriter\Expressions\ExpressionInterface;
 
+use Mouf\Utils\Value\ValueUtils;
+
+use Mouf\Utils\Value\ScalarValueInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
- * The NotFilter class translates into an "NOT" SQL statement: it reverses the filter.
+ * The GreaterFilter class translates into an ">" SQL statement.
  * 
  * @Component
  * @author David Négrier
  */
-class NotFilter implements FilterInterface {
-	private $filter;
-
+class ColRef implements ExpressionInterface {
+	private $tableName;
+	private $columnName;
+	
 	/**
-	 * The filter the not will be applied to.
+	 * The table name (or alias if any) to use in the filter.
 	 * 
 	 * @Property
 	 * @Compulsory
-	 * @param FilterInterface|ExpressionInterface $filter
+	 * @param string $tableName
 	 */
-	public function setFilter($filter) {
-		$this->filter = $filter;
+	public function setTableName($tableName) {
+		$this->tableName = $tableName;
 	}
-	
-	private $enableCondition;
-	
+
 	/**
-	 * You can use an object implementing the ConditionInterface to activate this filter conditionnally.
-	 * If you do not specify any condition, the filter will always be used.
-	 *
-	 * @param ConditionInterface $enableCondition
+	 * The column name (or alias if any) to use in the filter.
+	 * 
+	 * @Property
+	 * @Compulsory
+	 * @param string $columnName
 	 */
-	public function setEnableCondition($enableCondition) {
-		$this->enableCondition = $enableCondition;
+	public function setColumnName($columnName) {
+		$this->columnName = $columnName;
 	}
 	
 	/**
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @Important $filter
-	 * @param FilterInterface|ExpressionInterface $filter
+	 * @Important $tableName
+	 * @Important $columnName
+	 * @param string $tableName
+	 * @param string $columnName
 	 */
-	public function __construct($filter=null) {
-		$this->filter = $filter;
+	public function __construct($tableName=null, $columnName=null) {
+		$this->tableName = $tableName;
+		$this->columnName = $columnName;
 	}
 
 	/**
@@ -73,12 +80,7 @@ class NotFilter implements FilterInterface {
 	 * @return string
 	 */
 	public function toSql(ConnectionInterface $dbConnection) {
-		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
-			return "";
-		}
-		
-
-		return 'NOT ('.$this->filter->toSql($dbConnection).')';
+		return $dbConnection->escapeDBItem($this->tableName).'.'.$dbConnection->escapeDBItem($this->columnName);
 	}
 
 	/**
@@ -87,9 +89,6 @@ class NotFilter implements FilterInterface {
 	 * @return array<string>
 	 */
 	public function getUsedTables() {
-		if ($this->enableCondition != null && !$this->enableCondition->isOk()) {
-			return array();
-		}
-		return $this->filter->getUsedTables();
+		return array($this->tableName);
 	}
 }

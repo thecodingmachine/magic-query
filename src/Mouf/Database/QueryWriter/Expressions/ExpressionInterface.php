@@ -17,7 +17,9 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace Mouf\Database\QueryWriter\Filters;
+namespace Mouf\Database\QueryWriter\Expressions;
+
+use Mouf\Database\QueryWriter\SqlRenderInterface;
 
 /**
  * Represents a SQL statement that can appear in a WHERE clause (or in a ON clause).
@@ -25,12 +27,6 @@ namespace Mouf\Database\QueryWriter\Filters;
  * @author David Negrier
  * @Component
  */
-interface FilterInterface extends \Mouf\Database\QueryWriter\ExpressionInterface {
+interface ExpressionInterface extends SqlRenderInterface {
 	
-	/**
-	 * Returns the tables used in the filter in an array.
-	 *
-	 * @return array<string>
-	 */
-	public function getUsedTables();
 }

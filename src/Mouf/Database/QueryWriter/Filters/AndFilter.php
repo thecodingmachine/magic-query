@@ -19,7 +19,10 @@
 
 namespace Mouf\Database\QueryWriter\Filters;
 
+use Mouf\Database\QueryWriter\ExpressionInterface;
+
 use Mouf\Database\DBConnection\ConnectionInterface;
+
 
 /**
  * The AndFilter class translates into an "AND" SQL statement between many filters.
@@ -34,7 +37,7 @@ class AndFilter implements FilterInterface {
 	 * The filters that will be "AND"ed.
 	 * 
 	 * @Important
-	 * @param array<FilterInterface> $filters
+	 * @param array<FilterInterface>|array<ExpressionInterface> $filters
 	 */
 	public function setFilters($filters) {
 		$this->filters = $filters;
@@ -44,7 +47,7 @@ class AndFilter implements FilterInterface {
 	 * Default constructor to build the filter.
 	 * All parameters are optional and can later be set using the setters.
 	 * 
-	 * @param array<FilterInterface> $filters
+	 * @param array<FilterInterface>|array<ExpressionInterface> $filters
 	 */
 	public function __construct($filters=null) {
 		$this->filters = $filters;

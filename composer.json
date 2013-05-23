@@ -26,6 +26,9 @@
     },
     "extra": {
 	     "mouf": {
+	         "require-admin": [
+    			"src/QueryWriterAdmin.php"
+    			],
 			"logo": "database.png"
 		}
 	}
