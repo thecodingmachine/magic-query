@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use SQLParser\Query\Select;
+
 use Mouf\Utils\Common\PaginableInterface;
 
 use Mouf\Utils\Value\ArrayValueInterface;
@@ -47,7 +49,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface {
 	 */
 	public function val() {
 		// FIXME: add support for params!
-		$pdoStatement = $this->connection->query($this->select->toSql(), $this->offset, $this->limit);
+		$pdoStatement = $this->connection->query($this->select->toSql($this->connection), $this->offset, $this->limit);
 		return new ResultSet($pdoStatement);
 	}
 	

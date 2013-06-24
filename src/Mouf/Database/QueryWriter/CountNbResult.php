@@ -1,6 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use SQLParser\Query\Select;
+
 use Mouf\Utils\Value\IntValueInterface;
 
 use Mouf\Database\DBConnection\ConnectionInterface;
@@ -28,7 +30,7 @@ class CountNbResult implements IntValueInterface {
 	private $connection;
 
 	/**
-	 * 
+	 * @Important $select
 	 * @param Select $select
 	 * @param ConnectionInterface $connection
 	 */
