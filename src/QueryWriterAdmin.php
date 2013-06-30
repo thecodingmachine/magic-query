@@ -2,6 +2,10 @@
 use Mouf\MoufManager;
 use Mouf\MoufUtils;
 
+MoufUtils::registerMainMenu('dbMainMenu', 'DB', null, 'mainMenu', 70);
+MoufUtils::registerMenuItem('dbQueryWriterAdminSubMenu', 'SQL queries', null, 'dbMainMenu', 80);
+MoufUtils::registerMenuItem('dbQueryWriterCreateQueryAdminSubMenu', 'Create SQL query', 'parseselect/createQuery', 'dbQueryWriterAdminSubMenu', 0);
+
 
 // Controller declaration
 $moufManager = MoufManager::getMoufManager();

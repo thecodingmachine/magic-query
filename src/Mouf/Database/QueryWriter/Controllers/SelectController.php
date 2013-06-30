@@ -50,21 +50,15 @@ class SelectController extends AbstractMoufInstanceController {
 	}
 	
 	/**
-	 * This action generates the DAOs and Beans for the TDBM service passed in parameter. 
+	 * This action generates the objects from the SQL query and applies it to the existing SELECT object. 
 	 * 
 	 * @Action
+	 * @param string $name
 	 * @param string $sql
 	 * @param string $selfedit
 	 */
 	public function parse($name, $sql,$selfedit="false") {
 		$this->initController($name, $selfedit);
-
-		//require_once __DIR__.'/../../../../php-sql-parser/php-sql-parser.php';
-		
-		/*$parser = new \PHPSQLParser();
-		$parsed = $parser->parse($sql);
-		print_r($parsed);
-		exit;*/
 		
 		$parser = new SQLParser();
 		$parsed = $parser->parse($sql);
@@ -79,8 +73,37 @@ class SelectController extends AbstractMoufInstanceController {
 		$select->overwriteInstanceDescriptor($name, $moufManager);
 		$moufManager->rewriteMouf();
 				
-		// TODO: better: we should redirect to a screen that list the number of DAOs generated, etc...
 		header("Location: ".ROOT_URL."ajaxinstance/?name=".urlencode($name)."&selfedit=".$selfedit);
 	}
 	
+	/**
+	 * Admin page used to create a new SQL query.
+	 *
+	 * @Action
+	 */
+	public function createQuery($selfedit="false") {	
+		$this->content->addFile(dirname(__FILE__)."/../../../../views/createQuery.php", $this);
+		$this->template->toHtml();
+	}
+	
+	/**
+	 * This action generates the objects from the SQL query and creates a new SELECT instance.
+	 *
+	 * @Action
+	 * @param string $name
+	 * @param string $sql
+	 * @param string $selfedit
+	 */
+	public function doCreateQuery($name, $sql,$selfedit="false") {
+		$parser = new SQLParser();
+		$parsed = $parser->parse($sql);
+		$select = StatementFactory::toObject($parsed);
+		
+		$moufManager = MoufManager::getMoufManagerHiddenInstance();
+		$instanceDescriptor = $select->toInstanceDescriptor($moufManager);
+		$instanceDescriptor->setName($name);
+		$moufManager->rewriteMouf();
+		
+		header("Location: ".ROOT_URL."ajaxinstance/?name=".urlencode($name)."&selfedit=".$selfedit);
+	}
 }
