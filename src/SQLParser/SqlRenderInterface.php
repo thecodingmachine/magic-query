@@ -14,7 +14,10 @@ interface SqlRenderInterface {
 	 * Renders the object as a SQL string
 	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null);
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false);
 }

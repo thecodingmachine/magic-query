@@ -32,6 +32,8 @@
 
 namespace SQLParser\Node;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 use Mouf\MoufInstanceDescriptor;
 
 use Mouf\MoufManager;
@@ -57,6 +59,7 @@ class Parameter implements NodeInterface {
 	/**
 	 * Sets the name name
 	 *
+	 * @Important
 	 * @param string $name
 	 */
 	public function setName($name) {
@@ -73,5 +76,30 @@ class Parameter implements NodeInterface {
 		$instanceDescriptor = $moufManager->createInstance(get_called_class());
 		$instanceDescriptor->getProperty("name")->setValue($this->name);
 		return $instanceDescriptor;
+	}
+	
+	/**
+	 * Renders the object as a SQL string
+	 * 
+	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
+	 * @return string
+	 */
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+		if (isset($parameters[$this->name])) {
+			if ($dbConnection) {
+				return $dbConnection->quoteSmart($parameters[$this->name]);
+			} else {
+				if ($parameters[$this->name] === null) {
+					return NULL;
+				} else {
+					return "'".addslashes($parameters[$this->name])."'";
+				}
+			}
+		} else {
+			return ':'.$this->name;
+		}
 	}
 }

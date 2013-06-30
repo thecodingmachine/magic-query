@@ -140,16 +140,20 @@ class ColRef implements NodeInterface {
 		$instanceDescriptor->getProperty("table")->setValue($this->table);
 		$instanceDescriptor->getProperty("column")->setValue($this->column);
 		$instanceDescriptor->getProperty("alias")->setValue($this->alias);
+		$instanceDescriptor->getProperty("direction")->setValue($this->direction);
 		return $instanceDescriptor;
 	}
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
 		$sql = '';
 		if ($this->table) {
 			$sql .= NodeFactory::escapeDBItem($this->table, $dbConnection).'.';
@@ -157,6 +161,9 @@ class ColRef implements NodeInterface {
 		$sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
 		if ($this->alias) {
 			$sql .= ' AS '.$this->alias;
+		}
+		if ($this->direction) {
+			$sql .= ' '.$this->direction;
 		}
 		return $sql;
 	}

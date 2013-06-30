@@ -63,7 +63,16 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface {
 		
 		if ($this->leftOperand instanceof Parameter) {
 			// Let's add a condition on the parameter.
-			// TODO
+			$conditionDescriptor = $moufManager->createInstance("Mouf\\Database\\QueryWriter\\Condition\\ParamAvailableCondition");
+			$conditionDescriptor->getProperty("parameterName")->setValue($this->leftOperand->getName());
+			$instanceDescriptor->getProperty("condition")->setValue($conditionDescriptor);
+		}
+		// TODO: manage cases where both leftOperand and rightOperand are parameters.
+		if ($this->rightOperand instanceof Parameter) {
+			// Let's add a condition on the parameter.
+			$conditionDescriptor = $moufManager->createInstance("Mouf\\Database\\QueryWriter\\Condition\\ParamAvailableCondition");
+			$conditionDescriptor->getProperty("parameterName")->setValue($this->rightOperand->getName());
+			$instanceDescriptor->getProperty("condition")->setValue($conditionDescriptor);
 		}
 		
 		return $instanceDescriptor;
@@ -71,14 +80,21 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface {
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
-		$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, ' ', false);
-		$sql .= ' '.$this->getOperatorSymbol().' ';
-		$sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, ' ', false);
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+		if ($ignoreConditions || $this->condition->isOk($parameters)) {		
+			$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
+			$sql .= ' '.$this->getOperatorSymbol().' ';
+			$sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
+		} else {
+			$sql = null;
+		}
 		
 		return $sql;
 	}

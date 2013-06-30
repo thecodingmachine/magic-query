@@ -32,6 +32,8 @@
 
 namespace SQLParser\Node;
 
+use Mouf\Database\DBConnection\ConnectionInterface;
+
 use Mouf\MoufManager;
 
 use Mouf\MoufInstanceDescriptor;
@@ -57,6 +59,7 @@ class AggregateFunction implements NodeInterface {
 	/**
 	 * Sets the base expression (the string that generated this expression).
 	 * 
+	 * @Important
 	 * @param string $functionName
 	 */
 	public function setFunctionName($functionName) {
@@ -72,6 +75,7 @@ class AggregateFunction implements NodeInterface {
 	/**
 	 * Sets the subtree
 	 *
+	 * @Important
 	 * @param array<NodeInterface> $subTree
 	 */
 	public function setSubTree($subTree) {
@@ -105,5 +109,30 @@ class AggregateFunction implements NodeInterface {
 		$instanceDescriptor->getProperty("subTree")->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
 		$instanceDescriptor->getProperty("alias")->setValue($this->alias, $moufManager);
 		return $instanceDescriptor;
+	}
+	
+	/**
+	 * Renders the object as a SQL string
+	 *
+	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
+	 * @return string
+	 */
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+		$subTreeSql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
+		if ($subTreeSql !== null) {
+			$sql = $this->functionName.'(';
+			$sql .= $subTreeSql;
+			$sql .= ')';
+			if ($this->alias) {
+				$sql .= ' AS '.$this->alias;
+			}
+		} else {
+			$sql = null;
+		}
+	
+		return $sql;
 	}
 }

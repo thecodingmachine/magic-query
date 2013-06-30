@@ -43,7 +43,7 @@ class SelectController extends AbstractMoufInstanceController {
 		$this->initController($name, $selfedit);
 		
 		$select = MoufManager::getMoufManagerHiddenInstance()->getInstance($name);
-		$this->sql = $select->toSql(null); 
+		$this->sql = $select->toSql(null, array(), 0, true); 
 		
 		$this->content->addFile(dirname(__FILE__)."/../../../../views/parseSql.php", $this);
 		$this->template->toHtml();
@@ -59,7 +59,7 @@ class SelectController extends AbstractMoufInstanceController {
 	public function parse($name, $sql,$selfedit="false") {
 		$this->initController($name, $selfedit);
 
-		require_once __DIR__.'/../../../../php-sql-parser/php-sql-parser.php';
+		//require_once __DIR__.'/../../../../php-sql-parser/php-sql-parser.php';
 		
 		/*$parser = new \PHPSQLParser();
 		$parsed = $parser->parse($sql);

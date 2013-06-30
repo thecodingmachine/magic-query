@@ -574,22 +574,34 @@ class NodeFactory {
 	 * @param string $wrapInBrackets
 	 * @param number $indent
 	 */
-	public static function toSql($nodes, ConnectionInterface $dbConnection = null, $delimiter = ',', $wrapInBrackets = true, $indent = 0	) {
+	public static function toSql($nodes, ConnectionInterface $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $ignoreConditions = false) {
 		if (is_array($nodes)) {
 			$elems = array();
-			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter) {
+			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $ignoreConditions) {
 				if ($item instanceof SqlRenderInterface) {
-					$elems[] = str_repeat(' ', $indent).$item->toSql($dbConnection);
+					$itemSql = $item->toSql($dbConnection, $parameters, $indent, $ignoreConditions);
+					if ($itemSql !== null) {
+						$elems[] = str_repeat(' ', $indent).$itemSql;
+					}
 				} else {
-					$elems[] = str_repeat(' ', $indent).$item;
+					if ($item !== null) {
+						$elems[] = str_repeat(' ', $indent).$item;
+					}
 				}
 			});
 			$sql = implode($delimiter, $elems);
 		} else {
 			$item = $nodes;
 			if ($item instanceof SqlRenderInterface) {
-				$sql = str_repeat(' ', $indent).$item->toSql($dbConnection);
+				$itemSql = $item->toSql($dbConnection,  $parameters, $indent, $ignoreConditions);
+				if ($itemSql == null) {
+					return null;
+				}
+				$sql = str_repeat(' ', $indent).$itemSql;
 			} else {
+				if ($item == null) {
+					return null;
+				}
 				$sql = str_repeat(' ', $indent).$item;
 			}
 		}

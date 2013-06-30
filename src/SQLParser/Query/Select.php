@@ -146,7 +146,7 @@ class Select implements StatementInterface {
 	/**
 	 * Sets the list of group statements
 	 *
-	 * @param NodeInterface[] $group
+	 * @param NodeInterface[]|NodeInterface $group
 	 */
 	public function setGroup($group) {
 		$this->group = $group;
@@ -158,7 +158,7 @@ class Select implements StatementInterface {
 	/**
 	 * Returns the list of having statements
 	 *
-	 * @return NodeInterface[]
+	 * @return NodeInterface[]|NodeInterface
 	 */
 	public function getHaving() {
 		return $this->having;
@@ -167,7 +167,7 @@ class Select implements StatementInterface {
 	/**
 	 * Sets the list of having statements
 	 *
-	 * @param NodeInterface[] $having
+	 * @param NodeInterface[]|NodeInterface $having
 	 */
 	public function setHaving($having) {
 		$this->having = $having;
@@ -179,7 +179,7 @@ class Select implements StatementInterface {
 	/**
 	 * Returns the list of order statements
 	 *
-	 * @return NodeInterface[]
+	 * @return NodeInterface[]|NodeInterface
 	 */
 	public function getOrder() {
 		return $this->order;
@@ -188,7 +188,7 @@ class Select implements StatementInterface {
 	/**
 	 * Sets the list of order statements
 	 *
-	 * @param NodeInterface[] $order
+	 * @param NodeInterface[]|NodeInterface $order
 	 */
 	public function setOrder($order) {
 		$this->order = $order;
@@ -254,11 +254,14 @@ class Select implements StatementInterface {
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
 		$sql = 'SELECT ';
 		if ($this->distinct) {
 			$sql .= 'DISTINCT ';
@@ -268,15 +271,43 @@ class Select implements StatementInterface {
 		}
 		
 		if (!empty($this->columns)) {
-			$sql .= NodeFactory::toSql($this->columns, $dbConnection, ",", false, 2);
+			$sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ",", false, $indent + 2, $ignoreConditions);
 		}
-		
-		$sql .= "\nFROM ";
 		
 		if (!empty($this->from)) {
-			$sql .= NodeFactory::toSql($this->from, $dbConnection, " ", false, 2);
+			$from = NodeFactory::toSql($this->from, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			if ($from) {
+				$sql .= "\nFROM ".$from;
+			}
 		}
 		
+		if (!empty($this->where)) {
+			$where = NodeFactory::toSql($this->where, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			if ($where) {
+				$sql .= "\nWHERE ".$where;
+			}
+		}
+		
+		if (!empty($this->group)) {
+			$groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			if ($groupBy) {
+				$sql .= "\nGROUP BY ".$groupBy;
+			}
+		}
+		
+		if (!empty($this->having)) {
+			$having = NodeFactory::toSql($this->having, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			if ($having) {
+				$sql .= "\nHAVING ".$having;
+			}
+		}
+		
+		if (!empty($this->order)) {
+			$order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ",", false, $indent + 2, $ignoreConditions);
+			if ($order) {
+				$sql .= "\nORDER BY ".$order;
+			}
+		}
 		
 		return $sql;
 	}

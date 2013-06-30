@@ -88,6 +88,7 @@ class StatementFactory {
 				$group = array_map(function($item) {
 					return NodeFactory::toObject($item);
 				}, $desc['GROUP']);
+				$group = NodeFactory::simplify($group);
 				$select->setGroup($group);
 			}
 
@@ -95,6 +96,7 @@ class StatementFactory {
 				$having = array_map(function($item) {
 					return NodeFactory::toObject($item);
 				}, $desc['HAVING']);
+				$having = NodeFactory::simplify($having);
 				$select->setHaving($having);
 			}
 			
@@ -102,6 +104,7 @@ class StatementFactory {
 				$order = array_map(function($item) {
 					return NodeFactory::toObject($item);
 				}, $desc['ORDER']);
+				$order = NodeFactory::simplify($order);
 				$select->setOrder($order);
 			}
 			

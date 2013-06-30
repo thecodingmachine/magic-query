@@ -48,16 +48,23 @@ abstract class AbstractManyInstancesOperator implements NodeInterface {
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
-		$sqlOperands = array_map(function($item) use ($dbConnection) {
-			return NodeFactory::toSql($item, $dbConnection, ' ', true);
-		}, $this->operands);
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+		$sqlOperands = array();
+		foreach ($this->operands as $operand) {
+			$sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', true, $indent, $ignoreConditions);
+			if ($sql != null) {
+				$sqlOperands[] = $sql;
+			}
+		}
 		
-		return implode("\n  ".$this->getOperatorSymbol().' ', $sqlOperands);
+		return implode("\n".str_repeat(' ', $indent).$this->getOperatorSymbol().' ', $sqlOperands);
 	}
 	
 	/**

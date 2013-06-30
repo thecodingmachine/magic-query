@@ -146,11 +146,14 @@ class Table implements NodeInterface {
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
 		
 		$sql = '';
 		if ($this->refClause) {
@@ -162,7 +165,7 @@ class Table implements NodeInterface {
 		}
 		if ($this->refClause) {
 			$sql .= " ON ";
-			$sql .= NodeFactory::toSql($this->refClause, $dbConnection, ' ', true);
+			$sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $ignoreConditions);
 		}		
 		return $sql;
 	}

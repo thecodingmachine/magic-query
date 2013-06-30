@@ -152,12 +152,15 @@ class Expression implements NodeInterface {
 	
 	/**
 	 * Renders the object as a SQL string
-	 *
+	 * 
 	 * @param ConnectionInterface $dbConnection
+	 * @param array $parameters
+	 * @param number $indent
+	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null) {
-		$sql = NodeFactory::toSql($this->subTree, $dbConnection, ' ', false);
+	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+		$sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
 		if ($this->alias) {
 			$sql .= " AS ".$this->alias;
 		}
