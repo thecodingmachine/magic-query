@@ -3,17 +3,24 @@
 ?>
 <h1>Create a new SQL query</h1>
 
-<form action="doCreateQuery" method="post">
+<form action="doCreateQuery" method="post" class="form-horizontal">
 	<div class="control-group">
-		<label class="control-label">Instance name:</label>
+		<label class="control-label">Instance name*: </label>
 		<div class="controls">
-			<input type="text" name="name" value="<?php echo plainstring_to_htmlprotected($this->instanceName) ?>" />
+			<input type="text" name="name" value="<?php echo plainstring_to_htmlprotected($this->instanceName) ?>" required />
+			<span class="help-block">The name of the <code>Select</code> instance that will be created.</span>
 		</div>
 	</div>
 	
-
-	<label class="control-label">SQL query:</label>
-	<textarea rows=10 name="sql" class="span10"><?php echo plainstring_to_htmlprotected($this->sql) ?></textarea>
+	<div class="control-group">
+		<label class="control-label">SQL query*: </label>
+		<div class="controls">
+			<textarea rows=10 name="sql" class="span10" required><?php echo plainstring_to_htmlprotected($this->sql) ?></textarea>
+			<span class="help-block">You can use <strong>parameters</strong> using prepared statement notation. For instance: 
+			<code>select * from users where country_id = :country_id</code></span>
+		</div>
+	</div>
+	
 	<div class="control-group">
 		<div class="controls">
 			<button name="action" value="parse" type="submit" class="btn btn-danger">Create SQL query object</button>
@@ -21,3 +28,7 @@
 	</div>
 		
 </form>
+
+<script type="text/javascript">
+$(function () { $("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); } );
+</script>

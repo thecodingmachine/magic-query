@@ -44,7 +44,9 @@ use SQLParser\Node\NodeInterface;
 
 
 /**
- * This class represents a select Query. 
+ * This class represents a <code>SELECT</code> query. You can use it to generate a SQL query statement
+ * using the <code>toSql</code> method.
+ * You can use the <code>QueryResult</code> class if you want to run the query directly. 
  * 
  * @author David Négrier <d.negrier@thecodingmachine.com>
  * @ExtendedAction {"name":"Generate from SQL", "url":"parseselect/", "default":false}

@@ -158,7 +158,11 @@ class ColRef implements NodeInterface {
 		if ($this->table) {
 			$sql .= NodeFactory::escapeDBItem($this->table, $dbConnection).'.';
 		}
-		$sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
+		if ($this->column != '*') {
+			$sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
+		} else {
+			$sql .= '*';
+		}
 		if ($this->alias) {
 			$sql .= ' AS '.$this->alias;
 		}
