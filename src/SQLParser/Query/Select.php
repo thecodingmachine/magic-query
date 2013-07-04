@@ -50,6 +50,7 @@ use SQLParser\Node\NodeInterface;
  * 
  * @author David Négrier <d.negrier@thecodingmachine.com>
  * @ExtendedAction {"name":"Generate from SQL", "url":"parseselect/", "default":false}
+ * @ExtendedAction {"name":"Test query", "url":"parseselect/tryQuery", "default":false}
  */
 class Select implements StatementInterface {
 	

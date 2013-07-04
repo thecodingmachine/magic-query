@@ -65,7 +65,58 @@ class Parameter implements NodeInterface {
 	public function setName($name) {
 		$this->name = $name;
 	}
+	
+	/**
+	 * @var string
+	 */
+	private $autoPrepend;
 
+	/**
+	 * @var string
+	 */
+	private $autoAppend;
+
+	/**
+	 * @return string
+	 */
+	public function getAutoPrepend() {
+		return $this->autoPrepend;
+	}
+	
+	/**
+	 * Sets a string that will automatically be appended to the parameter, if the parameter is available.
+	 * Very useful to automatically add "%" to a parameter used in a LIKE.
+	 * 
+	 * @Important IfSet
+	 * @param string $autoPrepend
+	 */
+	public function setAutoPrepend($autoPrepend) {
+		$this->autoPrepend = $autoPrepend;
+		return $this;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getAutoAppend() {
+		return $this->autoAppend;
+	}
+	
+	/**
+	 * Sets a string that will automatically be preprended to the parameter, if the parameter is available.
+	 * Very useful to automatically add "%" to a parameter used in a LIKE.
+	 * 
+	 * @Important IfSet
+	 * @param string $autoAppend
+	 */
+	public function setAutoAppend($autoAppend) {
+		$this->autoAppend = $autoAppend;
+		return $this;
+	}
+	
+	
+	
+	
 	/**
 	 * Returns a Mouf instance descriptor describing this object.
 	 *
@@ -75,6 +126,8 @@ class Parameter implements NodeInterface {
 	public function toInstanceDescriptor(MoufManager $moufManager) {
 		$instanceDescriptor = $moufManager->createInstance(get_called_class());
 		$instanceDescriptor->getProperty("name")->setValue($this->name);
+		$instanceDescriptor->getProperty("autoPrepend")->setValue($this->autoPrepend);
+		$instanceDescriptor->getProperty("autoAppend")->setValue($this->autoAppend);
 		return $instanceDescriptor;
 	}
 	
@@ -95,7 +148,7 @@ class Parameter implements NodeInterface {
 				if ($parameters[$this->name] === null) {
 					return NULL;
 				} else {
-					return "'".addslashes($parameters[$this->name])."'";
+					return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
 				}
 			}
 		} else {
