@@ -579,7 +579,7 @@ class NodeFactory {
 			$elems = array();
 			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $ignoreConditions) {
 				if ($item instanceof SqlRenderInterface) {
-					$itemSql = $item->toSql($dbConnection, $parameters, $indent, $ignoreConditions);
+					$itemSql = $item->toSql($parameters, $dbConnection, $indent, $ignoreConditions);
 					if ($itemSql !== null) {
 						$elems[] = str_repeat(' ', $indent).$itemSql;
 					}
@@ -593,7 +593,7 @@ class NodeFactory {
 		} else {
 			$item = $nodes;
 			if ($item instanceof SqlRenderInterface) {
-				$itemSql = $item->toSql($dbConnection,  $parameters, $indent, $ignoreConditions);
+				$itemSql = $item->toSql($parameters, $dbConnection, $indent, $ignoreConditions);
 				if ($itemSql == null) {
 					return null;
 				}

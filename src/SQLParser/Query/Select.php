@@ -264,7 +264,7 @@ class Select implements StatementInterface {
 	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		$sql = 'SELECT ';
 		if ($this->distinct) {
 			$sql .= 'DISTINCT ';

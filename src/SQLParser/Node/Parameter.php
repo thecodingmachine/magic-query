@@ -140,10 +140,10 @@ class Parameter implements NodeInterface {
 	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		if (isset($parameters[$this->name])) {
 			if ($dbConnection) {
-				return $dbConnection->quoteSmart($parameters[$this->name]);
+				return $dbConnection->quoteSmart($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
 			} else {
 				if ($parameters[$this->name] === null) {
 					return NULL;

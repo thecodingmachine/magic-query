@@ -68,7 +68,7 @@ class SelectController extends AbstractMoufInstanceController {
 		if ($sql != null) {
 			$this->sql = $sql;
 		} else {
-			$this->sql = $select->toSql(null, array(), 0, true);
+			$this->sql = $select->toSql(array(), null, 0, true);
 		} 
 		
 		$this->content->addFile(dirname(__FILE__)."/../../../../views/parseSql.php", $this);
@@ -164,7 +164,7 @@ class SelectController extends AbstractMoufInstanceController {
 		$this->parameters = FindParametersService::findParameters($instanceDescriptor);
 		
 		$select = MoufManager::getMoufManagerHiddenInstance()->getInstance($name);
-		$this->sql = $select->toSql(null, array(), 0, true);
+		$this->sql = $select->toSql(array(), null, 0, true);
 		
 		$this->template->getWebLibraryManager()->addLibrary(new WebLibrary(
 			array("../../../vendor/mouf/html.widgets.evolugrid/js/evolugrid.js")
@@ -181,7 +181,7 @@ class SelectController extends AbstractMoufInstanceController {
 	 */
 	public function getParameterizedQuery($name,$parameters,$selfedit="false") {
 		$select = new InstanceProxy($name);
-		echo $select->toSql(null, $parameters);
+		echo $select->toSql($parameters);
 	}
 	
 	/**
@@ -193,7 +193,7 @@ class SelectController extends AbstractMoufInstanceController {
 	 */
 	public function runQuery($name, $parameters, $offset = null, $limit = null) {
 		$select = new InstanceProxy($name);
-		$sql = $select->toSql(null, $parameters);
+		$sql = $select->toSql($parameters);
 		
 		// TODO: point to the right dbConnection
 		$dbConnection = new InstanceProxy("dbConnection");

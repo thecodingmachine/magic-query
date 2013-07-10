@@ -11,7 +11,8 @@ class FindParametersService {
 	/**
 	 * Tries to find parameters recursively in the instances and retrieves the list of parameters found.
 	 *
-	 * @param unknown $instanceName
+	 * @param MoufInstanceDescriptor $instanceDescriptor
+	 * @return string[]
 	 */
 	public static function findParameters(MoufInstanceDescriptor $instanceDescriptor) {
 		return array_keys(self::recursiveFindParameters($instanceDescriptor)[1]);

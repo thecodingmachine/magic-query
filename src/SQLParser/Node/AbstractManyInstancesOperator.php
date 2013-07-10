@@ -55,7 +55,7 @@ abstract class AbstractManyInstancesOperator implements NodeInterface {
 	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(ConnectionInterface $dbConnection = null, array $parameters = array(), $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		$sqlOperands = array();
 		foreach ($this->operands as $operand) {
 			$sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', true, $indent, $ignoreConditions);

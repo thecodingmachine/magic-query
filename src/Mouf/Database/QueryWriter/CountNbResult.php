@@ -1,8 +1,6 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
-use SQLParser\Query\Select;
-
 use Mouf\Utils\Value\IntValueInterface;
 
 use Mouf\Database\DBConnection\ConnectionInterface;
@@ -18,9 +16,9 @@ class CountNbResult implements IntValueInterface {
 	/**
 	 * The Select statement.
 	 *
-	 * @var Select
+	 * @var QueryResult
 	 */
-	private $select;
+	private $queryResult;
 
 	/**
 	 * The connection to the database.
@@ -31,11 +29,11 @@ class CountNbResult implements IntValueInterface {
 
 	/**
 	 * @Important $select
-	 * @param Select $select
+	 * @param QueryResult $queryResult The query we will perform "count" upon.
 	 * @param ConnectionInterface $connection
 	 */
-	public function __construct(Select $select, ConnectionInterface $connection) {
-		$this->select = $select;
+	public function __construct(QueryResult $queryResult, ConnectionInterface $connection) {
+		$this->queryResult = $queryResult;
 		$this->connection = $connection;
 	}
 
@@ -44,8 +42,7 @@ class CountNbResult implements IntValueInterface {
 	 * @see \Mouf\Utils\Value\ArrayValueInterface::val()
 	 */
 	public function val() {
-		$sql = "SELECT count(*) as cnt FROM (".$this->select->toSql().") tmp";
-		// FIXME: add support for params!
+		$sql = "SELECT count(*) as cnt FROM (".$this->queryResult->toSql().") tmp";
 		return $this->connection->getOne($sql);
 	}
 
