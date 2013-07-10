@@ -3,6 +3,10 @@
 ?>
 <h1>Create a new SQL query</h1>
 
+<?php if ($this->parseError) { ?>
+	<div class="alert">Unable to parse SQL query</div>
+<?php } ?>
+
 <form action="doCreateQuery" method="post" class="form-horizontal">
 	<div class="control-group">
 		<label class="control-label">Instance name*: </label>

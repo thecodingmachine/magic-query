@@ -53,17 +53,23 @@ class SelectController extends AbstractMoufInstanceController {
 	 */
 	protected $parameters;
 	
+	protected $parseError = false;
+	
 	/**
 	 * Admin page used to edit the SQL of a SELECT instance.
 	 *
 	 * @Action
 	 * //@Admin
 	 */
-	public function defaultAction($name, $selfedit="false") {
+	public function defaultAction($name, $sql = null,  $selfedit="false") {
 		$this->initController($name, $selfedit);
 		
 		$select = MoufManager::getMoufManagerHiddenInstance()->getInstance($name);
-		$this->sql = $select->toSql(null, array(), 0, true); 
+		if ($sql != null) {
+			$this->sql = $sql;
+		} else {
+			$this->sql = $select->toSql(null, array(), 0, true);
+		} 
 		
 		$this->content->addFile(dirname(__FILE__)."/../../../../views/parseSql.php", $this);
 		$this->template->toHtml();
@@ -82,6 +88,13 @@ class SelectController extends AbstractMoufInstanceController {
 		
 		$parser = new SQLParser();
 		$parsed = $parser->parse($sql);
+		
+		if ($parsed == false) {
+			$this->parseError = true;
+			$this->defaultAction($name, $sql, $selfedit);
+			return;
+		}
+		
 		//print_r($parsed);
 		$select = StatementFactory::toObject($parsed);
 		//var_dump(StatementFactory::toObject($parsed));
@@ -101,7 +114,10 @@ class SelectController extends AbstractMoufInstanceController {
 	 *
 	 * @Action
 	 */
-	public function createQuery($selfedit="false") {	
+	public function createQuery($name = null, $sql = null, $selfedit="false") {
+		$this->instanceName = $name;
+		$this->sql = $sql;
+			
 		$this->content->addFile(dirname(__FILE__)."/../../../../views/createQuery.php", $this);
 		$this->template->toHtml();
 	}
@@ -117,6 +133,13 @@ class SelectController extends AbstractMoufInstanceController {
 	public function doCreateQuery($name, $sql,$selfedit="false") {
 		$parser = new SQLParser();
 		$parsed = $parser->parse($sql);
+		
+		if ($parsed == false) {
+			$this->parseError = true;
+			$this->createQuery($name, $sql, $selfedit);
+			return;
+		}
+		
 		$select = StatementFactory::toObject($parsed);
 		
 		$moufManager = MoufManager::getMoufManagerHiddenInstance();
