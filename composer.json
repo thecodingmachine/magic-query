@@ -17,7 +17,8 @@
     	"mouf/database.dbconnection": "~2.0",
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
-    	"mouf/utils.common.paginable-interface": "~1.0"
+    	"mouf/utils.common.paginable-interface": "~1.0",
+    	"mouf/utils.common.sortable-interface": "~1.0"
     },
     "autoload": {
         "psr-0": {

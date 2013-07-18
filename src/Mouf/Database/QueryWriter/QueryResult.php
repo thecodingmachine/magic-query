@@ -11,13 +11,16 @@ use Mouf\Utils\Value\ArrayValueInterface;
 use Mouf\Utils\Value\ValueInterface;
 
 use Mouf\Database\DBConnection\ConnectionInterface;
+use Mouf\Utils\Common\SortableInterface;
+use SQLParser\Node\NodeInterface;
+use SQLParser\Node\ColRef;
 
 /**
  * A class that can execute a query and expose the results.
  * 
  * @author David Negrier
  */
-class QueryResult implements ArrayValueInterface, PaginableInterface {
+class QueryResult implements ArrayValueInterface, PaginableInterface, SortableInterface {
 
 	/**
 	 * The Select statement.
@@ -91,5 +94,49 @@ class QueryResult implements ArrayValueInterface, PaginableInterface {
 		$this->limit = $limit;
 		$this->offset = $offset;
 	}
+
+	/* (non-PHPdoc)
+	 * @see \Mouf\Utils\Common\SortableInterface::sort()
+	 */
+	public function sort($key, $direction = SortableInterface::ASC) {
+		$result = $this->findColumnByKey($key);
+		if ($result != null) {
+			$columnObj = clone($result);
+			if (method_exists($columnObj, "setAlias")) {
+				$columnObj->setAlias(null);
+			}
+			$columnObj->setDirection($direction);
+		} else {
+			$columnObj = new ColRef();
+			$columnObj->setColumn($key);
+			$columnObj->setDirection($direction);
+		}
+		$this->select->setOrder(array($columnObj));		
+	}
 
+	/**
+	 * Returns the object representing a column from the key passed in parameter.
+	 * It will first scan the column aliases to find if an alias match the key, then the column names, etc...
+	 * It will throw an exception if the column cannot be found.
+	 * 
+	 * @param string $key
+	 * @return NodeInterface
+	 */
+	private function findColumnByKey($key) {
+		$columns = $this->select->getColumns();
+		foreach ($columns as $column) {
+			if (method_exists($column, "getAlias")) {
+				$alias = $column->getAlias();
+				if ($alias === $key) {
+					return $column;
+				}
+			}
+			if ($column instanceof ColRef) {
+				if ($column->getColumn() === $key) {
+					return $column;
+				}
+			}
+		}
+		return null;
+	}
 }
