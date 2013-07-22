@@ -18,6 +18,7 @@ use SQLParser\Node\ColRef;
 /**
  * A class that can execute a query and expose the results.
  * 
+ * @Renderer { "smallLogo":"vendor/mouf/database.querywriter/icons/database_query.png" }
  * @author David Negrier
  */
 class QueryResult implements ArrayValueInterface, PaginableInterface, SortableInterface {
