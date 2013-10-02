@@ -88,7 +88,7 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface {
 	 * @return string
 	 */
 	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
-		if ($ignoreConditions || $this->condition->isOk($parameters)) {		
+		if ($ignoreConditions || !$this->condition || $this->condition->isOk($parameters)) {		
 			$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
 			$sql .= ' '.$this->getOperatorSymbol().' ';
 			$sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
