@@ -33,6 +33,11 @@
 		
 </form>
 
+<div class="alert">If you are performing JOINs, avoid doing a `SELECT * FROM ...`. You may have
+several columns with the same name in different tables and this might confuse QueryWritter, especially
+if you are using the `CountNbResult` class.</div>
+
+
 <script type="text/javascript">
 $(function () { $("input,select,textarea").not("[type=submit]").jqBootstrapValidation(); } );
 </script>
