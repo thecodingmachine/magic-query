@@ -41,6 +41,7 @@ use Mouf\MoufManager;
 use SQLParser\Query\StatementFactory;
 
 use SQLParser\ExpressionType;
+use Mouf\MoufException;
 
 /**
  * This class has the ability to create instances implementing NodeInterface based on a descriptive array.
@@ -131,7 +132,35 @@ class NodeFactory {
 			case ExpressionType::TABLE:
 				$expr = new Table();
 				$expr->setTable(str_replace('`', '',$desc['table']));
-				$expr->setJoinType($desc['join_type']);
+				switch ($desc['join_type']) {
+					case "CROSS":
+						$joinType = "CROSS JOIN";
+						break;
+					case "JOIN":
+						$joinType = "JOIN";
+						break;
+					case "LEFT":
+						$joinType = "LEFT JOIN";
+						break;
+					case "RIGHT":
+						$joinType = "RIGHT JOIN";
+						break;
+					case "INNER":
+						$joinType = "INNER JOIN";
+						break;
+					case "OUTER":
+						$joinType = "OUTER JOIN";
+						break;
+					case "NATURAL":
+						$joinType = "NATURAL JOIN";
+						break;
+					case ",":
+						$joinType = ",";
+						break;
+					default:
+						throw new \Exception("Unexpected join type: '".$desc['join_type']."'");
+				}
+				$expr->setJoinType($joinType);
 				
 				if (isset($desc['alias'])) {
 					$expr->setAlias($desc['alias']['name']);
