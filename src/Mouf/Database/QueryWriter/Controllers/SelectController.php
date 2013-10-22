@@ -191,7 +191,7 @@ class SelectController extends AbstractMoufInstanceController {
 	 * @param int $offset
 	 * @param int $limit
 	 */
-	public function runQuery($name, $parameters, $offset = null, $limit = null) {
+	public function runQuery($name, $parameters = array(), $offset = null, $limit = null) {
 		$select = new InstanceProxy($name);
 		$sql = $select->toSql($parameters);
 		

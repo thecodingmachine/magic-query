@@ -5,13 +5,14 @@
 
 <pre id="mainQuery"><code><?php echo $this->sql; ?></code></pre>
 
+<form action="" class="form-horizontal" id="parametersform">
+	<input type="hidden" name="name" value="<?php echo plainstring_to_htmlprotected($this->instanceName); ?>" />
+
 <?php if (!empty($this->parameters)): ?>
 <div class="row">
 	<div class="span6">
 		<h2>Configure parameters</h2>
 		
-		<form action="" class="form-horizontal" id="parametersform">
-			<input type="hidden" name="name" value="<?php echo plainstring_to_htmlprotected($this->instanceName); ?>" />
 		<?php foreach ($this->parameters as $parameter) { ?>
 			<div class="control-group">
 				<label class="control-label"><?php echo plainstring_to_htmlprotected($parameter); ?>: </label>
@@ -20,7 +21,6 @@
 				</div>
 			</div>
 		<?php } ?>
-		</form>
 	</div>
 	<div class="span6">
 		<h2>Query with parameters</h2>
@@ -54,9 +54,12 @@ $(document).ready(function() {
 
 <div class="form-actions">
 	<a href=".?name=<?php echo urlencode($this->instanceName) ?>" class="btn">&lt; Edit Query</a>
-	<button type="button" class="btn btn-primary" id="runQueryButton">Run Query</button>
+	<button type="submit" class="btn btn-primary" id="runQueryButton">Run Query</button>
 	<a href="<?php echo ROOT_URL ?>ajaxinstance/?name=<?php echo urlencode($this->instanceName) ?>" class="btn">View instance &gt;</a>
 </div>
+
+</form>
+
 
 <div id="resultsContainer"></div>
 
@@ -73,9 +76,9 @@ $(document).ready(function() {
 	    });
 	});
 	
-	$("#runQueryButton").click(function() {
+	/*$("#runQueryButton").click(function() {
 		$("#parametersform").trigger("submit");
-	});
+	});*/
 	
 });
 </script>
