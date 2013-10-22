@@ -479,7 +479,7 @@ class NodeFactory {
 				
 		
 		
-		$operation = $selectedOperators[0]->getValue();
+		$operation = strtoupper($selectedOperators[0]->getValue());
 		
 		
 		/* TODO: 
