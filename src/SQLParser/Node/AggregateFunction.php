@@ -127,7 +127,10 @@ class AggregateFunction implements NodeInterface {
 			$sql .= $subTreeSql;
 			$sql .= ')';
 			if ($this->alias) {
-				$sql .= ' AS '.$this->alias;
+			// defensive fix:
+                $alias = is_array($this->alias)?$this->alias['name']:$this->alias;
+
+                $sql .= ' AS '.$alias;
 			}
 		} else {
 			$sql = null;
