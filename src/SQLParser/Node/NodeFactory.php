@@ -354,7 +354,7 @@ class NodeFactory {
 			'IS' => 'SQLParser\Node\Is',
 			'IS NOT' => 'SQLParser\Node\IsNot',
 			'LIKE' => 'SQLParser\Node\Like',
-			'REGEXP' => 'SQLParser\Node\RegExp',
+			'REGEXP' => 'SQLParser\Node\Regexp',
 			'IN' => 'SQLParser\Node\In',
 			'NOT IN' => 'SQLParser\Node\NotIn',
 			'+' => 'SQLParser\Node\Plus',
