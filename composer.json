@@ -14,7 +14,7 @@
     ],
     "require": {
     	"php": ">=5.3.0",
-    	"mouf/database.dbconnection": "~2.0",
+    	"mouf/database.doctrine-dbal-wrapper": "~1.1",
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
