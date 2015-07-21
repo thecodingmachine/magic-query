@@ -3,7 +3,7 @@ namespace Mouf\Database\QueryWriter;
 
 use Mouf\Utils\Value\ArrayValueInterface;
 
-use Mouf\Database\DBConnection\ConnectionInterface;
+use Doctrine\DBAL\Connection;
 
 /**
  * Wraps the results of a PDOStatement.

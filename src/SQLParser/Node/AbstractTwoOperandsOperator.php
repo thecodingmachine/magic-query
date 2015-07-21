@@ -3,7 +3,7 @@ namespace SQLParser\Node;
 
 use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 
-use Mouf\Database\DBConnection\ConnectionInterface;
+use Doctrine\DBAL\Connection;
 
 use Mouf\MoufManager;
 
@@ -81,13 +81,13 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface {
 	/**
 	 * Renders the object as a SQL string
 	 * 
-	 * @param ConnectionInterface $dbConnection
+	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
 	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		if ($ignoreConditions || !$this->condition || $this->condition->isOk($parameters)) {		
 			$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
 			$sql .= ' '.$this->getOperatorSymbol().' ';
