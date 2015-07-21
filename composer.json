@@ -19,7 +19,7 @@
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
     	"mouf/utils.common.sortable-interface": "~1.0",
-        "html.widgets.evolugrid": "~3.0"
+        "mouf/html.widgets.evolugrid": "~3.0"
     },
     "autoload": {
         "psr-0": {
