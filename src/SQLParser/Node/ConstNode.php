@@ -79,10 +79,10 @@ class ConstNode implements NodeInterface {
 	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
-	 * @param bool $ignoreConditions
+	 * @param int $conditionsMode
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
 		if ($this->value === null) {
 			return 'NULL';
 		} elseif ($dbConnection != null) {

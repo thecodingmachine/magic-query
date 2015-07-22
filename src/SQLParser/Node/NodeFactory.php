@@ -594,21 +594,25 @@ class NodeFactory {
 		else $new = call_user_func($callback, $array);
 		return $new;
 	}
-	
+
 	/**
 	 * Tansforms the array of nodes (or the node) passed in parameter into a SQL string.
-	 * 
+	 *
 	 * @param mixed $nodes Recursive array of node interface
+	 * @param Connection $dbConnection
+	 * @param array $parameters
 	 * @param string $delimiter
-	 * @param string $wrapInBrackets
-	 * @param number $indent
+	 * @param bool|string $wrapInBrackets
+	 * @param int|number $indent
+	 * @param int $conditionsMode
+	 * @return null|string
 	 */
-	public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $ignoreConditions = false) {
+	public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY) {
 		if (is_array($nodes)) {
 			$elems = array();
-			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $ignoreConditions) {
+			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $conditionsMode) {
 				if ($item instanceof SqlRenderInterface) {
-					$itemSql = $item->toSql($parameters, $dbConnection, $indent, $ignoreConditions);
+					$itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
 					if ($itemSql !== null) {
 						$elems[] = str_repeat(' ', $indent).$itemSql;
 					}
@@ -622,7 +626,7 @@ class NodeFactory {
 		} else {
 			$item = $nodes;
 			if ($item instanceof SqlRenderInterface) {
-				$itemSql = $item->toSql($parameters, $dbConnection, $indent, $ignoreConditions);
+				$itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
 				if ($itemSql == null) {
 					return null;
 				}

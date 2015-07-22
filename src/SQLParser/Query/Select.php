@@ -262,10 +262,10 @@ class Select implements StatementInterface {
 	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
-	 * @param bool $ignoreConditions
+	 * @param int $conditionsMode
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
 		$sql = 'SELECT ';
 		if ($this->distinct) {
 			$sql .= 'DISTINCT ';
@@ -275,39 +275,39 @@ class Select implements StatementInterface {
 		}
 		
 		if (!empty($this->columns)) {
-			$sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ",", false, $indent + 2, $ignoreConditions);
+			$sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ",", false, $indent + 2, $conditionsMode);
 		}
 		
 		if (!empty($this->from)) {
-			$from = NodeFactory::toSql($this->from, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			$from = NodeFactory::toSql($this->from, $dbConnection, $parameters, " ", false, $indent + 2, $conditionsMode);
 			if ($from) {
 				$sql .= "\nFROM ".$from;
 			}
 		}
 		
 		if (!empty($this->where)) {
-			$where = NodeFactory::toSql($this->where, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			$where = NodeFactory::toSql($this->where, $dbConnection, $parameters, " ", false, $indent + 2, $conditionsMode);
 			if ($where) {
 				$sql .= "\nWHERE ".$where;
 			}
 		}
 		
 		if (!empty($this->group)) {
-			$groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			$groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, " ", false, $indent + 2, $conditionsMode);
 			if ($groupBy) {
 				$sql .= "\nGROUP BY ".$groupBy;
 			}
 		}
 		
 		if (!empty($this->having)) {
-			$having = NodeFactory::toSql($this->having, $dbConnection, $parameters, " ", false, $indent + 2, $ignoreConditions);
+			$having = NodeFactory::toSql($this->having, $dbConnection, $parameters, " ", false, $indent + 2, $conditionsMode);
 			if ($having) {
 				$sql .= "\nHAVING ".$having;
 			}
 		}
 		
 		if (!empty($this->order)) {
-			$order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ",", false, $indent + 2, $ignoreConditions);
+			$order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ",", false, $indent + 2, $conditionsMode);
 			if ($order) {
 				$sql .= "\nORDER BY ".$order;
 			}

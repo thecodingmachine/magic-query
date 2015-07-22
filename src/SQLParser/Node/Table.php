@@ -150,10 +150,10 @@ class Table implements NodeInterface {
 	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
-	 * @param bool $ignoreConditions
+	 * @param int $conditionsMode
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
 		
 		$sql = '';
 		if ($this->refClause) {
@@ -165,7 +165,7 @@ class Table implements NodeInterface {
 		}
 		if ($this->refClause) {
 			$sql .= " ON ";
-			$sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $ignoreConditions);
+			$sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode);
 		}		
 		return $sql;
 	}

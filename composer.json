@@ -1,9 +1,9 @@
 {
-    "name": "mouf/database.querywriter",
-    "description": "This package contains classes useful to generate SQL statements such as SELECT queries, etc...",
+    "name": "mouf/magic-query",
+    "description": "A very clever library to generate PHP prepared statement with a variable number of parameters... and much more!",
     "keywords": ["database", "query", "mouf"],
-    "homepage": "https://github.com/thecodingmachine/database.querywriter",
-    "type": "mouf-library",
+    "homepage": "http://mouf-php.com/packages/mouf/magic-query",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -14,25 +14,35 @@
     ],
     "require": {
     	"php": ">=5.3.0",
-    	"mouf/database.doctrine-dbal-wrapper": "~1.1",
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
-    	"mouf/utils.common.sortable-interface": "~1.0",
-        "mouf/html.widgets.evolugrid": "~3.0"
+    	"mouf/utils.common.sortable-interface": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0"
+    },
+    "suggest": {
+      "doctrine/dbal": "To support more databases than just MySQL",
+      "mouf/database.querywriter": "To get a nice user interface to edit your SQL queries",
+      "mouf/mouf": "To get a nice user interface to edit your SQL queries"
     },
     "autoload": {
-        "psr-0": {
-            "Mouf\\Database\\QueryWriter": "src/",
-            "SQLParser": "src/"
+        "psr-4": {
+            "Mouf\\Database\\": "src/Mouf/Database/",
+            "SQLParser\\": "src/SQLParser/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mouf\\Database\\": "tests/Mouf/Database/"
         }
     },
     "extra": {
-	     "mouf": {
-	         "require-admin": [
-    			"src/QueryWriterAdmin.php"
-    			],
+        "mouf": {
 			"logo": "database.png"
 		}
-	}
+	},
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

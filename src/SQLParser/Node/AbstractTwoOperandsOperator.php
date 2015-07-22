@@ -1,6 +1,7 @@
 <?php 
 namespace SQLParser\Node;
 
+use Mouf\Database\QueryWriter\Condition\ParamAvailableCondition;
 use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 
 use Doctrine\DBAL\Connection;
@@ -84,14 +85,32 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface {
 	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
-	 * @param bool $ignoreConditions
+	 * @param int $conditionsMode
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
-		if ($ignoreConditions || !$this->condition || $this->condition->isOk($parameters)) {		
-			$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
+		if ($conditionsMode == self::CONDITION_GUESS) {
+			$bypass = false;
+			if ($this->leftOperand instanceof Parameter) {
+				if (!isset($parameters[$this->leftOperand->getName()])) {
+					$bypass = true;
+				}
+			}
+			if ($this->rightOperand instanceof Parameter) {
+				if (!isset($parameters[$this->rightOperand->getName()])) {
+					$bypass = true;
+				}
+			}
+			if ($bypass === true) {
+				return null;
+			} else {
+				$conditionsMode = self::CONDITION_IGNORE;
+			}
+		}
+		if ($conditionsMode == self::CONDITION_IGNORE || !$this->condition || $this->condition->isOk($parameters)) {
+			$sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
 			$sql .= ' '.$this->getOperatorSymbol().' ';
-			$sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $ignoreConditions);
+			$sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
 		} else {
 			$sql = null;
 		}
