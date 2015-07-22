@@ -10,6 +10,8 @@ How does it work?
 Easy! You write the query with all possible parameters.
 
 ```php
+use Mouf\Database\MagicQuery;
+
 $sql = "SELECT * FROM users WHERE name LIKE :name AND country LIKE :country";
 
 // Get a MagicQuery object.
@@ -17,11 +19,26 @@ $magicQuery = new MagicQuery();
 
 // Let's pass only the "name" parameter
 $result = $magicQuery->build($sql, [ "name" => "%John%" ]);
-// $result = SELECT * FROM users WHERE name LIKE '%John'
+// $result = SELECT * FROM users WHERE name LIKE '%John%'
 
 // Let's pass no parameter at all!
 $result2 = $magicQuery->build($sql, []);
 // $result2 = SELECT * FROM users
+```
+
+Installation
+------------
+
+Simply use the composer package:
+
+```json
+{
+	"require": {
+		"mouf/magic-query": "~1.0"
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
 ```
 
 Why should I care?
@@ -68,3 +85,22 @@ version of the php-sql-parser library) and then changed into a tree.
 The magic happens on the tree where the node containing unused parameters
 are simply discarded. When it's done, the tree is changed back to SQL and
 "shazam!", your SQL query is purged of useless parameters!
+
+Is it a MySQL only tool?
+------------------------
+
+No. By default, your SQL is parsed and then rewritten using the MySQL dialect, but you use any kind of dialect 
+known by Doctrine DBAL. Magic-query optionally uses Doctrine DBAL. You can pass a `Connection` object
+as the first parameter of the `MagicQuery` constructor. Magic-query will then use the matching dialect. 
+
+For instance:
+
+```php
+$config = new \Doctrine\DBAL\Configuration();
+$connectionParams = array(
+    'url' => 'sqlite:///somedb.sqlite',
+);
+$conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
+
+$magicQuery = new \Mouf\Database\MagicQuery($conn);
+```

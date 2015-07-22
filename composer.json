@@ -20,7 +20,8 @@
     	"mouf/utils.common.sortable-interface": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~4.0",
+        "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
       "doctrine/dbal": "To support more databases than just MySQL",
