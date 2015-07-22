@@ -1,9 +1,8 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Doctrine\DBAL\Connection;
 use Mouf\Utils\Value\IntValueInterface;
-
-use Mouf\Database\DBConnection\ConnectionInterface;
 
 /**
  * A utility class that can compute the number of results returned by a query.
@@ -24,16 +23,16 @@ class CountNbResult implements IntValueInterface {
 	/**
 	 * The connection to the database.
 	 *
-	 * @var ConnectionInterface
+	 * @var Connection
 	 */
 	private $connection;
 
 	/**
 	 * @Important $select
 	 * @param QueryResult $queryResult The query we will perform "count" upon.
-	 * @param ConnectionInterface $connection
+	 * @param Connection $connection
 	 */
-	public function __construct(QueryResult $queryResult, ConnectionInterface $connection) {
+	public function __construct(QueryResult $queryResult, Connection $connection) {
 		$this->queryResult = $queryResult;
 		$this->connection = $connection;
 	}
@@ -44,7 +43,7 @@ class CountNbResult implements IntValueInterface {
 	 */
 	public function val() {
 		$sql = "SELECT count(*) as cnt FROM (".$this->queryResult->toSql().") tmp";
-		return $this->connection->getOne($sql);
+		return $this->connection->fetchColumn($sql);
 	}
 
 }

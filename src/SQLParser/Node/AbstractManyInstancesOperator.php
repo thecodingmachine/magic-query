@@ -1,7 +1,7 @@
 <?php 
 namespace SQLParser\Node;
 
-use Mouf\Database\DBConnection\ConnectionInterface;
+use Doctrine\DBAL\Connection;
 
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
@@ -49,13 +49,13 @@ abstract class AbstractManyInstancesOperator implements NodeInterface {
 	/**
 	 * Renders the object as a SQL string
 	 * 
-	 * @param ConnectionInterface $dbConnection
+	 * @param Connection $dbConnection
 	 * @param array $parameters
 	 * @param number $indent
 	 * @param bool $ignoreConditions
 	 * @return string
 	 */
-	public function toSql(array $parameters = array(), ConnectionInterface $dbConnection = null, $indent = 0, $ignoreConditions = false) {
+	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		$sqlOperands = array();
 		foreach ($this->operands as $operand) {
 			$sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', true, $indent, $ignoreConditions);

@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Mouf\Database\QueryWriter\Utils\DbHelper;
 use Mouf\Utils\Value\ValueUtils;
 
 use SQLParser\Query\Select;
@@ -10,7 +11,7 @@ use Mouf\Utils\Common\PaginableInterface;
 use Mouf\Utils\Value\ArrayValueInterface;
 use Mouf\Utils\Value\ValueInterface;
 
-use Mouf\Database\DBConnection\ConnectionInterface;
+use Doctrine\DBAL\Connection;
 use Mouf\Utils\Common\SortableInterface;
 use SQLParser\Node\NodeInterface;
 use SQLParser\Node\ColRef;
@@ -33,7 +34,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
 	/**
 	 * The connection to the database.
 	 *
-	 * @var ConnectionInterface
+	 * @var Connection
 	 */
 	private $connection;
 	
@@ -50,9 +51,9 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
 	/**
 	 * 
 	 * @param Select $select
-	 * @param ConnectionInterface $connection
+	 * @param Connection $connection
 	 */
-	public function __construct(Select $select, ConnectionInterface $connection) {
+	public function __construct(Select $select, Connection $connection) {
 		$this->select = $select;
 		$this->connection = $connection;
 	}
@@ -72,10 +73,10 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
 	 */
 	public function val() {
 		$parameters = ValueUtils::val($this->parameters);
-		$pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection), $this->offset, $this->limit);
+		$pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection).DbHelper::getFromLimitString($this->offset, $this->limit));
 		return new ResultSet($pdoStatement);
 	}
-	
+
 	/**
 	 * Returns the SQL for this query-result (without pagination, but with parameters accounted for)
 	 * @return string
@@ -95,7 +96,8 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
 		$this->limit = $limit;
 		$this->offset = $offset;
 	}
-
+
+
 	/* (non-PHPdoc)
 	 * @see \Mouf\Utils\Common\SortableInterface::sort()
 	 */

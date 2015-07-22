@@ -34,7 +34,7 @@ namespace SQLParser\Node;
 
 use SQLParser\SqlRenderInterface;
 
-use Mouf\Database\DBConnection\ConnectionInterface;
+use Doctrine\DBAL\Connection;
 
 use Mouf\MoufManager;
 
@@ -603,7 +603,7 @@ class NodeFactory {
 	 * @param string $wrapInBrackets
 	 * @param number $indent
 	 */
-	public static function toSql($nodes, ConnectionInterface $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $ignoreConditions = false) {
+	public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $ignoreConditions = false) {
 		if (is_array($nodes)) {
 			$elems = array();
 			array_walk_recursive($nodes, function($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $ignoreConditions) {
@@ -645,9 +645,9 @@ class NodeFactory {
 	 * @return string
 	 * @param unknown $str
 	 */
-	public static function escapeDBItem($str, ConnectionInterface $dbConnection = null) {
+	public static function escapeDBItem($str, Connection $dbConnection = null) {
 		if ($dbConnection) {
-			return $dbConnection->escapeDBItem($str);
+			return $dbConnection->quoteIdentifier($str);
 		} else {
 			return '`'.$str.'`';
 		}

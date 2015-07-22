@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\Database\QueryWriter\Controllers;
 
+use Mouf\ClassProxy;
 use Mouf\Database\QueryWriter\Utils\FindParametersService;
 
 use Mouf\MoufPropertyDescriptor;
@@ -196,9 +197,9 @@ class SelectController extends AbstractMoufInstanceController {
 		$sql = $select->toSql($parameters);
 		
 		// TODO: point to the right dbConnection
-		$dbConnection = new InstanceProxy("dbConnection");
-		$results = $dbConnection->getAll($sql, \PDO::FETCH_ASSOC, "stdClass", $offset, $limit);
-		
+		$dbHelper = new ClassProxy("Mouf\\Database\\QueryWriter\\Utils\\DbHelper");
+		$results = $dbHelper->getAll($sql, $offset, $limit);
+
 		$evolugridResultSet = new EvoluGridResultSet();
 		$evolugridResultSet->setResults($results);
 		
