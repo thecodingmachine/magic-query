@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -35,10 +36,10 @@ namespace SQLParser\Query;
 use SQLParser\SqlRenderInterface;
 
 /**
- * This base interface for anything that represents a SQL statement (SELECT, UNION, DROP, etc...). 
- * 
+ * This base interface for anything that represents a SQL statement (SELECT, UNION, DROP, etc...).
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-interface StatementInterface extends SqlRenderInterface {
-	
+interface StatementInterface extends SqlRenderInterface
+{
 }

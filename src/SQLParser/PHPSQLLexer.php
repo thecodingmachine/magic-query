@@ -1,6 +1,7 @@
 <?php
+
 /**
- * lexer.php
+ * lexer.php.
  *
  * This file contains the lexer, which splits the SQL statement just before parsing.
  *
@@ -35,25 +36,26 @@ namespace SQLParser;
 /**
  * This class splits the SQL string into little parts, which the parser can
  * use to build the result array.
- * 
- * @author arothe
  *
+ * @author arothe
  */
-class PHPSQLLexer extends PHPSQLParserUtils {
-
+class PHPSQLLexer extends PHPSQLParserUtils
+{
     private $splitters;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->splitters = new LexerSplitter();
     }
 
-    public function split($sql) {
+    public function split($sql)
+    {
         if (!is_string($sql)) {
             throw new InvalidParameterException($sql);
         }
 
         $tokens = array();
-        $token = "";
+        $token = '';
 
         $splitLen = $this->splitters->getMaxLengthOfSplitter();
         $found = false;
@@ -61,28 +63,26 @@ class PHPSQLLexer extends PHPSQLParserUtils {
         $pos = 0;
 
         while ($pos < $len) {
-
-            for ($i = $splitLen; $i > 0; $i--) {
+            for ($i = $splitLen; $i > 0; --$i) {
                 $substr = substr($sql, $pos, $i);
                 if ($this->splitters->isSplitter($substr)) {
-
-                    if ($token !== "") {
+                    if ($token !== '') {
                         $tokens[] = $token;
                     }
 
                     $tokens[] = $substr;
                     $pos += $i;
-                    $token = "";
+                    $token = '';
 
                     continue 2;
                 }
             }
 
             $token .= $sql[$pos];
-            $pos++;
+            ++$pos;
         }
 
-        if ($token !== "") {
+        if ($token !== '') {
             $tokens[] = $token;
         }
 
@@ -93,18 +93,19 @@ class PHPSQLLexer extends PHPSQLParserUtils {
         $tokens = $this->balanceMultilineComments($tokens);
         $tokens = $this->concatInlineComments($tokens);
         $tokens = $this->concatUserDefinedVariables($tokens);
+
         return $tokens;
     }
 
-    private function concatUserDefinedVariables($tokens) {
+    private function concatUserDefinedVariables($tokens)
+    {
         $i = 0;
         $cnt = count($tokens);
         $userdef = false;
 
         while ($i < $cnt) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
@@ -113,31 +114,30 @@ class PHPSQLLexer extends PHPSQLParserUtils {
             if ($userdef !== false) {
                 $tokens[$userdef] .= $token;
                 unset($tokens[$i]);
-                if ($token !== "@") {
+                if ($token !== '@') {
                     $userdef = false;
                 }
             }
 
-            if ($userdef === false && $token === "@") {
+            if ($userdef === false && $token === '@') {
                 $userdef = $i;
             }
 
-            $i++;
+            ++$i;
         }
 
         return array_values($tokens);
     }
 
-    private function concatInlineComments($tokens) {
-
+    private function concatInlineComments($tokens)
+    {
         $i = 0;
         $cnt = count($tokens);
         $comment = false;
 
         while ($i < $cnt) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
@@ -152,32 +152,31 @@ class PHPSQLLexer extends PHPSQLParserUtils {
                 }
             }
 
-            if (($comment === false) && ($token === "-")) {
-                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "-") {
+            if (($comment === false) && ($token === '-')) {
+                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === '-') {
                     $comment = $i;
-                    $tokens[$i] = "--";
-                    $i++;
+                    $tokens[$i] = '--';
+                    ++$i;
                     unset($tokens[$i]);
                     continue;
                 }
             }
 
-            $i++;
+            ++$i;
         }
 
         return array_values($tokens);
     }
 
-    private function balanceMultilineComments($tokens) {
-
+    private function balanceMultilineComments($tokens)
+    {
         $i = 0;
         $cnt = count($tokens);
         $comment = false;
 
         while ($i < $cnt) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
@@ -186,39 +185,41 @@ class PHPSQLLexer extends PHPSQLParserUtils {
             if ($comment !== false) {
                 unset($tokens[$i]);
                 $tokens[$comment] .= $token;
-                if ($token === "*" && isset($tokens[$i + 1]) && $tokens[$i + 1] === "/") {
+                if ($token === '*' && isset($tokens[$i + 1]) && $tokens[$i + 1] === '/') {
                     unset($tokens[$i + 1]);
-                    $tokens[$comment] .= "/";
+                    $tokens[$comment] .= '/';
                     $comment = false;
                 }
             }
 
-            if (($comment === false) && ($token === "/")) {
-                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === "*") {
+            if (($comment === false) && ($token === '/')) {
+                if (isset($tokens[$i + 1]) && $tokens[$i + 1] === '*') {
                     $comment = $i;
-                    $tokens[$i] = "/*";
-                    $i++;
+                    $tokens[$i] = '/*';
+                    ++$i;
                     unset($tokens[$i]);
                     continue;
                 }
             }
 
-            $i++;
+            ++$i;
         }
+
         return array_values($tokens);
     }
 
-    private function isBacktick($token) {
-        return ($token === "'" || $token === "\"" || $token === "`");
+    private function isBacktick($token)
+    {
+        return ($token === "'" || $token === '"' || $token === '`');
     }
 
-    private function balanceBackticks($tokens) {
+    private function balanceBackticks($tokens)
+    {
         $i = 0;
         $cnt = count($tokens);
         while ($i < $cnt) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
@@ -228,7 +229,7 @@ class PHPSQLLexer extends PHPSQLParserUtils {
                 $tokens = $this->balanceCharacter($tokens, $i, $token);
             }
 
-            $i++;
+            ++$i;
         }
 
         return $tokens;
@@ -236,14 +237,13 @@ class PHPSQLLexer extends PHPSQLParserUtils {
 
     # backticks are not balanced within one token, so we have
     # to re-combine some tokens
-    private function balanceCharacter($tokens, $idx, $char) {
-
+    private function balanceCharacter($tokens, $idx, $char)
+    {
         $token_count = count($tokens);
         $i = $idx + 1;
         while ($i < $token_count) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
@@ -255,42 +255,42 @@ class PHPSQLLexer extends PHPSQLParserUtils {
                 break;
             }
 
-            $i++;
+            ++$i;
         }
+
         return array_values($tokens);
     }
 
     /*
      * does the token ends with dot?
      * concat it with the next token
-     * 
+     *
      * does the token starts with a dot?
      * concat it with the previous token
      */
-    private function concatColReferences($tokens) {
-
+    private function concatColReferences($tokens)
+    {
         $cnt = count($tokens);
         $i = 0;
         while ($i < $cnt) {
-
             if (!isset($tokens[$i])) {
-                $i++;
+                ++$i;
                 continue;
             }
 
-            if ($tokens[$i][0] === ".") {
+            if ($tokens[$i][0] === '.') {
 
                 // concat the previous tokens, till the token has been changed
                 $k = $i - 1;
                 $len = strlen($tokens[$i]);
                 while (($k >= 0) && ($len == strlen($tokens[$i]))) {
                     if (!isset($tokens[$k])) { # FIXME: this can be wrong if we have schema . table . column
-                        $k--;
+                        --$k;
                         continue;
                     }
-                    $tokens[$i] = $tokens[$k] . $tokens[$i];
+                    $tokens[$i] = $tokens[$k].$tokens[$i];
                     unset($tokens[$k]);
-                    $k--;
+                    --$k;
                 }
             }
 
@@ -301,64 +301,67 @@ class PHPSQLLexer extends PHPSQLParserUtils {
                 $len = strlen($tokens[$i]);
                 while (($k < $cnt) && ($len == strlen($tokens[$i]))) {
                     if (!isset($tokens[$k])) {
-                        $k++;
+                        ++$k;
                         continue;
                     }
                     $tokens[$i] .= $tokens[$k];
                     unset($tokens[$k]);
-                    $k++;
+                    ++$k;
                 }
             }
 
-            $i++;
+            ++$i;
         }
 
         return array_values($tokens);
     }
 
-    private function concatEscapeSequences($tokens) {
+    private function concatEscapeSequences($tokens)
+    {
         $tokenCount = count($tokens);
         $i = 0;
         while ($i < $tokenCount) {
-
-            if ($this->endsWith($tokens[$i], "\\")) {
-                $i++;
+            if ($this->endsWith($tokens[$i], '\\')) {
+                ++$i;
                 if (isset($tokens[$i])) {
                     $tokens[$i - 1] .= $tokens[$i];
                     unset($tokens[$i]);
                 }
             }
-            $i++;
+            ++$i;
         }
+
         return array_values($tokens);
     }
 
-    private function balanceParenthesis($tokens) {
+    private function balanceParenthesis($tokens)
+    {
         $token_count = count($tokens);
         $i = 0;
         while ($i < $token_count) {
             if ($tokens[$i] !== '(') {
-                $i++;
+                ++$i;
                 continue;
             }
             $count = 1;
-            for ($n = $i + 1; $n < $token_count; $n++) {
+            for ($n = $i + 1; $n < $token_count; ++$n) {
                 $token = $tokens[$n];
                 if ($token === '(') {
-                    $count++;
+                    ++$count;
                 }
                 if ($token === ')') {
-                    $count--;
+                    --$count;
                 }
                 $tokens[$i] .= $token;
                 unset($tokens[$n]);
                 if ($count === 0) {
-                    $n++;
+                    ++$n;
                     break;
                 }
             }
             $i = $n;
         }
+
         return array_values($tokens);
     }
 }

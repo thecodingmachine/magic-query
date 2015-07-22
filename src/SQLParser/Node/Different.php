@@ -1,4 +1,5 @@
 <?php
+
 namespace SQLParser\Node;
 
 /**
@@ -6,12 +7,15 @@ namespace SQLParser\Node;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Different extends AbstractTwoOperandsOperator {
+class Different extends AbstractTwoOperandsOperator
+{
     /**
      * Returns the symbol for this operator.
+     *
      * @return string
      */
-    protected function getOperatorSymbol() {
+    protected function getOperatorSymbol()
+    {
         return '<>';
     }
 }

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * exceptions.php
+ * exceptions.php.
  *
  * This file implements some expection classes which are used within the
  * PHPSQLParser package.
@@ -33,22 +34,25 @@
 
 namespace SQLParser;
 
-class UnableToCalculatePositionException extends \Exception {
-
+class UnableToCalculatePositionException extends \Exception
+{
     protected $needle;
     protected $haystack;
 
-    public function __construct($needle, $haystack) {
+    public function __construct($needle, $haystack)
+    {
         $this->needle = $needle;
         $this->haystack = $haystack;
-        parent::__construct("cannot calculate position of " . $needle . " within " . $haystack, 5);
+        parent::__construct('cannot calculate position of '.$needle.' within '.$haystack, 5);
     }
 
-    public function getNeedle() {
+    public function getNeedle()
+    {
         return $this->needle;
     }
 
-    public function getHaystack() {
+    public function getHaystack()
+    {
         return $this->haystack;
     }
 }

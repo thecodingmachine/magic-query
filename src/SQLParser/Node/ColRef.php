@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,142 +34,157 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufManager;
 
 /**
- * This class represents an column in an SQL expression. 
- * 
+ * This class represents an column in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class ColRef implements NodeInterface {
+class ColRef implements NodeInterface
+{
+    private $table;
 
-	private $table;
-	
-	/**
-	 * Returns the table name
-	 *
-	 * @return string
-	 */
-	public function getTable() {
-		return $this->table;
-	}
-	
-	/**
-	 * Sets the table name
-	 *
-	 * @Important
-	 * @param string $table
-	 */
-	public function setTable($table) {
-		$this->table = $table;
-	}
-	
-	
-	private $column;
-	
-	/**
-	 * Returns the column name
-	 * 
-	 * @return string
-	 */
-	public function getColumn() {
-		return $this->column;
-	}
-	
-	/**
-	 * Sets the column name
-	 *
-	 * @Important
-	 * @param string $column
-	 */
-	public function setColumn($column) {
-		$this->column = $column;
-	}
+    /**
+     * Returns the table name.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
 
-	private $alias;
-	
-	/**
-	 * Returns the alias
-	 *
-	 * @return string
-	 */
-	public function getAlias() {
-		return $this->alias;
-	}
-	
-	/**
-	 * Sets the alias
-	 *
-	 * @Important
-	 * @param string $alias
-	 */
-	public function setAlias($alias) {
-		$this->alias = $alias;
-	}
-	
-	private $direction;
-	
-	/**
-	 * Returns the direction
-	 *
-	 * @return string
-	 */
-	public function getDirection() {
-		return $this->direction;
-	}
-	
-	/**
-	 * Sets the direction
-	 *
-	 * @Important
-	 * @param string $direction
-	 */
-	public function setDirection($direction) {
-		$this->direction = $direction;
-	}
-	
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("table")->setValue($this->table);
-		$instanceDescriptor->getProperty("column")->setValue($this->column);
-		$instanceDescriptor->getProperty("alias")->setValue($this->alias);
-		$instanceDescriptor->getProperty("direction")->setValue($this->direction);
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 * 
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		$sql = '';
-		if ($this->table) {
-			$sql .= NodeFactory::escapeDBItem($this->table, $dbConnection).'.';
-		}
-		if ($this->column != '*') {
-			$sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
-		} else {
-			$sql .= '*';
-		}
-		if ($this->alias) {
-			$sql .= ' AS '.$this->alias;
-		}
-		if ($this->direction) {
-			$sql .= ' '.$this->direction;
-		}
-		return $sql;
-	}
+    /**
+     * Sets the table name.
+     *
+     * @Important
+     *
+     * @param string $table
+     */
+    public function setTable($table)
+    {
+        $this->table = $table;
+    }
+
+    private $column;
+
+    /**
+     * Returns the column name.
+     *
+     * @return string
+     */
+    public function getColumn()
+    {
+        return $this->column;
+    }
+
+    /**
+     * Sets the column name.
+     *
+     * @Important
+     *
+     * @param string $column
+     */
+    public function setColumn($column)
+    {
+        $this->column = $column;
+    }
+
+    private $alias;
+
+    /**
+     * Returns the alias.
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * Sets the alias.
+     *
+     * @Important
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    private $direction;
+
+    /**
+     * Returns the direction.
+     *
+     * @return string
+     */
+    public function getDirection()
+    {
+        return $this->direction;
+    }
+
+    /**
+     * Sets the direction.
+     *
+     * @Important
+     *
+     * @param string $direction
+     */
+    public function setDirection($direction)
+    {
+        $this->direction = $direction;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('table')->setValue($this->table);
+        $instanceDescriptor->getProperty('column')->setValue($this->column);
+        $instanceDescriptor->getProperty('alias')->setValue($this->alias);
+        $instanceDescriptor->getProperty('direction')->setValue($this->direction);
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $sql = '';
+        if ($this->table) {
+            $sql .= NodeFactory::escapeDBItem($this->table, $dbConnection).'.';
+        }
+        if ($this->column != '*') {
+            $sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
+        } else {
+            $sql .= '*';
+        }
+        if ($this->alias) {
+            $sql .= ' AS '.$this->alias;
+        }
+        if ($this->direction) {
+            $sql .= ' '.$this->direction;
+        }
+
+        return $sql;
+    }
 }

@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,144 +34,162 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufInstanceDescriptor;
-
 use Mouf\MoufManager;
 
 /**
- * This class represents a node that is an SQL expression. 
- * 
+ * This class represents a node that is an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Expression implements NodeInterface {
-	
-	private $baseExpression;
-	
-	/**
-	 * Returns the base expression (the string that generated this expression).
-	 * 
-	 * @return string
-	 */
-	public function getBaseExpression() {
-		return $this->baseExpression;
-	}
-	
-	/**
-	 * Sets the base expression (the string that generated this expression).
-	 * 
-	 * @param string $baseExpression
-	 */
-	public function setBaseExpression($baseExpression) {
-		$this->baseExpression = $baseExpression;
-	}
-	
-	private $subTree;
-	
-	public function getSubTree() {
-		return $this->subTree;
-	}
-	
-	/**
-	 * Sets the subtree
-	 *
-	 * @Important
-	 * @param array<NodeInterface>|NodeInterface $subTree
-	 */
-	public function setSubTree($subTree) {
-		$this->subTree = $subTree;
-		$this->subTree = NodeFactory::simplify($this->subTree);
-	}
-	
-	private $alias;
-	
-	public function getAlias() {
-		return $this->alias;
-	}
-	
-	/**
-	 * Sets the alias
-	 *
-	 * @Important
-	 * @param string $alias
-	 */
-	public function setAlias($alias) {
-		$this->alias = $alias;
-	}
-	
-	private $direction;
-	
-	public function getDiretion() {
-		return $this->direction;
-	}
-	
-	/**
-	 * Sets the direction
-	 *
-	 * @Important
-	 * @param string $direction
-	 */
-	public function setDirection($direction) {
-		$this->direction = $direction;
-	}
-	
-	private $brackets = false;
-	
-	/**
-	 * Returns true if the expression is between brackets
-	 * @return boolean
-	 */
-	public function hasBrackets() {
-		return $this->brackets;
-	}
-	
-	/**
-	 * Sets to true if the expression is between brackets
-	 * 
-	 * @Important
-	 * @param bool $brackets
-	 */
-	public function setBrackets($brackets) {
-		$this->brackets = $brackets;
-	}
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("baseExpression")->setValue(NodeFactory::nodeToInstanceDescriptor($this->baseExpression, $moufManager));
-		$instanceDescriptor->getProperty("subTree")->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
-		$instanceDescriptor->getProperty("alias")->setValue(NodeFactory::nodeToInstanceDescriptor($this->alias, $moufManager));
-		$instanceDescriptor->getProperty("direction")->setValue(NodeFactory::nodeToInstanceDescriptor($this->direction, $moufManager));
-		$instanceDescriptor->getProperty("brackets")->setValue(NodeFactory::nodeToInstanceDescriptor($this->brackets, $moufManager));
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 * 
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		$sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
-		if ($this->alias) {
-			$sql .= " AS ".$this->alias;
-		}
-		if ($this->direction) {
-			$sql .= " ".$this->direction;
-		}
-		if ($this->brackets) {
-			$sql = '('.$sql.')';
-		}
-		
-		return $sql;
-	}
+class Expression implements NodeInterface
+{
+    private $baseExpression;
+
+    /**
+     * Returns the base expression (the string that generated this expression).
+     *
+     * @return string
+     */
+    public function getBaseExpression()
+    {
+        return $this->baseExpression;
+    }
+
+    /**
+     * Sets the base expression (the string that generated this expression).
+     *
+     * @param string $baseExpression
+     */
+    public function setBaseExpression($baseExpression)
+    {
+        $this->baseExpression = $baseExpression;
+    }
+
+    private $subTree;
+
+    public function getSubTree()
+    {
+        return $this->subTree;
+    }
+
+    /**
+     * Sets the subtree.
+     *
+     * @Important
+     *
+     * @param array<NodeInterface>|NodeInterface $subTree
+     */
+    public function setSubTree($subTree)
+    {
+        $this->subTree = $subTree;
+        $this->subTree = NodeFactory::simplify($this->subTree);
+    }
+
+    private $alias;
+
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * Sets the alias.
+     *
+     * @Important
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    private $direction;
+
+    public function getDiretion()
+    {
+        return $this->direction;
+    }
+
+    /**
+     * Sets the direction.
+     *
+     * @Important
+     *
+     * @param string $direction
+     */
+    public function setDirection($direction)
+    {
+        $this->direction = $direction;
+    }
+
+    private $brackets = false;
+
+    /**
+     * Returns true if the expression is between brackets.
+     *
+     * @return bool
+     */
+    public function hasBrackets()
+    {
+        return $this->brackets;
+    }
+
+    /**
+     * Sets to true if the expression is between brackets.
+     *
+     * @Important
+     *
+     * @param bool $brackets
+     */
+    public function setBrackets($brackets)
+    {
+        $this->brackets = $brackets;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('baseExpression')->setValue(NodeFactory::nodeToInstanceDescriptor($this->baseExpression, $moufManager));
+        $instanceDescriptor->getProperty('subTree')->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
+        $instanceDescriptor->getProperty('alias')->setValue(NodeFactory::nodeToInstanceDescriptor($this->alias, $moufManager));
+        $instanceDescriptor->getProperty('direction')->setValue(NodeFactory::nodeToInstanceDescriptor($this->direction, $moufManager));
+        $instanceDescriptor->getProperty('brackets')->setValue(NodeFactory::nodeToInstanceDescriptor($this->brackets, $moufManager));
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        if ($this->alias) {
+            $sql .= ' AS '.$this->alias;
+        }
+        if ($this->direction) {
+            $sql .= ' '.$this->direction;
+        }
+        if ($this->brackets) {
+            $sql = '('.$sql.')';
+        }
+
+        return $sql;
+    }
 }

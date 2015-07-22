@@ -1,6 +1,7 @@
 <?php
+
 /**
- * parser-utils.php
+ * parser-utils.php.
  *
  * These are utility functions for the PHPSQLParser.
  *
@@ -34,52 +35,59 @@ namespace SQLParser;
 
 /**
  * This class implements some helper functions.
- * @author arothe
  *
+ * @author arothe
  */
-class PHPSQLParserUtils extends PHPSQLParserConstants {
-
+class PHPSQLParserUtils extends PHPSQLParserConstants
+{
     /**
      * Prints an array only if debug mode is on.
+     *
      * @param array $s
-     * @param boolean $return, if true, the formatted array is returned via return parameter
+     * @param bool  $return, if true, the formatted array is returned via return parameter
      */
-    protected function preprint($arr, $return = false) {
-        $x = "<pre>";
+    protected function preprint($arr, $return = false)
+    {
+        $x = '<pre>';
         $x .= print_r($arr, 1);
-        $x .= "</pre>";
+        $x .= '</pre>';
         if ($return) {
             return $x;
         } else {
             if (isset($_ENV['DEBUG'])) {
-                print $x . "\n";
+                print $x."\n";
             }
         }
     }
 
     /**
      * Ends the given string $haystack with the string $needle?
+     *
      * @param string $haystack
      * @param string $needle
      */
-    protected function endsWith($haystack, $needle) {
+    protected function endsWith($haystack, $needle)
+    {
         $length = strlen($needle);
         if ($length == 0) {
             return true;
         }
 
         $start = $length * -1;
+
         return (substr($haystack, $start) === $needle);
     }
 
     /**
-     * Revokes the escaping characters from an expression
+     * Revokes the escaping characters from an expression.
      */
-    protected function revokeEscaping($sql) {
+    protected function revokeEscaping($sql)
+    {
         $result = trim($sql);
         if (($result[0] === '`') && ($result[strlen($result) - 1] === '`')) {
             $result = substr($result, 1, -1);
         }
+
         return str_replace('``', '`', $result);
     }
 
@@ -87,14 +95,14 @@ class PHPSQLParserUtils extends PHPSQLParserConstants {
      * This method removes parenthesis from start of the given string.
      * It removes also the associated closing parenthesis.
      */
-    protected function removeParenthesisFromStart($token) {
-
+    protected function removeParenthesisFromStart($token)
+    {
         $parenthesisRemoved = 0;
 
         $trim = trim($token);
-        if ($trim !== "" && $trim[0] === "(") { // remove only one parenthesis pair now!
-            $parenthesisRemoved++;
-            $trim[0] = " ";
+        if ($trim !== '' && $trim[0] === '(') { // remove only one parenthesis pair now!
+            ++$parenthesisRemoved;
+            $trim[0] = ' ';
             $trim = trim($trim);
         }
 
@@ -102,48 +110,52 @@ class PHPSQLParserUtils extends PHPSQLParserConstants {
         $i = 0;
         $string = 0;
         while ($i < strlen($trim)) {
-
-            if ($trim[$i] === "\\") {
+            if ($trim[$i] === '\\') {
                 $i += 2; # an escape character, the next character is irrelevant
                 continue;
             }
 
             if ($trim[$i] === "'" || $trim[$i] === '"') {
-                $string++;
+                ++$string;
             }
 
-            if (($string % 2 === 0) && ($trim[$i] === "(")) {
-                $parenthesis++;
+            if (($string % 2 === 0) && ($trim[$i] === '(')) {
+                ++$parenthesis;
             }
 
-            if (($string % 2 === 0) && ($trim[$i] === ")")) {
+            if (($string % 2 === 0) && ($trim[$i] === ')')) {
                 if ($parenthesis == $parenthesisRemoved) {
-                    $trim[$i] = " ";
-                    $parenthesisRemoved--;
+                    $trim[$i] = ' ';
+                    --$parenthesisRemoved;
                 }
-                $parenthesis--;
+                --$parenthesis;
             }
-            $i++;
+            ++$i;
         }
+
         return trim($trim);
     }
 
-    public function getLastOf($array) {
+    public function getLastOf($array)
+    {
         // $array is a copy of the original array, so we can change it without sideeffects
         if (!is_array($array)) {
             return false;
         }
+
         return array_pop($array);
     }
 
     /**
-     * translates an array of objects into an associative array
+     * translates an array of objects into an associative array.
      */
-    public function toArray($tokenList) {
+    public function toArray($tokenList)
+    {
         $expr = array();
         foreach ($tokenList as $token) {
             $expr[] = $token->toArray();
         }
+
         return (empty($expr) ? false : $expr);
     }
 }

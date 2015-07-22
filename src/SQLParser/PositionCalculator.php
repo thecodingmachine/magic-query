@@ -1,8 +1,9 @@
 <?php
+
 /**
- * position-calculator.php
+ * position-calculator.php.
  *
- * This file implements the calculator for the position elements of 
+ * This file implements the calculator for the position elements of
  * the output of the PHPSQLParser.
  *
  * Copyright (c) 2010-2012, Justin Swanhart
@@ -34,60 +35,60 @@
 namespace SQLParser;
 
 /**
- * 
- * This class calculates the positions 
+ * This class calculates the positions
  * of base_expr within the original SQL statement.
- * 
+ *
  * @author arothe
- * 
  */
-class PositionCalculator extends PHPSQLParserUtils {
+class PositionCalculator extends PHPSQLParserUtils
+{
+    private static $allowedOnOperator = array("\t", "\n", "\r", ' ', ',', '(', ')', '_', "'", '"');
+    private static $allowedOnOther = array("\t", "\n", "\r", ' ', ',', '(', ')', '<', '>', '*', '+', '-', '/', '|',
+                                           '&', '=', '!', ';', );
 
-    private static $allowedOnOperator = array("\t", "\n", "\r", " ", ",", "(", ")", "_", "'", "\"");
-    private static $allowedOnOther = array("\t", "\n", "\r", " ", ",", "(", ")", "<", ">", "*", "+", "-", "/", "|",
-                                           "&", "=", "!", ";");
-
-    private function printPos($text, $sql, $charPos, $key, $parsed, $backtracking) {
+    private function printPos($text, $sql, $charPos, $key, $parsed, $backtracking)
+    {
         if (!isset($_ENV['DEBUG'])) {
             return;
         }
 
-        $spaces = "";
+        $spaces = '';
         $caller = debug_backtrace();
         $i = 1;
         while ($caller[$i]['function'] === 'lookForBaseExpression') {
-            $spaces .= "   ";
-            $i++;
+            $spaces .= '   ';
+            ++$i;
         }
-        $holdem = substr($sql, 0, $charPos) . "^" . substr($sql, $charPos);
-        echo $spaces . $text . " key:" . $key . "  parsed:" . $parsed . " back:" . serialize($backtracking) . " "
-                . $holdem . "\n";
+        $holdem = substr($sql, 0, $charPos).'^'.substr($sql, $charPos);
+        echo $spaces.$text.' key:'.$key.'  parsed:'.$parsed.' back:'.serialize($backtracking).' '
+                .$holdem."\n";
     }
 
-    public function setPositionsWithinSQL($sql, $parsed) {
+    public function setPositionsWithinSQL($sql, $parsed)
+    {
         $charPos = 0;
         $backtracking = array();
         $this->lookForBaseExpression($sql, $charPos, $parsed, 0, $backtracking);
+
         return $parsed;
     }
 
-    private function findPositionWithinString($sql, $value, $expr_type) {
-
+    private function findPositionWithinString($sql, $value, $expr_type)
+    {
         $offset = 0;
         $ok = false;
         while (true) {
-
             $pos = strpos($sql, $value, $offset);
             if ($pos === false) {
                 break;
             }
 
-            $before = "";
+            $before = '';
             if ($pos > 0) {
                 $before = $sql[$pos - 1];
             }
 
-            $after = "";
+            $after = '';
             if (isset($sql[$pos + strlen($value)])) {
                 $after = $sql[$pos + strlen($value)];
             }
@@ -97,12 +98,11 @@ class PositionCalculator extends PHPSQLParserUtils {
             # an operator should not be surrounded by another operator
 
             if ($expr_type === 'operator') {
-
-                $ok = ($before === "" || in_array($before, self::$allowedOnOperator, true))
+                $ok = ($before === '' || in_array($before, self::$allowedOnOperator, true))
                         || (strtolower($before) >= 'a' && strtolower($before) <= 'z')
                         || ($before >= '0' && $before <= '9');
                 $ok = $ok
-                        && ($after === "" || in_array($after, self::$allowedOnOperator, true)
+                        && ($after === '' || in_array($after, self::$allowedOnOperator, true)
                                 || (strtolower($after) >= 'a' && strtolower($after) <= 'z')
                                 || ($after >= '0' && $after <= '9') || ($after === '?') || ($after === '@'));
 
@@ -117,8 +117,8 @@ class PositionCalculator extends PHPSQLParserUtils {
             # in all other cases we accept
             # whitespace, comma, operators, parenthesis and end_of_string
 
-            $ok = ($before === "" || in_array($before, self::$allowedOnOther, true));
-            $ok = $ok && ($after === "" || in_array($after, self::$allowedOnOther, true));
+            $ok = ($before === '' || in_array($before, self::$allowedOnOther, true));
+            $ok = $ok && ($after === '' || in_array($after, self::$allowedOnOther, true));
 
             if ($ok) {
                 break;
@@ -130,7 +130,8 @@ class PositionCalculator extends PHPSQLParserUtils {
         return $pos;
     }
 
-    private function lookForBaseExpression($sql, &$charPos, &$parsed, $key, &$backtracking) {
+    private function lookForBaseExpression($sql, &$charPos, &$parsed, $key, &$backtracking)
+    {
         if (!is_numeric($key)) {
             if (($key === 'UNION' || $key === 'UNION ALL')
                     || ($key === 'expr_type' && $parsed === ExpressionType::EXPRESSION)
@@ -145,20 +146,19 @@ class PositionCalculator extends PHPSQLParserUtils {
                 # we do this, because the next base_expr contains the complete expression/subquery/record
                 # and we have to look into it too
                 $backtracking[] = $charPos;
-
             } elseif (($key === 'ref_clause' || $key === 'columns') && $parsed !== false) {
                 # we hold the current position and come back after n base_expr(s)
                 # there is an array of sub-elements before (!) the base_expr clause of the current element
                 # so we go through the sub-elements and must come at the end
                 $backtracking[] = $charPos;
-                for ($i = 1; $i < count($parsed); $i++) {
+                for ($i = 1; $i < count($parsed); ++$i) {
                     $backtracking[] = false; # backtracking only after n base_expr!
                 }
             } elseif ($key === 'sub_tree' && $parsed !== false) {
                 # we prevent wrong backtracking on subtrees (too much array_pop())
                 # there is an array of sub-elements after(!) the base_expr clause of the current element
                 # so we go through the sub-elements and must not come back at the end
-                for ($i = 1; $i < count($parsed); $i++) {
+                for ($i = 1; $i < count($parsed); ++$i) {
                     $backtracking[] = false;
                 }
             } else {
@@ -198,7 +198,6 @@ class PositionCalculator extends PHPSQLParserUtils {
                 }
 
                 #$this->printPos("2", $sql, $charPos, $key, $value, $backtracking);
-
             } else {
                 $this->lookForBaseExpression($sql, $charPos, $parsed[$key], $key, $backtracking);
             }

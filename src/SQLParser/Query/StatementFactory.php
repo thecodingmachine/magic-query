@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -32,86 +33,80 @@
 
 namespace SQLParser\Query;
 
-use Mouf\MoufManager;
-
-use Mouf\MoufInstanceDescriptor;
-
 use SQLParser\Node\NodeFactory;
-
-use SQLParser\ExpressionType;
 
 /**
  * This class has the ability to create instances implementing NodeInterface based on a descriptive array.
- * 
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class StatementFactory {
-	
-	public static function toObject(array $desc) {
-		if (isset($desc['SELECT'])) {
-			$select = new Select();
-			
-			$columns = array_map(function($item) {
-				return NodeFactory::toObject($item);
-			}, $desc['SELECT']);
-			$columns = NodeFactory::simplify($columns);
-			$select->setColumns($columns);
-			
-			if (isset($desc['OPTIONS'])) {
-				$options = $desc['OPTIONS'];
-				$key = array_search('DISTINCT', $options);
-				if ($key !== false) {
-					$select->setDistinct(true);
-					unset($options[$key]);
-				} else {
-					$select->setDistinct(false);
-				}
-				$select->setOptions($options);
-			}
-			
-			if (isset($desc['FROM'])) {
-				$from = array_map(function($item) {
-					return NodeFactory::toObject($item);
-				}, $desc['FROM']);
-				$select->setFrom($from);
-			}
+class StatementFactory
+{
+    public static function toObject(array $desc)
+    {
+        if (isset($desc['SELECT'])) {
+            $select = new Select();
 
-			if (isset($desc['WHERE'])) {
-				$where = array_map(function($item) {
-					return NodeFactory::toObject($item);
-				}, $desc['WHERE']);
-				$where = NodeFactory::simplify($where);
-				$select->setWhere($where);
-			}
-				
-			if (isset($desc['GROUP'])) {
-				$group = array_map(function($item) {
-					return NodeFactory::toObject($item);
-				}, $desc['GROUP']);
-				$group = NodeFactory::simplify($group);
-				$select->setGroup($group);
-			}
+            $columns = array_map(function ($item) {
+                return NodeFactory::toObject($item);
+            }, $desc['SELECT']);
+            $columns = NodeFactory::simplify($columns);
+            $select->setColumns($columns);
 
-			if (isset($desc['HAVING'])) {
-				$having = array_map(function($item) {
-					return NodeFactory::toObject($item);
-				}, $desc['HAVING']);
-				$having = NodeFactory::simplify($having);
-				$select->setHaving($having);
-			}
-			
-			if (isset($desc['ORDER'])) {
-				$order = array_map(function($item) {
-					return NodeFactory::toObject($item);
-				}, $desc['ORDER']);
-				$order = NodeFactory::simplify($order);
-				$select->setOrder($order);
-			}
-			
-			return $select;
-			
-		} else {
-			throw new \BadMethodCallException("Unknown query");
-		}		
-	}
+            if (isset($desc['OPTIONS'])) {
+                $options = $desc['OPTIONS'];
+                $key = array_search('DISTINCT', $options);
+                if ($key !== false) {
+                    $select->setDistinct(true);
+                    unset($options[$key]);
+                } else {
+                    $select->setDistinct(false);
+                }
+                $select->setOptions($options);
+            }
+
+            if (isset($desc['FROM'])) {
+                $from = array_map(function ($item) {
+                    return NodeFactory::toObject($item);
+                }, $desc['FROM']);
+                $select->setFrom($from);
+            }
+
+            if (isset($desc['WHERE'])) {
+                $where = array_map(function ($item) {
+                    return NodeFactory::toObject($item);
+                }, $desc['WHERE']);
+                $where = NodeFactory::simplify($where);
+                $select->setWhere($where);
+            }
+
+            if (isset($desc['GROUP'])) {
+                $group = array_map(function ($item) {
+                    return NodeFactory::toObject($item);
+                }, $desc['GROUP']);
+                $group = NodeFactory::simplify($group);
+                $select->setGroup($group);
+            }
+
+            if (isset($desc['HAVING'])) {
+                $having = array_map(function ($item) {
+                    return NodeFactory::toObject($item);
+                }, $desc['HAVING']);
+                $having = NodeFactory::simplify($having);
+                $select->setHaving($having);
+            }
+
+            if (isset($desc['ORDER'])) {
+                $order = array_map(function ($item) {
+                    return NodeFactory::toObject($item);
+                }, $desc['ORDER']);
+                $order = NodeFactory::simplify($order);
+                $select->setOrder($order);
+            }
+
+            return $select;
+        } else {
+            throw new \BadMethodCallException('Unknown query');
+        }
+    }
 }

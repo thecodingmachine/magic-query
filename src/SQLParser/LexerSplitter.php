@@ -1,6 +1,7 @@
 <?php
+
 /**
- * lexer-splitter.php
+ * lexer-splitter.php.
  *
  * Defines the characters, which are used to split the given SQL string.
  * Part of PHPSQLParser.
@@ -33,23 +34,26 @@
 
 namespace SQLParser;
 
-class LexerSplitter {
-
-    private static $splitters = array("\r\n", "!=", ">=", "<=", "<>", ":=", "\\", "&&", ">", "<", "|", "=", "^", "(",
-                                      ")", "\t", "\n", "'", "\"", "`", ",", "@", " ", "+", "-", "*", "/", ";");
+class LexerSplitter
+{
+    private static $splitters = array("\r\n", '!=', '>=', '<=', '<>', ':=', '\\', '&&', '>', '<', '|', '=', '^', '(',
+                                      ')', "\t", "\n", "'", '"', '`', ',', '@', ' ', '+', '-', '*', '/', ';', );
     private $tokenSize;
     private $hashSet;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->tokenSize = strlen(self::$splitters[0]); # should be the largest one
         $this->hashSet = array_flip(self::$splitters);
     }
 
-    public function getMaxLengthOfSplitter() {
+    public function getMaxLengthOfSplitter()
+    {
         return $this->tokenSize;
     }
 
-    public function isSplitter($token) {
+    public function isSplitter($token)
+    {
         return isset($this->hashSet[$token]);
     }
 }

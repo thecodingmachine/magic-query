@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,126 +34,137 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufInstanceDescriptor;
-
 use Mouf\MoufManager;
 
 /**
- * This class represents a parameter (as in parameterized query). 
- * 
+ * This class represents a parameter (as in parameterized query).
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Parameter implements NodeInterface {
-	
-	private $name;
-	
-	/**
-	 * Returns the name name
-	 * 
-	 * @return string
-	 */
-	public function getName() {
-		return $this->name;
-	}
-	
-	/**
-	 * Sets the name name
-	 *
-	 * @Important
-	 * @param string $name
-	 */
-	public function setName($name) {
-		$this->name = $name;
-	}
-	
-	/**
-	 * @var string
-	 */
-	private $autoPrepend;
+class Parameter implements NodeInterface
+{
+    private $name;
 
-	/**
-	 * @var string
-	 */
-	private $autoAppend;
+    /**
+     * Returns the name name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getAutoPrepend() {
-		return $this->autoPrepend;
-	}
-	
-	/**
-	 * Sets a string that will automatically be appended to the parameter, if the parameter is available.
-	 * Very useful to automatically add "%" to a parameter used in a LIKE.
-	 * 
-	 * @Important IfSet
-	 * @param string $autoPrepend
-	 */
-	public function setAutoPrepend($autoPrepend) {
-		$this->autoPrepend = $autoPrepend;
-		return $this;
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getAutoAppend() {
-		return $this->autoAppend;
-	}
-	
-	/**
-	 * Sets a string that will automatically be preprended to the parameter, if the parameter is available.
-	 * Very useful to automatically add "%" to a parameter used in a LIKE.
-	 * 
-	 * @Important IfSet
-	 * @param string $autoAppend
-	 */
-	public function setAutoAppend($autoAppend) {
-		$this->autoAppend = $autoAppend;
-		return $this;
-	}
-	
-	
-	
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("name")->setValue($this->name);
-		$instanceDescriptor->getProperty("autoPrepend")->setValue($this->autoPrepend);
-		$instanceDescriptor->getProperty("autoAppend")->setValue($this->autoAppend);
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 * 
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		if (isset($parameters[$this->name])) {
-			if ($dbConnection) {
-				return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
-			} else {
-				if ($parameters[$this->name] === null) {
-					return NULL;
-				} else {
-					return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
-				}
-			}
-		} else {
-			return ':'.$this->name;
-		}
-	}
+    /**
+     * Sets the name name.
+     *
+     * @Important
+     *
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @var string
+     */
+    private $autoPrepend;
+
+    /**
+     * @var string
+     */
+    private $autoAppend;
+
+    /**
+     * @return string
+     */
+    public function getAutoPrepend()
+    {
+        return $this->autoPrepend;
+    }
+
+    /**
+     * Sets a string that will automatically be appended to the parameter, if the parameter is available.
+     * Very useful to automatically add "%" to a parameter used in a LIKE.
+     *
+     * @Important IfSet
+     *
+     * @param string $autoPrepend
+     */
+    public function setAutoPrepend($autoPrepend)
+    {
+        $this->autoPrepend = $autoPrepend;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAutoAppend()
+    {
+        return $this->autoAppend;
+    }
+
+    /**
+     * Sets a string that will automatically be preprended to the parameter, if the parameter is available.
+     * Very useful to automatically add "%" to a parameter used in a LIKE.
+     *
+     * @Important IfSet
+     *
+     * @param string $autoAppend
+     */
+    public function setAutoAppend($autoAppend)
+    {
+        $this->autoAppend = $autoAppend;
+
+        return $this;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('name')->setValue($this->name);
+        $instanceDescriptor->getProperty('autoPrepend')->setValue($this->autoPrepend);
+        $instanceDescriptor->getProperty('autoAppend')->setValue($this->autoAppend);
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        if (isset($parameters[$this->name])) {
+            if ($dbConnection) {
+                return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
+            } else {
+                if ($parameters[$this->name] === null) {
+                    return null;
+                } else {
+                    return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
+                }
+            }
+        } else {
+            return ':'.$this->name;
+        }
+    }
 }

@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,16 +34,19 @@
 namespace SQLParser\Node;
 
 /**
- * This class represents an OR in an SQL expression. 
- * 
+ * This class represents an OR in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class OrOp extends AbstractManyInstancesOperator {
-	/**
-	 * Returns the symbol for this operator.
-	 * @return string
-	 */
-	protected function getOperatorSymbol() {
-		return 'OR';
-	}
+class OrOp extends AbstractManyInstancesOperator
+{
+    /**
+     * Returns the symbol for this operator.
+     *
+     * @return string
+     */
+    protected function getOperatorSymbol()
+    {
+        return 'OR';
+    }
 }

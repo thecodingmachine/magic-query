@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,110 +34,119 @@
 namespace SQLParser\Node;
 
 use SQLParser\Query\Select;
-
 use Mouf\MoufInstanceDescriptor;
-
 use Mouf\MoufManager;
 
 /**
- * This class represents a subquery (and optionnally a JOIN .. ON expression in an SQL expression. 
- * 
+ * This class represents a subquery (and optionnally a JOIN .. ON expression in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class SubQuery implements NodeInterface {
-	
-	private $subQuery;
-	
-	/**
-	 * Returns the list of subQuery statements
-	 *
-	 * @return Select
-	 */
-	public function getSubQuery() {
-		return $this->subQuery;
-	}
-	
-	/**
-	 * Sets the list of subQuery statements
-	 *
-	 * @param Select $subQuery
-	 */
-	public function setSubQuery(Select $subQuery) {
-		$this->subQuery = $subQuery;
-	}
-	
-	private $alias;
-	
-	/**
-	 * Returns the alias
-	 *
-	 * @return string
-	 */
-	public function getAlias() {
-		return $this->alias;
-	}
-	
-	/**
-	 * Sets the alias
-	 *
-	 * @param string $alias
-	 */
-	public function setAlias($alias) {
-		$this->alias = $alias;
-	}
+class SubQuery implements NodeInterface
+{
+    private $subQuery;
 
-	private $joinType;
-	
-	/**
-	 * Returns the join type
-	 *
-	 * @return string
-	 */
-	public function getJoinType() {
-		return $this->joinType;
-	}
-	
-	/**
-	 * Sets the join type (JOIN, LEFT JOIN, RIGHT JOIN, etc...)
-	 *
-	 * @param string $joinType
-	 */
-	public function setJoinType($joinType) {
-		$this->joinType = $joinType;
-	}
+    /**
+     * Returns the list of subQuery statements.
+     *
+     * @return Select
+     */
+    public function getSubQuery()
+    {
+        return $this->subQuery;
+    }
 
-	private $refClause;
-	
-	/**
-	 * Returns the list of refClause statements
-	 *
-	 * @return NodeInterface[]
-	 */
-	public function getRefClause() {
-		return $this->refClause;
-	}
-	
-	/**
-	 * Sets the list of refClause statements
-	 *
-	 * @param NodeInterface[] $refClause
-	 */
-	public function setRefClause($refClause) {
-		$this->refClause = $refClause;
-	}
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("subQuery")->setValue($this->subQuery->toInstanceDescriptor($moufManager));
-		$instanceDescriptor->getProperty("alias")->setValue($this->alias);
-		$instanceDescriptor->getProperty("joinType")->setValue($this->joinType);
-		$instanceDescriptor->getProperty("refClause")->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
-		return $instanceDescriptor;
-	}
+    /**
+     * Sets the list of subQuery statements.
+     *
+     * @param Select $subQuery
+     */
+    public function setSubQuery(Select $subQuery)
+    {
+        $this->subQuery = $subQuery;
+    }
+
+    private $alias;
+
+    /**
+     * Returns the alias.
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * Sets the alias.
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    private $joinType;
+
+    /**
+     * Returns the join type.
+     *
+     * @return string
+     */
+    public function getJoinType()
+    {
+        return $this->joinType;
+    }
+
+    /**
+     * Sets the join type (JOIN, LEFT JOIN, RIGHT JOIN, etc...).
+     *
+     * @param string $joinType
+     */
+    public function setJoinType($joinType)
+    {
+        $this->joinType = $joinType;
+    }
+
+    private $refClause;
+
+    /**
+     * Returns the list of refClause statements.
+     *
+     * @return NodeInterface[]
+     */
+    public function getRefClause()
+    {
+        return $this->refClause;
+    }
+
+    /**
+     * Sets the list of refClause statements.
+     *
+     * @param NodeInterface[] $refClause
+     */
+    public function setRefClause($refClause)
+    {
+        $this->refClause = $refClause;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('subQuery')->setValue($this->subQuery->toInstanceDescriptor($moufManager));
+        $instanceDescriptor->getProperty('alias')->setValue($this->alias);
+        $instanceDescriptor->getProperty('joinType')->setValue($this->joinType);
+        $instanceDescriptor->getProperty('refClause')->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
+
+        return $instanceDescriptor;
+    }
 }

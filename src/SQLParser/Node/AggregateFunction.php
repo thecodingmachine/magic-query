@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,109 +34,120 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufManager;
-
 use Mouf\MoufInstanceDescriptor;
 
 /**
- * This class represents an aggregation expression (like COUNT, SUM...) that is an SQL expression. 
- * 
+ * This class represents an aggregation expression (like COUNT, SUM...) that is an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class AggregateFunction implements NodeInterface {
-	
-	private $functionName;
-	
-	/**
-	 * Returns the base expression (the string that generated this expression).
-	 * 
-	 * @return string
-	 */
-	public function getFunctionName() {
-		return $this->functionName;
-	}
-	
-	/**
-	 * Sets the base expression (the string that generated this expression).
-	 * 
-	 * @Important
-	 * @param string $functionName
-	 */
-	public function setFunctionName($functionName) {
-		$this->functionName = $functionName;
-	}
-	
-	private $subTree;
-	
-	public function getSubTree() {
-		return $this->subTree;
-	}
-	
-	/**
-	 * Sets the subtree
-	 *
-	 * @Important
-	 * @param array<NodeInterface> $subTree
-	 */
-	public function setSubTree($subTree) {
-		$this->subTree = $subTree;
-	}
-	
-	private $alias;
-	
-	public function getAlias() {
-		return $this->alias;
-	}
-	
-	/**
-	 * Sets the alias
-	 *
-	 * @param string $alias
-	 */
-	public function setAlias($alias) {
-		$this->alias = $alias;
-	}
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("functionName")->setValue($this->functionName, $moufManager);
-		$instanceDescriptor->getProperty("subTree")->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
-		$instanceDescriptor->getProperty("alias")->setValue($this->alias, $moufManager);
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 *
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		$subTreeSql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
-		if ($subTreeSql !== null) {
-			$sql = $this->functionName.'(';
-			$sql .= $subTreeSql;
-			$sql .= ')';
-			if ($this->alias) {
-			// defensive fix:
-                $alias = is_array($this->alias)?$this->alias['name']:$this->alias;
+class AggregateFunction implements NodeInterface
+{
+    private $functionName;
+
+    /**
+     * Returns the base expression (the string that generated this expression).
+     *
+     * @return string
+     */
+    public function getFunctionName()
+    {
+        return $this->functionName;
+    }
+
+    /**
+     * Sets the base expression (the string that generated this expression).
+     *
+     * @Important
+     *
+     * @param string $functionName
+     */
+    public function setFunctionName($functionName)
+    {
+        $this->functionName = $functionName;
+    }
+
+    private $subTree;
+
+    public function getSubTree()
+    {
+        return $this->subTree;
+    }
+
+    /**
+     * Sets the subtree.
+     *
+     * @Important
+     *
+     * @param array<NodeInterface> $subTree
+     */
+    public function setSubTree($subTree)
+    {
+        $this->subTree = $subTree;
+    }
+
+    private $alias;
+
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * Sets the alias.
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('functionName')->setValue($this->functionName, $moufManager);
+        $instanceDescriptor->getProperty('subTree')->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
+        $instanceDescriptor->getProperty('alias')->setValue($this->alias, $moufManager);
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $subTreeSql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        if ($subTreeSql !== null) {
+            $sql = $this->functionName.'(';
+            $sql .= $subTreeSql;
+            $sql .= ')';
+            if ($this->alias) {
+                // defensive fix:
+                $alias = is_array($this->alias) ? $this->alias['name'] : $this->alias;
 
                 $sql .= ' AS '.$alias;
-			}
-		} else {
-			$sql = null;
-		}
-	
-		return $sql;
-	}
+            }
+        } else {
+            $sql = null;
+        }
+
+        return $sql;
+    }
 }

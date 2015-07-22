@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,25 +34,26 @@
 namespace SQLParser\Node;
 
 /**
- * This class represents an operation (AND, OR, ...) in an SQL expression. 
- * 
+ * This class represents an operation (AND, OR, ...) in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Operation extends AbstractManyInstancesOperator {
-	
-	private $operator;
-	
-	public function getOperator() {
-		return $this->operator;
-	}
-	
-	/**
-	 * Sets the operator
-	 *
-	 * @param string $operator
-	 */
-	public function setOperator($operator) {
-		$this->operator = $operator;
-	}
-	
+class Operation extends AbstractManyInstancesOperator
+{
+    private $operator;
+
+    public function getOperator()
+    {
+        return $this->operator;
+    }
+
+    /**
+     * Sets the operator.
+     *
+     * @param string $operator
+     */
+    public function setOperator($operator)
+    {
+        $this->operator = $operator;
+    }
 }

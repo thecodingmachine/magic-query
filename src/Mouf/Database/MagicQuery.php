@@ -1,5 +1,7 @@
 <?php
+
 namespace Mouf\Database;
+
 use SQLParser\Query\StatementFactory;
 use SQLParser\SQLParser;
 use SQLParser\SqlRenderInterface;
@@ -15,7 +17,8 @@ class MagicQuery
     /**
      * @param Doctrine\DBAL\Connection $connection
      */
-    public function __construct($connection = null) {
+    public function __construct($connection = null)
+    {
         $this->connection = $connection;
     }
 
@@ -24,10 +27,12 @@ class MagicQuery
      * from the SQL.
      *
      * @param string $sql
-     * @param array $parameters
+     * @param array  $parameters
+     *
      * @return string
      */
-    public function build($sql, array $parameters = array()) {
+    public function build($sql, array $parameters = array())
+    {
         $parser = new SQLParser();
         $parsed = $parser->parse($sql);
 
@@ -38,6 +43,7 @@ class MagicQuery
         $select = StatementFactory::toObject($parsed);
 
         $sql = $select->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS);
+
         return $sql;
     }
 }

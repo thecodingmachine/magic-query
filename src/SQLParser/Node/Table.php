@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,140 +34,155 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufInstanceDescriptor;
-
 use Mouf\MoufManager;
 
 /**
- * This class represents a table (and optionnally a JOIN .. ON expression in an SQL expression. 
- * 
+ * This class represents a table (and optionnally a JOIN .. ON expression in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Table implements NodeInterface {
-	
-	private $table;
-	
-	/**
-	 * Returns the table name
-	 * 
-	 * @return string
-	 */
-	public function getTable() {
-		return $this->table;
-	}
-	
-	/**
-	 * Sets the table name
-	 *
-	 * @Important
-	 * @param string $table
-	 */
-	public function setTable($table) {
-		$this->table = $table;
-	}
+class Table implements NodeInterface
+{
+    private $table;
 
-	private $alias;
-	
-	/**
-	 * Returns the alias
-	 *
-	 * @return string
-	 */
-	public function getAlias() {
-		return $this->alias;
-	}
-	
-	/**
-	 * Sets the alias
-	 *
-	 * @Important
-	 * @param string $alias
-	 */
-	public function setAlias($alias) {
-		$this->alias = $alias;
-	}
+    /**
+     * Returns the table name.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
 
-	private $joinType;
-	
-	/**
-	 * Returns the join type
-	 *
-	 * @return string
-	 */
-	public function getJoinType() {
-		return $this->joinType;
-	}
-	
-	/**
-	 * Sets the join type (JOIN, LEFT JOIN, RIGHT JOIN, etc...)
-	 *
-	 * @Important
-	 * @param string $joinType
-	 */
-	public function setJoinType($joinType) {
-		$this->joinType = $joinType;
-	}
+    /**
+     * Sets the table name.
+     *
+     * @Important
+     *
+     * @param string $table
+     */
+    public function setTable($table)
+    {
+        $this->table = $table;
+    }
 
-	private $refClause;
-	
-	/**
-	 * Returns the list of refClause statements
-	 *
-	 * @return NodeInterface[]|NodeInterface
-	 */
-	public function getRefClause() {
-		return $this->refClause;
-	}
-	
-	/**
-	 * Sets the list of refClause statements
-	 *
-	 * @Important
-	 * @param NodeInterface[]|NodeInterface $refClause
-	 */
-	public function setRefClause($refClause) {
-		$this->refClause = $refClause;
-	}
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("table")->setValue($this->table);
-		$instanceDescriptor->getProperty("alias")->setValue($this->alias);
-		$instanceDescriptor->getProperty("joinType")->setValue($this->joinType);
-		$instanceDescriptor->getProperty("refClause")->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 * 
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		
-		$sql = '';
-		if ($this->refClause) {
-			$sql .= "\n  ".$this->joinType.' ';
-		}
-		$sql .= NodeFactory::escapeDBItem($this->table, $dbConnection);
-		if ($this->alias) {
-			$sql .= " AS ".NodeFactory::escapeDBItem($this->alias, $dbConnection);
-		}
-		if ($this->refClause) {
-			$sql .= " ON ";
-			$sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode);
-		}		
-		return $sql;
-	}
+    private $alias;
+
+    /**
+     * Returns the alias.
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * Sets the alias.
+     *
+     * @Important
+     *
+     * @param string $alias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    private $joinType;
+
+    /**
+     * Returns the join type.
+     *
+     * @return string
+     */
+    public function getJoinType()
+    {
+        return $this->joinType;
+    }
+
+    /**
+     * Sets the join type (JOIN, LEFT JOIN, RIGHT JOIN, etc...).
+     *
+     * @Important
+     *
+     * @param string $joinType
+     */
+    public function setJoinType($joinType)
+    {
+        $this->joinType = $joinType;
+    }
+
+    private $refClause;
+
+    /**
+     * Returns the list of refClause statements.
+     *
+     * @return NodeInterface[]|NodeInterface
+     */
+    public function getRefClause()
+    {
+        return $this->refClause;
+    }
+
+    /**
+     * Sets the list of refClause statements.
+     *
+     * @Important
+     *
+     * @param NodeInterface[]|NodeInterface $refClause
+     */
+    public function setRefClause($refClause)
+    {
+        $this->refClause = $refClause;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('table')->setValue($this->table);
+        $instanceDescriptor->getProperty('alias')->setValue($this->alias);
+        $instanceDescriptor->getProperty('joinType')->setValue($this->joinType);
+        $instanceDescriptor->getProperty('refClause')->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $sql = '';
+        if ($this->refClause) {
+            $sql .= "\n  ".$this->joinType.' ';
+        }
+        $sql .= NodeFactory::escapeDBItem($this->table, $dbConnection);
+        if ($this->alias) {
+            $sql .= ' AS '.NodeFactory::escapeDBItem($this->alias, $dbConnection);
+        }
+        if ($this->refClause) {
+            $sql .= ' ON ';
+            $sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode);
+        }
+
+        return $sql;
+    }
 }

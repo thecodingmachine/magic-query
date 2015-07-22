@@ -1,6 +1,7 @@
-<?php 
+<?php
+
 /**
- * expression-types.php
+ * expression-types.php.
  *
  *
  * Copyright (c) 2010-2013, Justin Swanhart
@@ -33,62 +34,68 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-
 use Mouf\MoufManager;
-
 use Mouf\MoufInstanceDescriptor;
 
 /**
- * This class represents a constant in an SQL expression. 
- * 
+ * This class represents a constant in an SQL expression.
+ *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class ConstNode implements NodeInterface {
-	
-	private $value;
-	
-	public function getValue() {
-		return $this->value;
-	}
-	
-	/**
-	 * Sets the value
-	 *
-	 * @Important
-	 * @param string $value
-	 */
-	public function setValue($value) {
-		$this->value = $value;
-	}
-	
-	/**
-	 * Returns a Mouf instance descriptor describing this object.
-	 *
-	 * @param MoufManager $moufManager
-	 * @return MoufInstanceDescriptor
-	 */
-	public function toInstanceDescriptor(MoufManager $moufManager) {
-		$instanceDescriptor = $moufManager->createInstance(get_called_class());
-		$instanceDescriptor->getProperty("value")->setValue(NodeFactory::nodeToInstanceDescriptor($this->value, $moufManager));
-		return $instanceDescriptor;
-	}
-	
-	/**
-	 * Renders the object as a SQL string
-	 * 
-	 * @param Connection $dbConnection
-	 * @param array $parameters
-	 * @param number $indent
-	 * @param int $conditionsMode
-	 * @return string
-	 */
-	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY) {
-		if ($this->value === null) {
-			return 'NULL';
-		} elseif ($dbConnection != null) {
-			return $dbConnection->quote($this->value);
-		} else {
-			return "'".addslashes($this->value)."'";
-		}
-	}
+class ConstNode implements NodeInterface
+{
+    private $value;
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @Important
+     *
+     * @param string $value
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Returns a Mouf instance descriptor describing this object.
+     *
+     * @param MoufManager $moufManager
+     *
+     * @return MoufInstanceDescriptor
+     */
+    public function toInstanceDescriptor(MoufManager $moufManager)
+    {
+        $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('value')->setValue(NodeFactory::nodeToInstanceDescriptor($this->value, $moufManager));
+
+        return $instanceDescriptor;
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array      $parameters
+     * @param number     $indent
+     * @param int        $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        if ($this->value === null) {
+            return 'NULL';
+        } elseif ($dbConnection != null) {
+            return $dbConnection->quote($this->value);
+        } else {
+            return "'".addslashes($this->value)."'";
+        }
+    }
 }
