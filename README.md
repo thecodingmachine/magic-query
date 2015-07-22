@@ -1,6 +1,6 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mouf/magic-query/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/mouf/magic-query/?branch=1.0)
-[![Build Status](https://travis-ci.org/mouf/magic-query.svg?branch=1.0)](https://travis-ci.org/mouf/magic-query)
-[![Coverage Status](https://coveralls.io/repos/mouf/magic-query/badge.svg?branch=1.0)](https://coveralls.io/r/mouf/magic-query?branch=1.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/?branch=1.0)
+[![Build Status](https://travis-ci.org/thecodingmachine/magic-query.svg?branch=1.0)](https://travis-ci.org/thecodingmachine/magic-query)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/magic-query/badge.svg?branch=1.0)](https://coveralls.io/r/thecodingmachine/magic-query?branch=1.0)
 
 What is Magic-query?
 ====================
