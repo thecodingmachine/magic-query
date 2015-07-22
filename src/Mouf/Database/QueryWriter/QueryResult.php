@@ -1,6 +1,7 @@
 <?php
 namespace Mouf\Database\QueryWriter;
 
+use Mouf\Database\QueryWriter\Utils\DbHelper;
 use Mouf\Utils\Value\ValueUtils;
 
 use SQLParser\Query\Select;
@@ -72,27 +73,10 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
 	 */
 	public function val() {
 		$parameters = ValueUtils::val($this->parameters);
-		$pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection).$this->getFromLimitString($this->offset, $this->limit));
+		$pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection).DbHelper::getFromLimitString($this->offset, $this->limit));
 		return new ResultSet($pdoStatement);
 	}
 
-	private static function getFromLimitString($from = null, $limit = null) {
-		if ($limit !== null) {
-			$limitInt = (int)$limit;
-			$queryStr = " LIMIT ".$limitInt;
-
-			if ($from !== null) {
-				$fromInt = (int)$from;
-				$queryStr .= " OFFSET ".$fromInt;
-			}
-			return $queryStr;
-		}
-		else
-		{
-			return "";
-		}
-	}
-	
 	/**
 	 * Returns the SQL for this query-result (without pagination, but with parameters accounted for)
 	 * @return string

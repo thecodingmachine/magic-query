@@ -647,7 +647,7 @@ class NodeFactory {
 	 */
 	public static function escapeDBItem($str, Connection $dbConnection = null) {
 		if ($dbConnection) {
-			return $dbConnection->escapeDBItem($str);
+			return $dbConnection->quoteIdentifier($str);
 		} else {
 			return '`'.$str.'`';
 		}

@@ -86,7 +86,7 @@ class ConstNode implements NodeInterface {
 		if ($this->value === null) {
 			return 'NULL';
 		} elseif ($dbConnection != null) {
-			return $dbConnection->quoteSmart($this->value);
+			return $dbConnection->quote($this->value);
 		} else {
 			return "'".addslashes($this->value)."'";
 		}

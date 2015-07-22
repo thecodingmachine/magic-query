@@ -143,7 +143,7 @@ class Parameter implements NodeInterface {
 	public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $ignoreConditions = false) {
 		if (isset($parameters[$this->name])) {
 			if ($dbConnection) {
-				return $dbConnection->quoteSmart($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
+				return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
 			} else {
 				if ($parameters[$this->name] === null) {
 					return NULL;
