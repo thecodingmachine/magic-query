@@ -1,3 +1,5 @@
+[![Latest Unstable Version](https://poser.pugx.org/mouf/magic-query/v/unstable)](https://packagist.org/packages/mouf/magic-query)
+[![License](https://poser.pugx.org/mouf/magic-query/license)](https://packagist.org/packages/mouf/magic-query)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/?branch=1.0)
 [![Build Status](https://travis-ci.org/thecodingmachine/magic-query.svg?branch=1.0)](https://travis-ci.org/thecodingmachine/magic-query)
 [![Coverage Status](https://coveralls.io/repos/thecodingmachine/magic-query/badge.svg?branch=1.0)](https://coveralls.io/r/thecodingmachine/magic-query?branch=1.0)
@@ -24,10 +26,12 @@ $magicQuery = new MagicQuery();
 // Let's pass only the "name" parameter
 $result = $magicQuery->build($sql, [ "name" => "%John%" ]);
 // $result = SELECT * FROM users WHERE name LIKE '%John%'
+// Did you notice how the bit about the country simply vanished?
 
 // Let's pass no parameter at all!
 $result2 = $magicQuery->build($sql, []);
 // $result2 = SELECT * FROM users
+// The whole WHERE condition disappeared because it is not needed anymore!
 ```
 
 Installation
@@ -71,7 +75,7 @@ if (isset($params['country'])) {
 ```
 
 Concatenating SQL queries is **dangerous** (especially if you forget to protect parameters).
-You can always use parameterized SQL queries, but you will still have to concatenate the filters.
+You can always use parametrized SQL queries, but you will still have to concatenate the filters.
 
 To avoid concatenating strings, frameworks and libraries have used different strategies. Building a full ORM (like
 Doctrine or Propel) is a good idea, but it makes writing complex queries even more complex. Other frameworks like
