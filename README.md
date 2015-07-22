@@ -4,6 +4,26 @@ What is Magic-query?
 Magic-query is a PHP library that helps you work with complex queries that require
 a variable number of parameters.
 
+How does it work?
+-----------------
+
+Easy! You write the query with all possible parameters.
+
+```php
+$sql = "SELECT * FROM users WHERE name LIKE :name AND country LIKE :country";
+
+// Get a MagicQuery object.
+$magicQuery = new MagicQuery();
+
+// Let's pass only the "name" parameter
+$result = $magicQuery->build($sql, [ "name" => "%John%" ]);
+// $result = SELECT * FROM users WHERE name LIKE '%John'
+
+// Let's pass no parameter at all!
+$result2 = $magicQuery->build($sql, []);
+// $result2 = SELECT * FROM users
+```
+
 Why should I care?
 ------------------
 
@@ -39,37 +59,12 @@ directly, and let's face it, it is always useful to use a query directly.
 
 This is where Magic-query becomes helpful.
 
-How does it work?
------------------
-
-Easy! You write the query with all possible parameters.
-
-```php
-$sql = "SELECT * FROM
-		products p JOIN companies c
-			ON p.company_id = c.id
-	WHERE
-		p.name LIKE :name
-		AND c.name LIKE :company
-		AND c.country LIKE :country";
-
-// Get a MagicQuery object.
-$magicQuery = new MagicQuery();
-
-// Here, we pass only the "name" parameter
-$generatedSql = $magicQuery->build($sql, [ "name" => "%John%" ]);
-// $generatedSql will not include the "c.name" filter!
-
-// Here we pass no parameters
-$generatedSql2 = $magicQuery->build($sql, []);
-// The WHERE statement will be completely removed!
-```
 
 How does it work under the hood?
 --------------------------------
 
 A lot happens to your SQL query. It is actually parsed (thanks to a modified
-	version of the php-sql-parser library) and then changed into a tree.
-	The magic happens on the tree where the node containing unused parameters
-	are simply discarded. When it's done, the tree is changed back to SQL and
-	"shazam!", your SQL query is purged of useless parameters!
+version of the php-sql-parser library) and then changed into a tree.
+The magic happens on the tree where the node containing unused parameters
+are simply discarded. When it's done, the tree is changed back to SQL and
+"shazam!", your SQL query is purged of useless parameters!
