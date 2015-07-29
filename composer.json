@@ -28,6 +28,9 @@
       "mouf/database.querywriter": "To get a nice user interface to edit your SQL queries",
       "mouf/mouf": "To get a nice user interface to edit your SQL queries"
     },
+    "conflict": {
+      "mouf/database.querywriter": "< 4.0"
+    },
     "autoload": {
         "psr-4": {
             "Mouf\\Database\\": "src/Mouf/Database/",
