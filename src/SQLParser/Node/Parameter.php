@@ -155,12 +155,25 @@ class Parameter implements NodeInterface
     {
         if (isset($parameters[$this->name])) {
             if ($dbConnection) {
-                return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
+                if(is_array($parameters[$this->name])){
+                    return '('.implode(',',array_map(function($item) use ($dbConnection) {
+                            return $dbConnection->quote($this->autoPrepend.$item.$this->autoAppend);
+                        }, $parameters[$this->name])).')';
+                } else{
+                    return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
+                }
             } else {
                 if ($parameters[$this->name] === null) {
-                    return null;
+                    return "null";
                 } else {
-                    return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
+                    if(is_array($parameters[$this->name])){
+                        return '('.implode(',',array_map(function($item) {
+                            return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
+                        }, $parameters[$this->name])).')';
+                    } else{
+                       return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'"; 
+                    }
+                    
                 }
             }
         } else {
