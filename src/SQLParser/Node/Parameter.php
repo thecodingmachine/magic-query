@@ -168,7 +168,7 @@ class Parameter implements NodeInterface
                 } else {
                     if(is_array($parameters[$this->name])){
                         return '('.implode(',',array_map(function($item) {
-                            return addslashes($this->autoPrepend.$item.$this->autoAppend);
+                            return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
                         }, $parameters[$this->name])).')';
                     } else{
                        return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'"; 
