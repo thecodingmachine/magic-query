@@ -38,6 +38,7 @@ use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\NodeFactory;
 use Mouf\MoufManager;
 use SQLParser\Node\NodeInterface;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents a <code>SELECT</code> query. You can use it to generate a SQL query statement
@@ -49,7 +50,7 @@ use SQLParser\Node\NodeInterface;
  * @ExtendedAction {"name":"Test query", "url":"parseselect/tryQuery", "default":false}
  * @Renderer { "smallLogo":"vendor/mouf/database.querywriter/icons/database_go.png" }
  */
-class Select implements StatementInterface
+class Select implements StatementInterface, NodeInterface
 {
     private $distinct;
 
@@ -330,5 +331,38 @@ class Select implements StatementInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            $this->walkChildren($this->columns);
+            $this->walkChildren($this->from);
+            $this->walkChildren($this->where);
+            $this->walkChildren($this->group);
+            $this->walkChildren($this->having);
+            $this->walkChildren($this->order);
+        }
+        return $visitor->leaveNode($node);
+    }
+
+    private function walkChildren(&$children) {
+        foreach ($children as $key => $operand) {
+            $result = $operand->walk($visitor);
+            if ($result == NodeTraverser::REMOVE_NODE) {
+                unset($this->subTree[$key]);
+            } elseif ($result instanceof NodeInterface) {
+                $this->subTree[$key] = $result;
+            }
+        }
     }
 }

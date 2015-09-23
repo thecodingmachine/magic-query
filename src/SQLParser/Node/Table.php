@@ -39,7 +39,7 @@ use Mouf\MoufManager;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
- * This class represents a table (and optionally a JOIN .. ON expression in an SQL expression.
+ * This class represents a table (and optionally a JOIN .. ON expression) in a SQL expression.
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */

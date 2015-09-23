@@ -33,12 +33,13 @@
 
 namespace SQLParser\Node;
 
+use SQLParser\Node\Traverser\VisitorInterface;
 use SQLParser\Query\Select;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
 
 /**
- * This class represents a subquery (and optionnally a JOIN .. ON expression in an SQL expression.
+ * This class represents a subquery (and optionally a JOIN .. ON expression in an SQL expression.
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
@@ -148,5 +149,27 @@ class SubQuery implements NodeInterface
         $instanceDescriptor->getProperty('refClause')->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
 
         return $instanceDescriptor;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            $result = $this->subQuery->walk($visitor);
+            if ($result == NodeTraverser::REMOVE_NODE) {
+                return NodeTraverser::REMOVE_NODE;
+            } elseif ($result instanceof NodeInterface) {
+                $this->subQuery = $result;
+            }
+        }
+        return $visitor->leaveNode($node);
     }
 }

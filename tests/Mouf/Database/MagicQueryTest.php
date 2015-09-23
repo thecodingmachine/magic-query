@@ -21,6 +21,18 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE status in :status';
         $this->assertEquals("SELECT * FROM users WHERE status IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2,4]])));
+
+        // Triggers an "expression"
+        // TODO: find why it fails!
+        //$sql = 'SELECT * FROM (users) WHERE name LIKE :name';
+        //$this->assertEquals("SELECT * FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+        //$this->assertEquals('SELECT * FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        // Triggers a const node
+        $sql = 'SELECT id+1 FROM users';
+        $this->assertEquals("SELECT id + '1' FROM users", self::simplifySql($magicQuery->build($sql)));
+
+
     }
 
     /**
