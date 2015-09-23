@@ -532,7 +532,7 @@ class NodeFactory
             return $instance;
         } else {
             $instance = new Operation();
-            $instance->setOperator($operation);
+            $instance->setOperatorSymbol($operation);
             $instance->setOperands($operands);
 
             return $instance;

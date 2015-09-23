@@ -36,9 +36,10 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
- * This class represents a table (and optionnally a JOIN .. ON expression in an SQL expression.
+ * This class represents a table (and optionally a JOIN .. ON expression in an SQL expression.
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
@@ -184,5 +185,38 @@ class Table implements NodeInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            if (is_array($this->refClause)) {
+                foreach ($this->refClause as $key => $operand) {
+                    $result = $operand->walk($visitor);
+                    if ($result == NodeTraverser::REMOVE_NODE) {
+                        unset($this->refClause[$key]);
+                    } elseif ($result instanceof NodeInterface) {
+                        $this->refClause[$key] = $result;
+                    }
+                }
+            } else {
+                $result = $this->refClause->walk($visitor);
+                if ($result == NodeTraverser::REMOVE_NODE) {
+                    $this->refClause = null;
+                } elseif ($result instanceof NodeInterface) {
+                    $this->refClause = $result;
+                }
+            }
+        }
+        return $visitor->leaveNode($node);
     }
 }

@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "doctrine/dbal": "~2.5"
     },
     "suggest": {
       "doctrine/dbal": "To support more databases than just MySQL",

@@ -15,7 +15,7 @@ class MagicQuery
     private $connection;
 
     /**
-     * @param Doctrine\DBAL\Connection $connection
+     * @param \Doctrine\DBAL\Connection $connection
      */
     public function __construct($connection = null)
     {

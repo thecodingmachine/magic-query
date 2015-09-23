@@ -6,6 +6,7 @@ use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents an operation that takes 2 operands (for instance =, <, >, etc...) in an SQL expression.
@@ -124,6 +125,36 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
 
         return $sql;
     }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            $result = $this->leftOperand->walk($visitor);
+            if ($result == NodeTraverser::REMOVE_NODE) {
+                return NodeTraverser::REMOVE_NODE;
+            } elseif ($result instanceof NodeInterface) {
+                $this->leftOperand = $result;
+            }
+
+            $result = $this->rightOperand->walk($visitor);
+            if ($result == NodeTraverser::REMOVE_NODE) {
+                return NodeTraverser::REMOVE_NODE;
+            } elseif ($result instanceof NodeInterface) {
+                $this->rightOperand = $result;
+            }
+        }
+        return $visitor->leaveNode($node);
+    }
+
 
     /**
      * Returns the symbol for this operator.
