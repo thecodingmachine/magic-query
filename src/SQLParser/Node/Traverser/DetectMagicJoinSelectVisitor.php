@@ -27,7 +27,7 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
 
     /**
      * Return the list of all Select object that have a MagicJoin table.
-     * @return Select[]
+     * @return MagicJoinSelect[]
      */
     public function getMagicJoinSelects()
     {
@@ -50,7 +50,8 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
             $this->lastVisitedSelect = $node;
         } elseif ($node instanceof Table) {
             if (strtolower($node->getTable()) == 'magicjoin') {
-                $this->magicJoinSelects[] = $this->lastVisitedSelect;
+                $mainTable = trim($node->getAlias(), '()');
+                $this->magicJoinSelects[] = new MagicJoinSelect($this->lastVisitedSelect, $mainTable);
             }
         }
 

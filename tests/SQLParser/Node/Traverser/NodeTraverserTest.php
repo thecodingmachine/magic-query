@@ -21,11 +21,12 @@ class NodeTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $magicJoinDetector->getMagicJoinSelects());
         $magicJoinDetector->resetVisitor();
 
-        $sql = 'SELECT * FROM magicjoin';
+        $sql = 'SELECT * FROM magicjoin(mytable)';
         $parsed = $parser->parse($sql);
         $select = StatementFactory::toObject($parsed);
         $nodeTraverser->walk($select);
         $this->assertCount(1, $magicJoinDetector->getMagicJoinSelects());
+        $this->assertEquals("mytable", $magicJoinDetector->getMagicJoinSelects()[0]->getMainTable());
         $magicJoinDetector->resetVisitor();
 
         $sql = 'SELECT SUM(users.age) FROM users WHERE name LIKE :name AND company LIKE :company';
