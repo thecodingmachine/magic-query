@@ -40,7 +40,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Mouf\\Database\\": "tests/Mouf/Database/"
+            "Mouf\\Database\\": "tests/Mouf/Database/",
+            "SQLParser\\": "tests/SQLParser/"
         }
     },
     "extra": {

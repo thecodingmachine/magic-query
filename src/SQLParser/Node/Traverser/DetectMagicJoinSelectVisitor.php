@@ -3,6 +3,7 @@ namespace SQLParser\Node\Traverser;
 
 
 use SQLParser\Node\NodeInterface;
+use SQLParser\Node\Table;
 use SQLParser\Query\Select;
 
 /**
@@ -12,6 +13,26 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
 {
 
     private $lastVisitedSelect;
+
+    private $magicJoinSelects = array();
+
+    /**
+     * Removes all detected magic join selects.
+     * Useful for reusing the visitor instance on another node traversal.
+     */
+    public function resetVisitor() {
+        $this->magicJoinSelects = array();
+    }
+
+    /**
+     * Return the list of all Select object that have a MagicJoin table.
+     * @return Select[]
+     */
+    public function getMagicJoinSelects()
+    {
+        // TODO: throw an exception if the magicjoin table is not the only one
+        return $this->magicJoinSelects;
+    }
 
     /**
      * Called on every node when the traverser enters the node.
@@ -24,9 +45,15 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      */
     public function enterNode(NodeInterface $node)
     {
-        if ($node instanceof Select)
+        if ($node instanceof Select) {
+            $this->lastVisitedSelect = $node;
+        } elseif ($node instanceof Table) {
+            if (strtolower($node->getTable()) == 'magicjoin') {
+                $this->magicJoinSelects[] = $this->lastVisitedSelect;
+            }
+        }
 
-        return $node;
+        return null;
     }
 
     /**
@@ -39,18 +66,6 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node)
     {
-        foreach ($this->visitors as $visitor) {
-            $result = $visitor->leaveNode($node);
-            if ($result instanceof NodeInterface) {
-                $node = $result;
-            } elseif ($result == NodeTraverser::REMOVE_NODE) {
-                return NodeTraverser::REMOVE_NODE;
-            } elseif ($result !== null) {
-                throw new TraverserException('Unexpected return value for leaveNode. Return value should be a NodeInterface instance or the NodeTraverser::REMOVE_NODE constant or null.');
-            }
-        }
-        return $node;
+        return null;
     }
-
-
 }

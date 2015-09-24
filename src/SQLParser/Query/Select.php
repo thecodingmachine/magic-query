@@ -38,6 +38,7 @@ use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\NodeFactory;
 use Mouf\MoufManager;
 use SQLParser\Node\NodeInterface;
+use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
@@ -345,23 +346,25 @@ class Select implements StatementInterface, NodeInterface
             $node = $result;
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            $this->walkChildren($this->columns);
-            $this->walkChildren($this->from);
-            $this->walkChildren($this->where);
-            $this->walkChildren($this->group);
-            $this->walkChildren($this->having);
-            $this->walkChildren($this->order);
+            $this->walkChildren($this->columns, $visitor);
+            $this->walkChildren($this->from, $visitor);
+            $this->walkChildren($this->where, $visitor);
+            $this->walkChildren($this->group, $visitor);
+            $this->walkChildren($this->having, $visitor);
+            $this->walkChildren($this->order, $visitor);
         }
         return $visitor->leaveNode($node);
     }
 
-    private function walkChildren(&$children) {
-        foreach ($children as $key => $operand) {
-            $result = $operand->walk($visitor);
-            if ($result == NodeTraverser::REMOVE_NODE) {
-                unset($this->subTree[$key]);
-            } elseif ($result instanceof NodeInterface) {
-                $this->subTree[$key] = $result;
+    private function walkChildren(&$children, VisitorInterface $visitor) {
+        if ($children) {
+            foreach ($children as $key => $operand) {
+                $result = $operand->walk($visitor);
+                if ($result == NodeTraverser::REMOVE_NODE) {
+                    unset($this->subTree[$key]);
+                } elseif ($result instanceof NodeInterface) {
+                    $this->subTree[$key] = $result;
+                }
             }
         }
     }

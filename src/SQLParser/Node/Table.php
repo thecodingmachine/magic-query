@@ -36,6 +36,7 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
@@ -208,7 +209,7 @@ class Table implements NodeInterface
                         $this->refClause[$key] = $result;
                     }
                 }
-            } else {
+            } elseif ($this->refClause) {
                 $result = $this->refClause->walk($visitor);
                 if ($result == NodeTraverser::REMOVE_NODE) {
                     $this->refClause = null;
