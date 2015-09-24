@@ -2,37 +2,37 @@
 namespace SQLParser\Node\Traverser;
 
 
+use SQLParser\Node\ColRef;
 use SQLParser\Node\NodeInterface;
-use SQLParser\Node\Table;
 use SQLParser\Query\Select;
 
 /**
- * This visitor detects magic join selects.
+ * This visitor is in charge of detecting references to tables in columns.
+ * It will throw an exception if a column does not specify a table name.
  */
-class DetectMagicJoinSelectVisitor implements VisitorInterface
+class DetectTablesVisitor implements VisitorInterface
 {
 
-    private $lastVisitedSelect;
+    private $isSelectVisited = false;
 
-    private $magicJoinSelects = array();
+    private $tables = array();
 
     /**
      * Removes all detected magic join selects.
      * Useful for reusing the visitor instance on another node traversal.
      */
     public function resetVisitor() {
-        $this->magicJoinSelects = array();
-        $this->lastVisitedSelect = null;
+        $this->tables = array();
+        $this->isSelectVisited = false;
     }
 
     /**
-     * Return the list of all Select object that have a MagicJoin table.
+     * Return the list of tables referenced in the Select.
      * @return Select[]
      */
-    public function getMagicJoinSelects()
+    public function getTables()
     {
-        // TODO: throw an exception if the magicjoin table is not the only one
-        return $this->magicJoinSelects;
+        return $this->tables;
     }
 
     /**
@@ -47,11 +47,18 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
     public function enterNode(NodeInterface $node)
     {
         if ($node instanceof Select) {
-            $this->lastVisitedSelect = $node;
-        } elseif ($node instanceof Table) {
-            if (strtolower($node->getTable()) == 'magicjoin') {
-                $this->magicJoinSelects[] = $this->lastVisitedSelect;
+            if ($this->isSelectVisited) {
+                return NodeTraverser::DONT_TRAVERSE_CHILDREN;
+            } else {
+                $this->isSelectVisited = true;
             }
+        } elseif ($node instanceof ColRef) {
+            if (empty($node->getTable())) {
+                $e = new MissingTableRefException("All column references should be in the form 'table.column'. Table part is missing for column '".$node->getColumn()."'");
+                $e->setMissingTableColRef($node);
+                throw $e;
+            }
+            $this->tables[$node->getTable()] = $node->getTable();
         }
 
         return null;

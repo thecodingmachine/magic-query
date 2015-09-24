@@ -358,12 +358,21 @@ class Select implements StatementInterface, NodeInterface
 
     private function walkChildren(&$children, VisitorInterface $visitor) {
         if ($children) {
-            foreach ($children as $key => $operand) {
-                $result = $operand->walk($visitor);
+            if (is_array($children)) {
+                foreach ($children as $key => $operand) {
+                    $result = $operand->walk($visitor);
+                    if ($result == NodeTraverser::REMOVE_NODE) {
+                        unset($children[$key]);
+                    } elseif ($result instanceof NodeInterface) {
+                        $children[$key] = $result;
+                    }
+                }
+            } else {
+                $result = $children->walk($visitor);
                 if ($result == NodeTraverser::REMOVE_NODE) {
-                    unset($this->subTree[$key]);
+                    $children = null;
                 } elseif ($result instanceof NodeInterface) {
-                    $this->subTree[$key] = $result;
+                    $children = $result;
                 }
             }
         }
