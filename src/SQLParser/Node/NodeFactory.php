@@ -661,7 +661,7 @@ class NodeFactory
      *
      * @return string
      *
-     * @param unknown $str
+     * @param string $str
      */
     public static function escapeDBItem($str, Connection $dbConnection = null)
     {
