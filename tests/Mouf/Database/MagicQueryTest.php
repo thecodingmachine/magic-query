@@ -42,7 +42,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     public function testWithCache() {
         $config = new \Doctrine\DBAL\Configuration();
         $connectionParams = array(
-            'url' => 'mysql://root:@localhost/test',
+            'url' => 'mysql://root:@localhost/',
         );
         $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 
