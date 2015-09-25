@@ -1,8 +1,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/mouf/magic-query/v/unstable)](https://packagist.org/packages/mouf/magic-query)
 [![License](https://poser.pugx.org/mouf/magic-query/license)](https://packagist.org/packages/mouf/magic-query)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/badges/quality-score.png?b=1.0)](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/?branch=1.0)
-[![Build Status](https://travis-ci.org/thecodingmachine/magic-query.svg?branch=1.0)](https://travis-ci.org/thecodingmachine/magic-query)
-[![Coverage Status](https://coveralls.io/repos/thecodingmachine/magic-query/badge.svg?branch=1.0)](https://coveralls.io/r/thecodingmachine/magic-query?branch=1.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/badges/quality-score.png?b=1.1)](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/?branch=1.1)
+[![Build Status](https://travis-ci.org/thecodingmachine/magic-query.svg?branch=1.1)](https://travis-ci.org/thecodingmachine/magic-query)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/magic-query/badge.svg?branch=1.1)](https://coveralls.io/r/thecodingmachine/magic-query?branch=1.1)
 
 What is Magic-query?
 ====================
@@ -22,7 +22,7 @@ Simply use the composer package:
 ```json
 {
 	"require": {
-		"mouf/magic-query": "~1.0"
+		"mouf/magic-query": "~1.1"
 	},
 	"minimum-stability": "dev",
 	"prefer-stable": true
