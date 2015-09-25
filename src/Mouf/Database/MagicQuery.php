@@ -120,11 +120,9 @@ class MagicQuery
         $nodeTraverser->walk($select);
 
         $magicJoinSelects = $magicJoinDetector->getMagicJoinSelects();
-        if ($magicJoinSelects) {
-            foreach ($magicJoinSelects as $magicJoinSelect) {
-                // For each select in the query (there can be nested selects!), let's find the list of tables.
-                $this->magicJoinOnOneQuery($magicJoinSelect);
-            }
+        foreach ($magicJoinSelects as $magicJoinSelect) {
+            // For each select in the query (there can be nested selects!), let's find the list of tables.
+            $this->magicJoinOnOneQuery($magicJoinSelect);
         }
     }
 
