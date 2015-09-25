@@ -28,7 +28,7 @@ class DetectTablesVisitor implements VisitorInterface
 
     /**
      * Return the list of tables referenced in the Select.
-     * @return Select[]
+     * @return string[] The key and the value are the table name.
      */
     public function getTables()
     {

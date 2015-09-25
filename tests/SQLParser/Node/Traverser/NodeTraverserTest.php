@@ -52,5 +52,4 @@ class NodeTraverserTest extends \PHPUnit_Framework_TestCase
         $magicJoinDetector->resetVisitor();
 
     }
-
 }
