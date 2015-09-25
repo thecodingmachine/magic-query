@@ -360,19 +360,19 @@ class Select implements StatementInterface, NodeInterface
         if ($children) {
             if (is_array($children)) {
                 foreach ($children as $key => $operand) {
-                    $result = $operand->walk($visitor);
-                    if ($result == NodeTraverser::REMOVE_NODE) {
+                    $result2 = $operand->walk($visitor);
+                    if ($result2 === NodeTraverser::REMOVE_NODE) {
                         unset($children[$key]);
-                    } elseif ($result instanceof NodeInterface) {
-                        $children[$key] = $result;
+                    } elseif ($result2 instanceof NodeInterface) {
+                        $children[$key] = $result2;
                     }
                 }
             } else {
-                $result = $children->walk($visitor);
-                if ($result == NodeTraverser::REMOVE_NODE) {
+                $result2 = $children->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
                     $children = null;
-                } elseif ($result instanceof NodeInterface) {
-                    $children = $result;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $children = $result2;
                 }
             }
         }

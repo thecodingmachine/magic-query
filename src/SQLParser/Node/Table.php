@@ -202,19 +202,19 @@ class Table implements NodeInterface
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
             if (is_array($this->refClause)) {
                 foreach ($this->refClause as $key => $operand) {
-                    $result = $operand->walk($visitor);
-                    if ($result == NodeTraverser::REMOVE_NODE) {
+                    $result2 = $operand->walk($visitor);
+                    if ($result2 === NodeTraverser::REMOVE_NODE) {
                         unset($this->refClause[$key]);
-                    } elseif ($result instanceof NodeInterface) {
-                        $this->refClause[$key] = $result;
+                    } elseif ($result2 instanceof NodeInterface) {
+                        $this->refClause[$key] = $result2;
                     }
                 }
             } elseif ($this->refClause) {
-                $result = $this->refClause->walk($visitor);
-                if ($result == NodeTraverser::REMOVE_NODE) {
+                $result2 = $this->refClause->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
                     $this->refClause = null;
-                } elseif ($result instanceof NodeInterface) {
-                    $this->refClause = $result;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $this->refClause = $result2;
                 }
             }
         }

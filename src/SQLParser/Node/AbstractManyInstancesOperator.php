@@ -89,11 +89,11 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
             foreach ($this->operands as $key => $operand) {
-                $result = $operand->walk($visitor);
-                if ($result == NodeTraverser::REMOVE_NODE) {
+                $result2 = $operand->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
                     unset($this->operands[$key]);
-                } elseif ($result instanceof NodeInterface) {
-                    $this->operands[$key] = $result;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $this->operands[$key] = $result2;
                 }
             }
         }

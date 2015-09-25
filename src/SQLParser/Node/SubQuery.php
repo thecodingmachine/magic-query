@@ -166,11 +166,11 @@ class SubQuery implements NodeInterface
             $node = $result;
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            $result = $this->subQuery->walk($visitor);
-            if ($result == NodeTraverser::REMOVE_NODE) {
+            $result2 = $this->subQuery->walk($visitor);
+            if ($result2 === NodeTraverser::REMOVE_NODE) {
                 return NodeTraverser::REMOVE_NODE;
-            } elseif ($result instanceof NodeInterface) {
-                $this->subQuery = $result;
+            } elseif ($result2 instanceof NodeInterface) {
+                $this->subQuery = $result2;
             }
         }
         return $visitor->leaveNode($node);

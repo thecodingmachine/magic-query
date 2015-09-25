@@ -207,11 +207,11 @@ class Expression implements NodeInterface
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
             foreach ($this->subTree as $key => $operand) {
-                $result = $operand->walk($visitor);
-                if ($result == NodeTraverser::REMOVE_NODE) {
+                $result2 = $operand->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
                     unset($this->subTree[$key]);
-                } elseif ($result instanceof NodeInterface) {
-                    $this->subTree[$key] = $result;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $this->subTree[$key] = $result2;
                 }
             }
         }

@@ -139,18 +139,18 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
             $node = $result;
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            $result = $this->leftOperand->walk($visitor);
-            if ($result == NodeTraverser::REMOVE_NODE) {
+            $result2 = $this->leftOperand->walk($visitor);
+            if ($result2 === NodeTraverser::REMOVE_NODE) {
                 return NodeTraverser::REMOVE_NODE;
-            } elseif ($result instanceof NodeInterface) {
-                $this->leftOperand = $result;
+            } elseif ($result2 instanceof NodeInterface) {
+                $this->leftOperand = $result2;
             }
 
-            $result = $this->rightOperand->walk($visitor);
-            if ($result == NodeTraverser::REMOVE_NODE) {
+            $result2 = $this->rightOperand->walk($visitor);
+            if ($result2 === NodeTraverser::REMOVE_NODE) {
                 return NodeTraverser::REMOVE_NODE;
-            } elseif ($result instanceof NodeInterface) {
-                $this->rightOperand = $result;
+            } elseif ($result2 instanceof NodeInterface) {
+                $this->rightOperand = $result2;
             }
         }
         return $visitor->leaveNode($node);
