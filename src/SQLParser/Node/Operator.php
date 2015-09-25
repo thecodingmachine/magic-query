@@ -36,6 +36,7 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents an operator (=, <, AND, OR, ...) in an SQL expression.
@@ -91,5 +92,20 @@ class Operator implements NodeInterface
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         return $this->value;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     * @return NodeInterface|null|string Can return null if nothing is to be done or a node that should replace this node, or NodeTraverser::REMOVE_NODE to remove the node
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        return $visitor->leaveNode($node);
     }
 }

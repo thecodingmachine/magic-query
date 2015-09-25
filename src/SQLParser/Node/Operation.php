@@ -42,7 +42,7 @@ class Operation extends AbstractManyInstancesOperator
 {
     private $operator;
 
-    public function getOperator()
+    public function getOperatorSymbol()
     {
         return $this->operator;
     }
@@ -52,7 +52,7 @@ class Operation extends AbstractManyInstancesOperator
      *
      * @param string $operator
      */
-    public function setOperator($operator)
+    public function setOperatorSymbol($operator)
     {
         $this->operator = $operator;
     }

@@ -38,6 +38,8 @@ use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\NodeFactory;
 use Mouf\MoufManager;
 use SQLParser\Node\NodeInterface;
+use SQLParser\Node\Traverser\NodeTraverser;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents a <code>SELECT</code> query. You can use it to generate a SQL query statement
@@ -49,7 +51,7 @@ use SQLParser\Node\NodeInterface;
  * @ExtendedAction {"name":"Test query", "url":"parseselect/tryQuery", "default":false}
  * @Renderer { "smallLogo":"vendor/mouf/database.querywriter/icons/database_go.png" }
  */
-class Select implements StatementInterface
+class Select implements StatementInterface, NodeInterface
 {
     private $distinct;
 
@@ -330,5 +332,49 @@ class Select implements StatementInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            $this->walkChildren($this->columns, $visitor);
+            $this->walkChildren($this->from, $visitor);
+            $this->walkChildren($this->where, $visitor);
+            $this->walkChildren($this->group, $visitor);
+            $this->walkChildren($this->having, $visitor);
+            $this->walkChildren($this->order, $visitor);
+        }
+        return $visitor->leaveNode($node);
+    }
+
+    private function walkChildren(&$children, VisitorInterface $visitor) {
+        if ($children) {
+            if (is_array($children)) {
+                foreach ($children as $key => $operand) {
+                    $result = $operand->walk($visitor);
+                    if ($result == NodeTraverser::REMOVE_NODE) {
+                        unset($children[$key]);
+                    } elseif ($result instanceof NodeInterface) {
+                        $children[$key] = $result;
+                    }
+                }
+            } else {
+                $result = $children->walk($visitor);
+                if ($result == NodeTraverser::REMOVE_NODE) {
+                    $children = null;
+                } elseif ($result instanceof NodeInterface) {
+                    $children = $result;
+                }
+            }
+        }
     }
 }

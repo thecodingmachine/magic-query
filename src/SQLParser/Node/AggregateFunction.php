@@ -36,6 +36,8 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
+use SQLParser\Node\Traverser\NodeTraverser;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents an aggregation expression (like COUNT, SUM...) that is an SQL expression.
@@ -149,5 +151,29 @@ class AggregateFunction implements NodeInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            foreach ($this->subTree as $key => $operand) {
+                $result = $operand->walk($visitor);
+                if ($result == NodeTraverser::REMOVE_NODE) {
+                    unset($this->subTree[$key]);
+                } elseif ($result instanceof NodeInterface) {
+                    $this->subTree[$key] = $result;
+                }
+            }
+        }
+        return $visitor->leaveNode($node);
     }
 }
