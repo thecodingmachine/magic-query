@@ -45,7 +45,7 @@ class CompositeVisitor implements VisitorInterface
             $result = $visitor->enterNode($node);
             if ($result instanceof NodeInterface) {
                 $node = $result;
-            } elseif ($result == NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            } elseif ($result === NodeTraverser::DONT_TRAVERSE_CHILDREN) {
                 return NodeTraverser::DONT_TRAVERSE_CHILDREN;
             } elseif ($result !== null) {
                 throw new TraverserException('Unexpected return value for enterNode. Return value should be a NodeInterface instance or the NodeTraverser::DONT_TRAVERSE_CHILDREN constant or null.');
