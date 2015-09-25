@@ -1,3 +1,4 @@
+[![Latest Stable Version](https://poser.pugx.org/mouf/magic-query/v/stable)](https://packagist.org/packages/mouf/magic-query)
 [![Latest Unstable Version](https://poser.pugx.org/mouf/magic-query/v/unstable)](https://packagist.org/packages/mouf/magic-query)
 [![License](https://poser.pugx.org/mouf/magic-query/license)](https://packagist.org/packages/mouf/magic-query)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/badges/quality-score.png?b=1.1)](https://scrutinizer-ci.com/g/thecodingmachine/magic-query/?branch=1.1)
