@@ -2,6 +2,7 @@
 
 namespace Mouf\Database;
 
+use Doctrine\Common\Cache\VoidCache;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use SQLParser\Node\ColRef;
 use SQLParser\Node\Equal;
@@ -34,7 +35,11 @@ class MagicQuery
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
     {
         $this->connection = $connection;
-        $this->cache = $cache;
+        if ($cache) {
+            $this->cache = $cache;
+        } else {
+            $this->cache = new VoidCache();
+        }
         if ($schemaAnalyzer) {
             $this->schemaAnalyzer = $schemaAnalyzer;
         }
@@ -67,13 +72,9 @@ class MagicQuery
      * @throws MagicQueryParserException
      */
     public function parse($sql) {
-        $select = false;
-
-        if ($this->cache !== null) {
-            // We choose md4 because it is fast.
-            $cacheKey = "request_".hash("md4", $sql);
-            $select = $this->cache->fetch($cacheKey);
-        }
+        // We choose md4 because it is fast.
+        $cacheKey = "request_".hash("md4", $sql);
+        $select = $this->cache->fetch($cacheKey);
 
         if ($select === false) {
             $parser = new SQLParser();
@@ -87,10 +88,8 @@ class MagicQuery
 
             $this->magicJoin($select);
 
-            if ($this->cache !== null) {
-                // Let's store the tree
-                $this->cache->save($cacheKey, $select);
-            }
+            // Let's store the tree
+            $this->cache->save($cacheKey, $select);
         }
         return $select;
     }
@@ -213,8 +212,12 @@ class MagicQuery
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
             }
 
-            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager()->createSchema());
+            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId());
         }
         return $this->schemaAnalyzer;
+    }
+
+    private function getConnectionUniqueId() {
+        return hash('md4', $this->connection->getHost()."-".$this->connection->getPort()."-".$this->connection->getDatabase()."-".$this->connection->getDriver()->getName());
     }
 }

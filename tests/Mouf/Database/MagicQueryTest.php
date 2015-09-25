@@ -84,7 +84,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
         $role_right->setPrimaryKey(["role_id", "right_id"]);
 
-        $schemaAnalyzer = new SchemaAnalyzer($schema);
+        $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
 
         $magicQuery = new MagicQuery(null, null, $schemaAnalyzer);
 
