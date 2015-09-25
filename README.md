@@ -64,8 +64,9 @@ Fed up of writing joins in SQL? Let MagicQuery do the work for you!
 
 Seriously? Yes! All you have to do is:
 
-- Pass a **Doctrine DBAL connection** to MagicQuery's constructor. MagicQuery will analyze your schema.
+- Pass a **[Doctrine DBAL connection](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/)** to MagicQuery's constructor. MagicQuery will analyze your schema.
 - In your SQL query, replace the tables with `magicjoin(start_table)`
+- For each column of your query, use the complete name ([table_name].[column_name] instead if [column_name] alone)
 
 Let's assume your database schema is:
 
@@ -108,7 +109,7 @@ Is it a MySQL only tool?
 ------------------------
 
 No. By default, your SQL is parsed and then rewritten using the MySQL dialect, but you use any kind of dialect 
-known by Doctrine DBAL. Magic-query optionally uses Doctrine DBAL. You can pass a `Connection` object
+known by [Doctrine DBAL](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/). Magic-query optionally uses Doctrine DBAL. You can pass a `Connection` object
 as the first parameter of the `MagicQuery` constructor. Magic-query will then use the matching dialect. 
 
 For instance:

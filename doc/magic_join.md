@@ -7,10 +7,11 @@ Seriously? Yes! All you have to do is:
 
 - Pass a **Doctrine DBAL connection** to MagicQuery's constructor. MagicQuery will analyze your schema.
 - In your SQL query, replace the tables with `magicjoin(start_table)`
+- For each column of your query, use the complete name ([table_name].[column_name] instead if [column_name] alone)
 
 Let's assume your database schema is:
 
-![Sample database schema](doc/images/schema1.png)
+![Sample database schema](images/schema1.png)
 
 Using MagicJoin, you can write this SQL query:
  
@@ -64,4 +65,3 @@ Now that you understand the concept, you should understand the power and the lim
     
 <div class="alert alert-warning">MagicJoin is meant to be used on the 80% of the cases where writing joins is trivial
 and boring. If you have complex joins, do not try to use MagicJoin. Go back to pure SQL instead.</div>
-
