@@ -68,7 +68,7 @@ class CompositeVisitor implements VisitorInterface
             $result = $visitor->leaveNode($node);
             if ($result instanceof NodeInterface) {
                 $node = $result;
-            } elseif ($result == NodeTraverser::REMOVE_NODE) {
+            } elseif ($result === NodeTraverser::REMOVE_NODE) {
                 return NodeTraverser::REMOVE_NODE;
             } elseif ($result !== null) {
                 throw new TraverserException('Unexpected return value for leaveNode. Return value should be a NodeInterface instance or the NodeTraverser::REMOVE_NODE constant or null.');
