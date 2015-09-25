@@ -5,6 +5,8 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
+use SQLParser\Node\Traverser\NodeTraverser;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents an operator with many operators (AND, OR...) in an SQL expression.
@@ -72,6 +74,30 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
         }
 
         return implode("\n".str_repeat(' ', $indent).$this->getOperatorSymbol().' ', $sqlOperands);
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            foreach ($this->operands as $key => $operand) {
+                $result2 = $operand->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
+                    unset($this->operands[$key]);
+                } elseif ($result2 instanceof NodeInterface) {
+                    $this->operands[$key] = $result2;
+                }
+            }
+        }
+        return $visitor->leaveNode($node);
     }
 
     /**

@@ -190,14 +190,19 @@ class NodeFactory
 
                 $expr->setSubQuery(self::buildFromSubtree($desc['sub_tree']));
 
-                $expr->setJoinType($desc['join_type']);
+                if (isset($desc['join_type'])) {
+                    $expr->setJoinType($desc['join_type']);
+                }
 
                 if (isset($desc['alias'])) {
                     $expr->setAlias($desc['alias']['name']);
                 }
-                $subTreeNodes = self::buildFromSubtree($desc['ref_clause']);
-                if ($subTreeNodes) {
-                    $expr->setRefClause(self::simplify($subTreeNodes));
+
+                if (isset($desc['ref_clause'])) {
+                    $subTreeNodes = self::buildFromSubtree($desc['ref_clause']);
+                    if ($subTreeNodes) {
+                        $expr->setRefClause(self::simplify($subTreeNodes));
+                    }
                 }
 
                 // Debug:
@@ -532,7 +537,7 @@ class NodeFactory
             return $instance;
         } else {
             $instance = new Operation();
-            $instance->setOperator($operation);
+            $instance->setOperatorSymbol($operation);
             $instance->setOperands($operands);
 
             return $instance;
@@ -656,7 +661,7 @@ class NodeFactory
      *
      * @return string
      *
-     * @param unknown $str
+     * @param string $str
      */
     public static function escapeDBItem($str, Connection $dbConnection = null)
     {

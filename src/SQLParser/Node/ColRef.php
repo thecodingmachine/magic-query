@@ -35,6 +35,7 @@ namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents an column in an SQL expression.
@@ -186,5 +187,19 @@ class ColRef implements NodeInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        return $visitor->leaveNode($node);
     }
 }

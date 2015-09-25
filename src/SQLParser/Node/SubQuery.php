@@ -33,12 +33,16 @@
 
 namespace SQLParser\Node;
 
+use Doctrine\DBAL\Connection;
+use SQLParser\Node\Traverser\NodeTraverser;
+use SQLParser\Node\Traverser\VisitorInterface;
 use SQLParser\Query\Select;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\SqlRenderInterface;
 
 /**
- * This class represents a subquery (and optionnally a JOIN .. ON expression in an SQL expression.
+ * This class represents a subquery (and optionally a JOIN .. ON expression in an SQL expression.
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
@@ -148,5 +152,55 @@ class SubQuery implements NodeInterface
         $instanceDescriptor->getProperty('refClause')->setValue(NodeFactory::nodeToInstanceDescriptor($this->refClause, $moufManager));
 
         return $instanceDescriptor;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            $result2 = $this->subQuery->walk($visitor);
+            if ($result2 === NodeTraverser::REMOVE_NODE) {
+                return NodeTraverser::REMOVE_NODE;
+            } elseif ($result2 instanceof NodeInterface) {
+                $this->subQuery = $result2;
+            }
+        }
+        return $visitor->leaveNode($node);
+    }
+
+    /**
+     * Renders the object as a SQL string.
+     *
+     * @param Connection $dbConnection
+     * @param array $parameters
+     * @param number $indent
+     * @param int $conditionsMode
+     *
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $sql = '';
+        if ($this->refClause) {
+            $sql .= "\n  ".$this->joinType.' ';
+        }
+        $sql .= "(".$this->subQuery->toSql($parameters, $dbConnection, $indent, $conditionsMode).")";
+        if ($this->alias) {
+            $sql .= ' AS '.NodeFactory::escapeDBItem($this->alias, $dbConnection);
+        }
+        if ($this->refClause) {
+            $sql .= ' ON ';
+            $sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode);
+        }
+
+        return $sql;
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "mouf/magic-query",
-    "description": "A very clever library to generate PHP prepared statement with a variable number of parameters... and much more!",
+    "description": "A very clever library to help you with SQL: generate prepared statements with a variable number of parameters, automatically writes joins... and much more!",
     "keywords": ["database", "query", "mouf"],
     "homepage": "http://mouf-php.com/packages/mouf/magic-query",
     "type": "library",
@@ -17,11 +17,13 @@
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
-    	"mouf/utils.common.sortable-interface": "~1.0"
+    	"mouf/utils.common.sortable-interface": "~1.0",
+        "mouf/schema-analyzer": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "doctrine/dbal": "~2.5"
     },
     "suggest": {
       "doctrine/dbal": "To support more databases than just MySQL",
@@ -39,7 +41,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Mouf\\Database\\": "tests/Mouf/Database/"
+            "Mouf\\Database\\": "tests/Mouf/Database/",
+            "SQLParser\\": "tests/SQLParser/"
         }
     },
     "extra": {

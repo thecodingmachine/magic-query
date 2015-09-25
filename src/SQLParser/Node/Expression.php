@@ -36,6 +36,7 @@ namespace SQLParser\Node;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents a node that is an SQL expression.
@@ -191,5 +192,29 @@ class Expression implements NodeInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Walks the tree of nodes, calling the visitor passed in parameter.
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function walk(VisitorInterface $visitor) {
+        $node = $this;
+        $result = $visitor->enterNode($node);
+        if ($result instanceof NodeInterface) {
+            $node = $result;
+        }
+        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
+            foreach ($this->subTree as $key => $operand) {
+                $result2 = $operand->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
+                    unset($this->subTree[$key]);
+                } elseif ($result2 instanceof NodeInterface) {
+                    $this->subTree[$key] = $result2;
+                }
+            }
+        }
+        return $visitor->leaveNode($node);
     }
 }
