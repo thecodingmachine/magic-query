@@ -66,7 +66,7 @@ Seriously? Yes! All you have to do is:
 
 - Pass a **[Doctrine DBAL connection](http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/)** to MagicQuery's constructor. MagicQuery will analyze your schema.
 - In your SQL query, replace the tables with `magicjoin(start_table)`
-- For each column of your query, use the complete name ([table_name].[column_name] instead if [column_name] alone)
+- For each column of your query, use the complete name ([table_name].[column_name] instead of [column_name] alone)
 
 Let's assume your database schema is:
 
