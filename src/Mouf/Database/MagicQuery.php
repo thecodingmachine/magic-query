@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\Common\Cache\VoidCache;
+use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use SQLParser\Node\ColRef;
 use SQLParser\Node\Equal;
@@ -26,6 +27,7 @@ class MagicQuery
     private $connection;
     private $cache;
     private $schemaAnalyzer;
+    private $twigEnvironment;
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
@@ -42,6 +44,9 @@ class MagicQuery
         }
         if ($schemaAnalyzer) {
             $this->schemaAnalyzer = $schemaAnalyzer;
+        }
+        if ($this->connection) {
+            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment($this->connection);
         }
     }
 
