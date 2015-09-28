@@ -12,7 +12,7 @@ Magic-query is a PHP library that helps you work with complex SQL queries.
 
 It comes with 2 great features:
 
-- [it helps you work with that require a variable number of parameters.](#parameters)
+- [**MagicParameters**: it helps you work with SQL queries that require a variable number of parameters.](#parameters)
 - [**MagicJoin**: it writes JOINs for you!](#joins)
 
 Installation
@@ -31,8 +31,8 @@ Simply use the composer package:
 ```
 
 <a name="parameters"></a>
-Automatically discard unused parameters
----------------------------------------
+Automatically discard unused parameters with MagicParameters
+------------------------------------------------------------
 
 Just write the query with all possible parameters.
 
@@ -55,7 +55,7 @@ $result2 = $magicQuery->build($sql, []);
 // The whole WHERE condition disappeared because it is not needed anymore!
 ```
 
-Curious to know how this work? <a class="btn btn-primary" href="doc/discard_unused_parameters.md">Check out the complete guide!</a>
+Curious to know how this work? <a class="btn btn-primary btn-large" href="doc/discard_unused_parameters.md">Check out the parameters guide!</a>
 
 <a name="joins"></a>
 Automatically guess JOINs with MagicJoin!
@@ -104,7 +104,7 @@ $completeSql = $magicQuery->build($sql);
 // $completeSql contains the complete SQL request, with all joins.
 ```
 
-Want to know more? <a class="btn btn-primary" href="doc/magic_join.md">Check out the MagicJoin guide!</a>
+Want to know more? <a class="btn btn-primary btn-large" href="doc/magic_join.md">Check out the MagicJoin guide!</a>
 
 Is it a MySQL only tool?
 ------------------------

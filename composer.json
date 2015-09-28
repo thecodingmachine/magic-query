@@ -47,7 +47,17 @@
     },
     "extra": {
         "mouf": {
-			"logo": "database.png"
+			"logo": "database.png",
+            "doc": [
+                {
+                    "title": "MagicParameters: automatically discard unused parameters",
+                    "url": "doc/discard_unused_parameters.html"
+                },
+                {
+                    "title": "MagicJoin: let MagicQuery write JOINs for you",
+                    "url": "doc/magic_join.md"
+                }
+            ]
 		}
 	},
     "minimum-stability": "dev",
