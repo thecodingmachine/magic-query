@@ -26,7 +26,7 @@
         "doctrine/dbal": "~2.5"
     },
     "suggest": {
-      "doctrine/dbal": "To support more databases than just MySQL",
+      "doctrine/dbal": "To support more databases than just MySQL and to use MagicJoin feature",
       "mouf/database.querywriter": "To get a nice user interface to edit your SQL queries",
       "mouf/mouf": "To get a nice user interface to edit your SQL queries"
     },
