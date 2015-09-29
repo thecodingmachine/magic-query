@@ -9,7 +9,7 @@ use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 
 class SqlTwigEnvironmentFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testWithConnection()
+    public function getTwigWithConnection()
     {
         $config = new \Doctrine\DBAL\Configuration();
         // TODO: put this in conf variable
@@ -19,7 +19,7 @@ class SqlTwigEnvironmentFactoryTest extends \PHPUnit_Framework_TestCase
         $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 
         $twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment($conn);
-        $this->doTestTwig($twigEnvironment);
+        return $twigEnvironment;
     }
 
     /**
@@ -34,13 +34,22 @@ class SqlTwigEnvironmentFactoryTest extends \PHPUnit_Framework_TestCase
         $this->doTestTwig($twigEnvironment);
     }*/
 
+    /**
+     *
+     */
+    public function testIf() {
 
-    private function doTestTwig(\Twig_Environment $twig) {
-        $result = $twig->render("SELECT * FROM toto WHERE id = {{ id }}", ["id"=>null]);
-        $this->assertEquals("SELECT * FROM toto WHERE id = null", $result);
+        $twig = $this->getTwigWithConnection();
+        $sql = $twig->render("SELECT * FROM toto {% if id %}WHERE id = :id{% endif %}", ["id"=>12]);
+        $this->assertEquals("SELECT * FROM toto WHERE id = :id", $sql);
+    }
 
-        $result = $twig->render("SELECT * FROM toto WHERE id = {{ id }}", [ "id" => "myid" ]);
-        $this->assertEquals("SELECT * FROM toto WHERE id = 'myid'", $result);
+    /**
+     * @expectedException Twig_Error_Runtime
+     */
+    public function testException() {
 
+        $twig = $this->getTwigWithConnection();
+        $twig->render("SELECT * FROM toto WHERE id = {{ id }}", ["id"=>null]);
     }
 }

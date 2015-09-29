@@ -27,7 +27,11 @@ class MagicQuery
     private $connection;
     private $cache;
     private $schemaAnalyzer;
+    /**
+     * @var \Twig_Environment
+     */
     private $twigEnvironment;
+    private $enableTwig = false;
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
@@ -45,9 +49,17 @@ class MagicQuery
         if ($schemaAnalyzer) {
             $this->schemaAnalyzer = $schemaAnalyzer;
         }
-        if ($this->connection) {
-            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment($this->connection);
-        }
+    }
+
+    /**
+     * Whether Twig parsing should be enabled or not.
+     * Defaults to false.
+     * @param bool $enableTwig
+     * @return $this
+     */
+    public function setEnableTwig($enableTwig = true) {
+        $this->enableTwig = true;
+        return $this;
     }
 
     /**
@@ -63,6 +75,9 @@ class MagicQuery
      */
     public function build($sql, array $parameters = array())
     {
+        if ($this->enableTwig) {
+            $sql = $this->getTwigEnvironment()->render($sql, $parameters);
+        }
         $select = $this->parse($sql);
         return $this->toSql($select, $parameters);
     }
@@ -222,5 +237,15 @@ class MagicQuery
 
     private function getConnectionUniqueId() {
         return hash('md4', $this->connection->getHost()."-".$this->connection->getPort()."-".$this->connection->getDatabase()."-".$this->connection->getDriver()->getName());
+    }
+
+    /**
+     * @return \Twig_Environment
+     */
+    private function getTwigEnvironment() {
+        if ($this->twigEnvironment === null) {
+            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment($this->connection);
+        }
+        return $this->twigEnvironment;
     }
 }
