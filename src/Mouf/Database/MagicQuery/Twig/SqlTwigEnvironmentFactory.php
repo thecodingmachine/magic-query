@@ -19,38 +19,11 @@ class SqlTwigEnvironmentFactory
 
         $twig = new \Twig_Environment($stringLoader, $options);
 
-        if ($connection !== null) {
-
-            $twig->getExtension('core')->setEscaper('sql', function(\Twig_Environment $env, $string, $charset) use ($connection) {
-                var_dump($string);
-                // ARGH! Escapers seems to be not called if $string is empty!
-                if ($string === null) {
-                    return "null";
-                } else {
-                    return $connection->quote($string);
-                }
-            });
-
-            // SQL identifier (table or column names....)
-            $twig->getExtension('core')->setEscaper('sqli', function(\Twig_Environment $env, $string, $charset) use ($connection) {
-                return $connection->quoteIdentifier($string);
-            });
-
-        } else {
-            $twig->getExtension('core')->setEscaper('sql', function(\Twig_Environment $env, $string, $charset) use ($connection) {
-                if ($string === null) {
-                    return "null";
-                } else {
-                    return "'".addslashes($string)."'";
-                }
-            });
-
-            $twig->getExtension('core')->setEscaper('sqli', function(\Twig_Environment $env, $string, $charset) use ($connection) {
-                // Note: we don't know how to escape backticks in a column name. In order to avoid injection,
-                // we remove any backticks.
-                return "`".str_replace('`', '', $string)."`";
-            });
-        }
+        // Default escaper will throw an exception. This is because we want to use SQL parameters instead of Twig.
+        // This ahs a number of advantages, especially in terms of caching.
+        $twig->getExtension('core')->setEscaper('sql', function(\Twig_Environment $env, $string, $charset) use ($connection) {
+            throw new ForbiddenTwigParameterInSqlException('You cannot use Twig expressions (like "{{ id }}"). Instead, you should use SQL parameters (like ":id"). Twig integration is limited to Twig statements (like "{% for .... %}"');
+        });
 
         // Default autoescape mode: sql
         $twig->addExtension(new \Twig_Extension_Escaper('sql'));
@@ -61,11 +34,14 @@ class SqlTwigEnvironmentFactory
     private static function getCacheDirectory() {
         // If we are running on a Unix environment, let's prepend the cache with the user id of the PHP process.
         // This way, we can avoid rights conflicts.
+
+        // @codeCoverageIgnoreStart
         if (function_exists('posix_geteuid')) {
             $posixGetuid = '_'.posix_geteuid();
         } else {
             $posixGetuid = '';
         }
+        // @codeCoverageIgnoreEnd
         $cacheDirectory = rtrim(sys_get_temp_dir(), '/\\').'/magicquerysqltwigtemplate'.$posixGetuid.str_replace(":", "", __DIR__);
 
         return $cacheDirectory;

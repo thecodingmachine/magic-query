@@ -106,6 +106,19 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *
+     */
+    public function testTwig() {
+        $magicQuery = new MagicQuery();
+        $magicQuery->setEnableTwig(true);
+
+        $sql = "SELECT * FROM toto {% if id %}WHERE status = 'on'{% endif %}";
+        $this->assertEquals("SELECT * FROM toto WHERE status = 'on'", $this->simplifySql($magicQuery->build($sql, ["id"=>12])));
+        $this->assertEquals("SELECT * FROM toto", $this->simplifySql($magicQuery->build($sql, ['id'=>null])));
+    }
+
+
+    /**
      * Removes all artifacts.
      */
     private static function simplifySql($sql)
