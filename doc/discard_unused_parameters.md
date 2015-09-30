@@ -65,6 +65,28 @@ $magicQuery = new MagicQuery();
 $sql = $magicQuery->build($sql, $params);
 ```
 
+####Forcing some parameters to be null
+
+MagicQuery assumes that if a parameter is null, you want to completely remove the code related to this 
+parameter from the SQL.
+
+But sometimes, you actually want to test parameters against the NULL value.
+In those cases, you need to disable the MagicParameter feature of MagicQuery for those parameters.
+
+<div class="alert alert-info">To disable MagicParameter for a given parameter, simply add an exclamation
+mark (!) after the parameter name.</div>
+
+```php
+// This query uses twice the "status" parameter. Once with ! and once without
+$sql = "SELECT * FROM products p WHERE status1 = :status AND status2 = :status!";
+
+$magicQuery = new MagicQuery();
+// We don't pass the "status" parameter
+$sql = $magicQuery->build($sql, []);
+// The part "status1 = :status" is discarded, but the part "status2 = :status!" is kept
+// $sql == "SELECT * FROM products p WHERE status2 = null"
+```
+
 ###Other alternatives
 
 To avoid concatenating strings, frameworks and libraries have used different strategies. Using a full ORM (like

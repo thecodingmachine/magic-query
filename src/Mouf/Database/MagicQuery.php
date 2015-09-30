@@ -58,7 +58,7 @@ class MagicQuery
      * @return $this
      */
     public function setEnableTwig($enableTwig = true) {
-        $this->enableTwig = true;
+        $this->enableTwig = $enableTwig;
         return $this;
     }
 

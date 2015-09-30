@@ -36,7 +36,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = 'SELECT id+1 FROM users';
         $this->assertEquals("SELECT id + '1' FROM users", self::simplifySql($magicQuery->build($sql)));
 
-
+        // Tests parameters with a ! (to force NULL values)
+        $sql = 'SELECT * FROM users WHERE status = :status!';
+        $this->assertEquals("SELECT * FROM users WHERE status = null", self::simplifySql($magicQuery->build($sql, ['status' => null])));
     }
 
     public function testWithCache() {
