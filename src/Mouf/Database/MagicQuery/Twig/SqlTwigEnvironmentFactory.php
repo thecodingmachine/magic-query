@@ -8,7 +8,13 @@ use Doctrine\DBAL\Connection;
  */
 class SqlTwigEnvironmentFactory
 {
-    public static function getTwigEnvironment(Connection $connection = null) {
+    private static $twig;
+
+    public static function getTwigEnvironment() {
+        if (self::$twig) {
+            return self::$twig;
+        }
+
         $stringLoader = new StringLoader();
 
         $options = array(
@@ -21,12 +27,14 @@ class SqlTwigEnvironmentFactory
 
         // Default escaper will throw an exception. This is because we want to use SQL parameters instead of Twig.
         // This ahs a number of advantages, especially in terms of caching.
-        $twig->getExtension('core')->setEscaper('sql', function(\Twig_Environment $env, $string, $charset) use ($connection) {
+        $twig->getExtension('core')->setEscaper('sql', function() {
             throw new ForbiddenTwigParameterInSqlException('You cannot use Twig expressions (like "{{ id }}"). Instead, you should use SQL parameters (like ":id"). Twig integration is limited to Twig statements (like "{% for .... %}"');
         });
 
         // Default autoescape mode: sql
         $twig->addExtension(new \Twig_Extension_Escaper('sql'));
+
+        self::$twig = $twig;
 
         return $twig;
     }

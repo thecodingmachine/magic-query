@@ -244,7 +244,7 @@ class MagicQuery
      */
     private function getTwigEnvironment() {
         if ($this->twigEnvironment === null) {
-            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment($this->connection);
+            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment();
         }
         return $this->twigEnvironment;
     }
