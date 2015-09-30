@@ -36,13 +36,17 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = 'SELECT id+1 FROM users';
         $this->assertEquals("SELECT id + '1' FROM users", self::simplifySql($magicQuery->build($sql)));
 
-
+        // Tests parameters with a ! (to force NULL values)
+        $sql = 'SELECT * FROM users WHERE status = :status!';
+        $this->assertEquals("SELECT * FROM users WHERE status = null", self::simplifySql($magicQuery->build($sql, ['status' => null])));
     }
 
     public function testWithCache() {
+        global $db_url;
         $config = new \Doctrine\DBAL\Configuration();
+        // TODO: put this in conf variable
         $connectionParams = array(
-            'url' => 'mysql://root:@localhost/',
+            'url' => $db_url,
         );
         $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 
@@ -103,6 +107,19 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $magicQuery->build($sql);
 
     }
+
+    /**
+     *
+     */
+    public function testTwig() {
+        $magicQuery = new MagicQuery();
+        $magicQuery->setEnableTwig(true);
+
+        $sql = "SELECT * FROM toto {% if id %}WHERE status = 'on'{% endif %}";
+        $this->assertEquals("SELECT * FROM toto WHERE status = 'on'", $this->simplifySql($magicQuery->build($sql, ["id"=>12])));
+        $this->assertEquals("SELECT * FROM toto", $this->simplifySql($magicQuery->build($sql, ['id'=>null])));
+    }
+
 
     /**
      * Removes all artifacts.

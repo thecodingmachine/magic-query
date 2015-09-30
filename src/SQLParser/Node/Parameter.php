@@ -46,9 +46,10 @@ use SQLParser\Node\Traverser\VisitorInterface;
 class Parameter implements NodeInterface
 {
     private $name;
+    private $discardedOnNull = true;
 
     /**
-     * Returns the name name.
+     * Returns the name.
      *
      * @return string
      */
@@ -58,7 +59,8 @@ class Parameter implements NodeInterface
     }
 
     /**
-     * Sets the name name.
+     * Sets the name.
+     * If the name ends with !, the parameter will be considered not nullable (regarding magicparameter settings)
      *
      * @Important
      *
@@ -66,7 +68,13 @@ class Parameter implements NodeInterface
      */
     public function setName($name)
     {
-        $this->name = $name;
+        if (strrpos($name, '!') === strlen($name)-1) {
+            $this->name = substr($name, 0, strlen($name)-1);
+            $this->discardedOnNull = false;
+        } else {
+            $this->name = $name;
+            $this->discardedOnNull = true;
+        }
     }
 
     /**
@@ -177,6 +185,8 @@ class Parameter implements NodeInterface
                     
                 }
             }
+        } elseif (!$this->isDiscardedOnNull()) {
+            return 'null';
         } else {
             return ':'.$this->name;
         }
@@ -195,5 +205,13 @@ class Parameter implements NodeInterface
             $node = $result;
         }
         return $visitor->leaveNode($node);
+    }
+
+    /**
+     * Returns whether the parameter can be discarded if provided value is null.
+     * @return bool
+     */
+    public function isDiscardedOnNull() {
+       return $this->discardedOnNull;
     }
 }

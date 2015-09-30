@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\Common\Cache\VoidCache;
+use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use SQLParser\Node\ColRef;
 use SQLParser\Node\Equal;
@@ -26,6 +27,11 @@ class MagicQuery
     private $connection;
     private $cache;
     private $schemaAnalyzer;
+    /**
+     * @var \Twig_Environment
+     */
+    private $twigEnvironment;
+    private $enableTwig = false;
 
     /**
      * @param \Doctrine\DBAL\Connection $connection
@@ -46,6 +52,17 @@ class MagicQuery
     }
 
     /**
+     * Whether Twig parsing should be enabled or not.
+     * Defaults to false.
+     * @param bool $enableTwig
+     * @return $this
+     */
+    public function setEnableTwig($enableTwig = true) {
+        $this->enableTwig = $enableTwig;
+        return $this;
+    }
+
+    /**
      * Returns merged SQL from $sql and $parameters. Any parameters not available will be striped down
      * from the SQL.
      *
@@ -58,6 +75,9 @@ class MagicQuery
      */
     public function build($sql, array $parameters = array())
     {
+        if ($this->enableTwig) {
+            $sql = $this->getTwigEnvironment()->render($sql, $parameters);
+        }
         $select = $this->parse($sql);
         return $this->toSql($select, $parameters);
     }
@@ -217,5 +237,15 @@ class MagicQuery
 
     private function getConnectionUniqueId() {
         return hash('md4', $this->connection->getHost()."-".$this->connection->getPort()."-".$this->connection->getDatabase()."-".$this->connection->getDriver()->getName());
+    }
+
+    /**
+     * @return \Twig_Environment
+     */
+    private function getTwigEnvironment() {
+        if ($this->twigEnvironment === null) {
+            $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment();
+        }
+        return $this->twigEnvironment;
     }
 }
