@@ -51,6 +51,6 @@ class SqlTwigEnvironmentFactoryTest extends \PHPUnit_Framework_TestCase
     public function testException() {
 
         $twig = $this->getTwigWithConnection();
-        $twig->render("SELECT * FROM toto WHERE id = {{ id }}", ["id"=>null]);
+        $twig->render("SELECT * FROM toto WHERE id = {{ id }}", ["id"=>"hello"]);
     }
 }
