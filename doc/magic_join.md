@@ -58,13 +58,74 @@ From this shortest path, it can build the correct JOINs.
 
 Now that you understand the concept, you should understand the power and the limits of MagicJoin.
 
-- MagicJoin **cannot generate queries with recursive relationships** (like a parent/child relationship)
+- MagicJoin **cannot generate queries with recursive relationships** (like a parent/child relationship). This is 
+  because parent/child relationships are represented by loops in the dependency graph, and a loop is never the
+  shortest path.
 - MagicJoin assumes you are looking for the shortest path between 2 tables
     - This is 80% of the case true
     - If you are in the remaining 20%, do not use MagicJoin
     
 <div class="alert alert-warning">MagicJoin is meant to be used on the 80% of the cases where writing joins is trivial
 and boring. If you have complex joins, do not try to use MagicJoin. Go back to pure SQL instead.</div>
+
+If you are looking for details on how this shortest path is computed, have a look at 
+[mouf/schema-analyzer](http://mouf-php.com/packages/mouf/schema-analyzer/README.md) which is the package in charge
+of computing that shortest path.
+
+###Ambiguity exceptions and fine-tuning
+
+Sometimes, there can be 2 possible paths that link 2 tables and that are equally short.
+In this case, rather than choosing a path at random, MagicQuery will let you know there is a problem by issuing
+a `ShortestPathAmbiguityException`.
+
+![Ambiguity in paths](images/shortest_path.png)
+
+Let's have a look at the example above. We have *products* that are part of a *store*. Stores are part of a *district*.
+Both *districts* and *products* have a *status*.
+
+Now, let's have a look at this query:
+
+```sql
+SELECT products.* FROM MAGICJOIN(products) WHERE district.name = 'NY';
+```
+
+Very obviously, we want all the products from the district. Bu for MagicJoin, this is far from obvious.
+There are really 2 paths from products to district. One is going through the "store" table and one through the "status"
+table. Those paths are equally short.
+
+We need to *hint* MagicJoin into understanding that the "status" table is irrelevant.
+
+To do this, we must first provide to MagicJoin an instance of `SchemaAnalyzer`. [`SchemaAnalyzer` is the underlying
+package that is in charge of computing the shortest path.](http://mouf-php.com/packages/mouf/schema-analyzer/README.md)
+
+```php
+use Mouf\Database\MagicQuery;
+use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
+
+// $conn is a Doctrine DBAL connection.
+// $cache is a Doctrine Cache
+
+// Get a SchemaAnalyzer object.
+$schemaAnalyzer = new SchemaAnalyzer($conn->getSchemaManager(), $cache, "some_unique_key");
+
+// On SchemaAnalyzer, let's modify the cost of the "status" table to make it unlikely to be used:
+$schemaAnalyzer->setTableCostModifier("status", SchemaAnalyzer::WEIGHT_IRRELEVANT);
+
+// Get a MagicQuery object.
+$magicQuery = new MagicQuery($conn, $cache, $schemaAnalyzer);
+
+$completeSql = $magicQuery->build("SELECT products.* FROM MAGICJOIN(products) WHERE district.name = 'NY'");
+```
+
+The call to `setTableCostModifier` above will explain to MagicJoin that the *status* table is mostly irrelevant, 
+and that it should most of the time be avoided.
+
+You can also set a *cost* on a single foreign key rather than on a table. For instance:
+
+```php
+// Avoid using the "status_id" foreign_key from the "products" table.
+$schemaAnalyzer->setForeignKeyCost("products", "status_id", SchemaAnalyzer::WEIGHT_IRRELEVANT);
+```
 
 ###With great power comes great responsibility
 
