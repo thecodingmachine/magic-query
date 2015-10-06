@@ -226,7 +226,7 @@ class MagicQuery
      */
     private function getSchemaAnalyzer() {
         if ($this->schemaAnalyzer === null) {
-            if (!$this->schemaAnalyzer) {
+            if (!$this->connection) {
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
             }
 
