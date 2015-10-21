@@ -56,12 +56,11 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $visitor->resetVisitor();
     }
 
-    /**
-     * @expectedException \SQLParser\Node\Traverser\MissingTableRefException
-     */
-    public function testMissingTableException()
+
+    public function testMissingRefTable()
     {
         $visitor = new DetectTablesVisitor();
+        $visitor->setDefaultTable('yop');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -71,5 +70,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $parsed = $parser->parse($sql);
         $select = StatementFactory::toObject($parsed);
         $nodeTraverser->walk($select);
+
+        // TODO check that tata is scoped in yop
     }
 }

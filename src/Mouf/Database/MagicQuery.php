@@ -154,6 +154,7 @@ class MagicQuery
     private function magicJoinOnOneQuery(MagicJoinSelect $magicJoinSelect) {
         $tableSearchNodeTraverser = new NodeTraverser();
         $detectTableVisitor = new DetectTablesVisitor();
+        $detectTableVisitor->setDefaultTable($magicJoinSelect->getMainTable());
         $tableSearchNodeTraverser->addVisitor($detectTableVisitor);
 
         $select = $magicJoinSelect->getSelect();
