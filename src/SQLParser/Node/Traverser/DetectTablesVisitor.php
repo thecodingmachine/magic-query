@@ -29,11 +29,9 @@ class DetectTablesVisitor implements VisitorInterface
     }
 
     /**
-     * Sets the default table that will be used if no table is specified.
-     *
-     * @param string $defaultTable
+     * @param string $defaultTable Sets the default table that will be used if no table is specified in a colref.
      */
-    public function setDefaultTable($defaultTable)
+    public function __construct($defaultTable)
     {
         $this->defaultTable = $defaultTable;
     }

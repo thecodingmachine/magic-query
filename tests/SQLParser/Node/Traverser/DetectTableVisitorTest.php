@@ -8,7 +8,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 {
     public function testStandardSelect()
     {
-        $visitor = new DetectTablesVisitor();
+        $visitor = new DetectTablesVisitor('users');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -38,7 +38,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 
     public function testWrappedSelect()
     {
-        $visitor = new DetectTablesVisitor();
+        $visitor = new DetectTablesVisitor('users');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -59,8 +59,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 
     public function testMissingRefTable()
     {
-        $visitor = new DetectTablesVisitor();
-        $visitor->setDefaultTable('yop');
+        $visitor = new DetectTablesVisitor('yop');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -71,6 +70,6 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $select = StatementFactory::toObject($parsed);
         $nodeTraverser->walk($select);
 
-        // TODO check that tata is scoped in yop
+        $this->assertEquals("yop", $select->getWhere()->getLeftOperand()->getTable());
     }
 }
