@@ -8,7 +8,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 {
     public function testStandardSelect()
     {
-        $visitor = new DetectTablesVisitor();
+        $visitor = new DetectTablesVisitor('users');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -38,7 +38,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 
     public function testWrappedSelect()
     {
-        $visitor = new DetectTablesVisitor();
+        $visitor = new DetectTablesVisitor('users');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -56,12 +56,10 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $visitor->resetVisitor();
     }
 
-    /**
-     * @expectedException \SQLParser\Node\Traverser\MissingTableRefException
-     */
-    public function testMissingTableException()
+
+    public function testMissingRefTable()
     {
-        $visitor = new DetectTablesVisitor();
+        $visitor = new DetectTablesVisitor('yop');
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
@@ -71,5 +69,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $parsed = $parser->parse($sql);
         $select = StatementFactory::toObject($parsed);
         $nodeTraverser->walk($select);
+
+        $this->assertEquals("yop", $select->getWhere()->getLeftOperand()->getTable());
     }
 }

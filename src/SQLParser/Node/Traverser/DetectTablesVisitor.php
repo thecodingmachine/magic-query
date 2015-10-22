@@ -8,7 +8,7 @@ use SQLParser\Query\Select;
 
 /**
  * This visitor is in charge of detecting references to tables in columns.
- * It will throw an exception if a column does not specify a table name.
+ * Also, it will modify all references to tables that have no table specified by adding the $defaultTable
  */
 class DetectTablesVisitor implements VisitorInterface
 {
@@ -16,6 +16,8 @@ class DetectTablesVisitor implements VisitorInterface
     private $isSelectVisited = false;
 
     private $tables = array();
+
+    private $defaultTable;
 
     /**
      * Removes all detected magic join selects.
@@ -25,6 +27,16 @@ class DetectTablesVisitor implements VisitorInterface
         $this->tables = array();
         $this->isSelectVisited = false;
     }
+
+    /**
+     * @param string $defaultTable Sets the default table that will be used if no table is specified in a colref.
+     */
+    public function __construct($defaultTable)
+    {
+        $this->defaultTable = $defaultTable;
+    }
+
+
 
     /**
      * Return the list of tables referenced in the Select.
@@ -54,9 +66,7 @@ class DetectTablesVisitor implements VisitorInterface
             }
         } elseif ($node instanceof ColRef) {
             if (empty($node->getTable())) {
-                $e = new MissingTableRefException("All column references should be in the form 'table.column'. Table part is missing for column '".$node->getColumn()."'");
-                $e->setMissingTableColRef($node);
-                throw $e;
+                $node->setTable($this->defaultTable);
             }
             $this->tables[$node->getTable()] = $node->getTable();
         }
