@@ -33,6 +33,7 @@
 
 namespace SQLParser\Node;
 
+use Mouf\Database\MagicQueryException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
@@ -335,6 +336,7 @@ class NodeFactory
             array('&'),
             array('|'),
             array('=' /*(comparison)*/, '<=>', '>=', '>', '<=', '<', '<>', '!=', 'IS', 'LIKE', 'REGEXP', 'IN', 'IS NOT', 'NOT IN'),
+            array('AND_FROM_BETWEEN'),
             array('BETWEEN', 'CASE', 'WHEN', 'THEN', 'ELSE'),
             array('NOT'),
             array('&&', 'AND'),
@@ -533,6 +535,23 @@ class NodeFactory
         } elseif (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractManyInstancesOperator')) {
             $instance = new self::$OPERATOR_TO_CLASS[$operation]();
             $instance->setOperands($operands);
+
+            return $instance;
+        } elseif ($operation === 'BETWEEN') {
+            $leftOperand = array_shift($operands);
+            $rightOperand = array_shift($operands);
+            if (!$rightOperand instanceof Operation || $rightOperand->getOperatorSymbol() !== 'AND_FROM_BETWEEN') {
+                throw new MagicQueryException('Missing AND in BETWEEN filter.');
+            }
+
+            $innerOperands = $rightOperand->getOperands();
+            $minOperand = array_shift($innerOperands);
+            $maxOperand = array_shift($innerOperands);
+
+            $instance = new Between();
+            $instance->setLeftOperand($leftOperand);
+            $instance->setMinValueOperand($minOperand);
+            $instance->setMaxValueOperand($maxOperand);
 
             return $instance;
         } else {

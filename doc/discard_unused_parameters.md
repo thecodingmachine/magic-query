@@ -24,6 +24,17 @@ $result2 = $magicQuery->build($sql, []);
 // The whole WHERE condition disappeared because it is not needed anymore!
 ```
 
+Magic-parameters can also collapse a BETWEEN filter into a simple `>=` or `<=` filter: 
+
+```php
+$sql = "SELECT * FROM products WHERE status BETWEEN :lowerStatus AND :upperStatus";
+
+// Let's pass only the "lowerStatus" parameter
+$result = $magicQuery->build($sql, [ "lowerStatus" => 2 ]);
+// $result = SELECT * FROM products WHERE status >= 2
+// See? The BETWEEN filter was transformed in a >= filter because we did not provide a higher limit.
+```
+
 ###Why should I care?
 
 Because it is **the most efficient way to deal with queries that can have a variable number of parameters**!
