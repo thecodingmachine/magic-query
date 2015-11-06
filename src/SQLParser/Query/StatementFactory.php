@@ -34,6 +34,7 @@
 namespace SQLParser\Query;
 
 use SQLParser\Node\NodeFactory;
+use SQLParser\Node\Operator;
 
 /**
  * This class has the ability to create instances implementing NodeInterface based on a descriptive array.
@@ -66,40 +67,30 @@ class StatementFactory
             }
 
             if (isset($desc['FROM'])) {
-                $from = array_map(function ($item) {
-                    return NodeFactory::toObject($item);
-                }, $desc['FROM']);
+                $from = self::mapArrayToNodeObjectList($desc['FROM']);
                 $select->setFrom($from);
             }
 
             if (isset($desc['WHERE'])) {
-                $where = array_map(function ($item) {
-                    return NodeFactory::toObject($item);
-                }, $desc['WHERE']);
+                $where = self::mapArrayToNodeObjectList($desc['WHERE']);
                 $where = NodeFactory::simplify($where);
                 $select->setWhere($where);
             }
 
             if (isset($desc['GROUP'])) {
-                $group = array_map(function ($item) {
-                    return NodeFactory::toObject($item);
-                }, $desc['GROUP']);
+                $group = self::mapArrayToNodeObjectList($desc['GROUP']);
                 $group = NodeFactory::simplify($group);
                 $select->setGroup($group);
             }
 
             if (isset($desc['HAVING'])) {
-                $having = array_map(function ($item) {
-                    return NodeFactory::toObject($item);
-                }, $desc['HAVING']);
+                $having = self::mapArrayToNodeObjectList($desc['HAVING']);
                 $having = NodeFactory::simplify($having);
                 $select->setHaving($having);
             }
 
             if (isset($desc['ORDER'])) {
-                $order = array_map(function ($item) {
-                    return NodeFactory::toObject($item);
-                }, $desc['ORDER']);
+                $order = self::mapArrayToNodeObjectList($desc['ORDER']);
                 $order = NodeFactory::simplify($order);
                 $select->setOrder($order);
             }
@@ -108,5 +99,29 @@ class StatementFactory
         } else {
             throw new \BadMethodCallException('Unknown query');
         }
+    }
+
+    /**
+     * @param array $items An array of objects represented as SQLParser arrays.
+     */
+    private static function mapArrayToNodeObjectList(array $items) {
+        $list = [];
+
+        $nextAndPartOfBetween = false;
+
+        // Special case, let's replace the AND of a between with a ANDBETWEEN object.
+        foreach ($items as $item) {
+            $obj = NodeFactory::toObject($item);
+            if ($obj instanceof Operator) {
+                if ($obj->getValue() == 'BETWEEN') {
+                    $nextAndPartOfBetween = true;
+                } elseif ($nextAndPartOfBetween && $obj->getValue() == 'AND') {
+                    $nextAndPartOfBetween = false;
+                    $obj->setValue('AND_FROM_BETWEEN');
+                }
+            }
+            $list[] = $obj;
+        }
+        return $list;
     }
 }
