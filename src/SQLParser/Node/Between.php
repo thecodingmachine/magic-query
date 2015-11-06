@@ -86,7 +86,7 @@ class Between implements NodeInterface
      * Sets the condition.
      *
      * @Important IfSet
-     * @param ConditionInterface $condition
+     * @param ConditionInterface $minValueCondition
      */
     public function setMinValueCondition(ConditionInterface $minValueCondition = null) {
         $this->minValueCondition = $minValueCondition;
@@ -101,7 +101,7 @@ class Between implements NodeInterface
      * Sets the condition.
      *
      * @Important IfSet
-     * @param ConditionInterface $condition
+     * @param ConditionInterface $maxValueCondition
      */
     public function setMaxValueCondition(ConditionInterface $maxValueCondition = null) {
         $this->maxValueCondition = $maxValueCondition;
