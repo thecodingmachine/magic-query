@@ -240,6 +240,32 @@ class NodeFactory
                 }
 
                 return $expr;
+            case ExpressionType::SIMPLE_FUNCTION:
+                $expr = new SimpleFunction();
+                $expr->setBaseExpression($desc['base_expr']);
+
+                if (isset($desc['sub_tree'])) {
+                    $expr->setSubTree(self::buildFromSubtree($desc['sub_tree']));
+                }
+
+                if (isset($desc['alias'])) {
+                    $expr->setAlias($desc['alias']['name']);
+                }
+                if (isset($desc['direction'])) {
+                    $expr->setDirection($desc['direction']);
+                }
+
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                unset($desc['alias']);
+                unset($desc['direction']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in simple function: '.var_export($desc, true));
+                }
+
+                return $expr;
 
             case ExpressionType::USER_VARIABLE:
             case ExpressionType::SESSION_VARIABLE:
@@ -247,8 +273,6 @@ class NodeFactory
             case ExpressionType::LOCAL_VARIABLE:
 
             case ExpressionType::RESERVED:
-
-            case ExpressionType::SIMPLE_FUNCTION:
 
             case ExpressionType::EXPRESSION:
             case ExpressionType::BRACKET_EXPRESSION:
@@ -277,7 +301,7 @@ class NodeFactory
                 }
 
                 if (isset($desc['alias'])) {
-                    $expr->setAlias($desc['alias']);
+                    $expr->setAlias($desc['alias']['name']);
                 }
                 if (isset($desc['direction'])) {
                     $expr->setDirection($desc['direction']);
@@ -385,7 +409,9 @@ class NodeFactory
      */
     public static function simplify($nodes)
     {
-        if (!is_array($nodes)) {
+        if (empty($nodes)) {
+            $nodes = array();
+        } elseif (!is_array($nodes)) {
             $nodes = array($nodes);
         }
         $minPriority = -1;
@@ -439,8 +465,8 @@ class NodeFactory
         // At this point, the $selectedOperator list contains a list of operators of the same kind that will apply
         // at the same time.
         if (empty($selectedOperators)) {
-            // If we have an Expression, let's simply discard it.
-            // Indeed, the tree will add brackets by itself, and no Expression in needed for that.
+            // If we have an Expression with no base expression, let's simply discard it.
+            // Indeed, the tree will add brackets by itself, and no Expression is needed for that.
             $newNodes = array();
             /*foreach ($nodes as $key=>$operand) {
                 if ($operand instanceof Expression) {
@@ -452,9 +478,13 @@ class NodeFactory
             }*/
             foreach ($nodes as $operand) {
                 if ($operand instanceof Expression) {
-                    $subTree = $operand->getSubTree();
-                    if (count($subTree) == 1) {
-                        $newNodes = array_merge($newNodes, self::simplify($subTree));
+                    if (empty($operand->getBaseExpression())) {
+                        $subTree = $operand->getSubTree();
+                        if (count($subTree) == 1) {
+                            $newNodes = array_merge($newNodes, self::simplify($subTree));
+                        } else {
+                            $newNodes[] = $operand;
+                        }
                     } else {
                         $newNodes[] = $operand;
                     }
