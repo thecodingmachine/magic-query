@@ -12,12 +12,17 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = 'SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE :name';
+        $this->assertEquals("SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
         $sql = 'SELECT * FROM users';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT * FROM users WHERE name LIKE :name';
         $this->assertEquals("SELECT * FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
         $this->assertEquals('SELECT * FROM users', self::simplifySql($magicQuery->build($sql)));
+
+
 
         $sql = 'SELECT SUM(users.age) FROM users WHERE name LIKE :name AND company LIKE :company';
         $this->assertEquals("SELECT SUM(users.age) FROM users WHERE (name LIKE 'foo')", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
