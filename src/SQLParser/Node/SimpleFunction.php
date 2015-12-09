@@ -172,7 +172,7 @@ class SimpleFunction implements NodeInterface
         if (!empty($this->baseExpression)) {
             $sql .= $this->baseExpression.'(';
         }
-        $sql .= NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql .= NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ',', false, $indent, $conditionsMode);
         if (!empty($this->baseExpression)) {
             $sql .= ')';
         }
