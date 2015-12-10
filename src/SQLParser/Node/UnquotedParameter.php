@@ -58,6 +58,6 @@ class UnquotedParameter extends Parameter
     {
         $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode);
         $name = str_replace("'", "", $name);
-        return is_numeric($name) ? (int)$name : $name;
+        return $name;
     }
 }

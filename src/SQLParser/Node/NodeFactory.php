@@ -713,12 +713,12 @@ class NodeFactory
             $item = $nodes;
             if ($item instanceof SqlRenderInterface) {
                 $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
-                if ($itemSql == null) {
+                if ($itemSql === null || $itemSql === '') {
                     return;
                 }
                 $sql = str_repeat(' ', $indent).$itemSql;
             } else {
-                if ($item == null) {
+                if ($item === null || $item === '') {
                     return;
                 }
                 $sql = str_repeat(' ', $indent).$item;

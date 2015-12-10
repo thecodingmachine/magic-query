@@ -232,17 +232,35 @@ class Select implements StatementInterface, NodeInterface
     private $limit;
 
     /**
-     * @return NodeInterface[]|NodeInterface $limit
+     * @return NodeInterface
      */
     public function getLimit() {
         return $this->limit;
     }
 
     /**
-     * @param NodeInterface[]|NodeInterface $limit
+     * @param NodeInterface $limit
      */
     public function setLimit($limit) {
         $this->limit = $limit;
+    }
+
+    private $offset;
+
+    /**
+     * @return NodeInterface
+     */
+    public function getOffset()
+    {
+        return $this->offset;
+    }
+
+    /**
+     * @param NodeInterface $offset
+     */
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
     }
 
     /**
@@ -260,6 +278,7 @@ class Select implements StatementInterface, NodeInterface
         $instanceDescriptor->getProperty('group')->setValue(NodeFactory::nodeToInstanceDescriptor($this->group, $moufManager));
         $instanceDescriptor->getProperty('having')->setValue(NodeFactory::nodeToInstanceDescriptor($this->having, $moufManager));
         $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
+        $instanceDescriptor->getProperty('offset')->setValue(NodeFactory::nodeToInstanceDescriptor($this->offset, $moufManager));
         $instanceDescriptor->getProperty('limit')->setValue(NodeFactory::nodeToInstanceDescriptor($this->limit, $moufManager));
         $instanceDescriptor->getProperty('options')->setValue($this->options);
 
@@ -284,6 +303,7 @@ class Select implements StatementInterface, NodeInterface
         $instanceDescriptor->getProperty('group')->setValue(NodeFactory::nodeToInstanceDescriptor($this->group, $moufManager));
         $instanceDescriptor->getProperty('having')->setValue(NodeFactory::nodeToInstanceDescriptor($this->having, $moufManager));
         $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
+        $instanceDescriptor->getProperty('offset')->setValue(NodeFactory::nodeToInstanceDescriptor($this->offset, $moufManager));
         $instanceDescriptor->getProperty('limit')->setValue(NodeFactory::nodeToInstanceDescriptor($this->limit, $moufManager));
         $instanceDescriptor->getProperty('options')->setValue($this->options);
 
@@ -348,11 +368,31 @@ class Select implements StatementInterface, NodeInterface
             }
         }
 
-        if (!empty($this->limit)) {
+        if (!empty($this->offset) && empty($this->limit)) {
+            throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
+        } else if (!empty($this->limit)) {
             $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
-            if ($limit) {
-                $sql .= "\nLIMIT ".$limit;
+            if ($limit === '') {
+                $limit = null;
             }
+            if (!empty($this->offset)) {
+                $offset = NodeFactory::toSql($this->offset, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
+                if ($offset === '') {
+                    $offset = null;
+                }
+            } else {
+                $offset = null;
+            }
+
+
+            if ($limit === null && $offset !== null) {
+                throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
+            }
+            $sql .= "\nLIMIT ";
+            if ($offset !== null) {
+                $sql .= $offset.', ';
+            }
+            $sql .= $limit;
         }
 
         return $sql;

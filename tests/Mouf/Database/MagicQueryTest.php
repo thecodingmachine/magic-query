@@ -12,6 +12,12 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = "SELECT id FROM users LIMIT 10";
+        $this->assertEquals("SELECT id FROM users LIMIT 10", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users LIMIT 10 OFFSET 20";
+        $this->assertEquals("SELECT id FROM users LIMIT 20, 10", self::simplifySql($magicQuery->build($sql)));
+
         $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0, 'limit' => 20])));
 
