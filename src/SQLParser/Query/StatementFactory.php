@@ -95,10 +95,33 @@ class StatementFactory
                 $select->setOrder($order);
             }
 
+            if (isset($desc['LIMIT'])) {
+                $descLimit = self::checkLimitDesc($desc['LIMIT']);
+
+                $limit = NodeFactory::toObject($descLimit['limit']);
+                //$limit = NodeFactory::simplify($limit);
+                $select->setLimit($limit);
+
+                $offset = NodeFactory::toObject($descLimit['offset']);
+                //$offset = NodeFactory::simplify($offset);
+                $select->setOffset($offset);
+            }
             return $select;
         } else {
             throw new \BadMethodCallException('Unknown query');
         }
+    }
+
+    /**
+     * @param array $descLimit
+     * @return array
+     * @throws \Exception
+     */
+    private static function checkLimitDesc(array $descLimit) {
+        if(count($descLimit) > 2) {
+            throw new \Exception('The limit returned by the SQLParser contains more than 2 items, something might went wrong.');
+        }
+        return ['offset' => $descLimit[0], 'limit' => $descLimit[1]];
     }
 
     /**

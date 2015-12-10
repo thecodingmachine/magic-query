@@ -12,6 +12,21 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = "SELECT id FROM users LIMIT 10";
+        $this->assertEquals("SELECT id FROM users LIMIT 10", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users LIMIT 10 OFFSET 20";
+        $this->assertEquals("SELECT id FROM users LIMIT 20, 10", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0, 'limit' => 20])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 0, 20";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = "SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS current_date FROM users WHERE name LIKE :name";
+        $this->assertEquals("SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS current_date FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
         $sql = 'SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE :name';
         $this->assertEquals("SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 
@@ -21,8 +36,6 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = 'SELECT * FROM users WHERE name LIKE :name';
         $this->assertEquals("SELECT * FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
         $this->assertEquals('SELECT * FROM users', self::simplifySql($magicQuery->build($sql)));
-
-
 
         $sql = 'SELECT SUM(users.age) FROM users WHERE name LIKE :name AND company LIKE :company';
         $this->assertEquals("SELECT SUM(users.age) FROM users WHERE (name LIKE 'foo')", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
