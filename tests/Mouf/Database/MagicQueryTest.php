@@ -12,6 +12,28 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
+
+        try {
+            $exceptionOccurred = false;
+            $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+            self::simplifySql($magicQuery->build($sql, ['name' => 'foo']));
+        } catch(\Exception $e) {
+            // We have no limit provided in the parameters so we test that the script return an exception for this case
+            $exceptionOccurred = true;
+        }
+        $this->assertEquals(true, $exceptionOccurred);
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
         $sql = "SELECT id FROM users LIMIT 10";
         $this->assertEquals("SELECT id FROM users LIMIT 10", self::simplifySql($magicQuery->build($sql)));
 
