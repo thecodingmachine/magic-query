@@ -372,27 +372,29 @@ class Select implements StatementInterface, NodeInterface
             throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
         } else if (!empty($this->limit)) {
             $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
-            if ($limit === '') {
+            if ($limit === '' || substr(trim($limit), 0, 1) == ':') {
                 $limit = null;
             }
             if (!empty($this->offset)) {
                 $offset = NodeFactory::toSql($this->offset, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
-                if ($offset === '') {
+                if ($offset === '' || substr(trim($offset), 0, 1) == ':') {
                     $offset = null;
                 }
             } else {
                 $offset = null;
             }
 
-
             if ($limit === null && $offset !== null) {
                 throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
             }
-            $sql .= "\nLIMIT ";
-            if ($offset !== null) {
-                $sql .= $offset.', ';
+
+            if($limit !== null) {
+                $sql .= "\nLIMIT ";
+                if ($offset !== null) {
+                    $sql .= $offset.', ';
+                }
+                $sql .= $limit;
             }
-            $sql .= $limit;
         }
 
         return $sql;
