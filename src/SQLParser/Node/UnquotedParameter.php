@@ -3,11 +3,10 @@
 /**
  * expression-types.php.
  *
- * This file implements the constants for the expression types of
- * the output of the PHPSQLParser.
  *
- * Copyright (c) 2010-2012, Justin Swanhart
+ * Copyright (c) 2010-2013, Justin Swanhart
  * with contributions by André Rothe <arothe@phosco.info, phosco@gmx.de>
+ * and David Négrier <d.negrier@thecodingmachine.com>
  *
  * All rights reserved.
  *
@@ -32,43 +31,33 @@
  * DAMAGE.
  */
 
-namespace SQLParser;
+namespace SQLParser\Node;
 
-class ExpressionType
+use Doctrine\DBAL\Connection;
+use Mouf\MoufInstanceDescriptor;
+use Mouf\MoufManager;
+use SQLParser\Node\Traverser\VisitorInterface;
+
+/**
+ * This class represents a parameter (as in parameterized query).
+ *
+ * @author David MAECHLER <d.maechler@thecodingmachine.com>
+ */
+class UnquotedParameter extends Parameter
 {
-    const USER_VARIABLE = 'user_variable';
-    const SESSION_VARIABLE = 'session_variable';
-    const GLOBAL_VARIABLE = 'global_variable';
-    const LOCAL_VARIABLE = 'local_variable';
-
-    const COLREF = 'colref';
-    const RESERVED = 'reserved';
-    const CONSTANT = 'const';
-
-    const LIMIT_CONST = 'limit_const';
-
-    const AGGREGATE_FUNCTION = 'aggregate_function';
-    const SIMPLE_FUNCTION = 'function';
-
-    const EXPRESSION = 'expression';
-    const BRACKET_EXPRESSION = 'bracket_expression';
-    const TABLE_EXPRESSION = 'table_expression';
-
-    const SUBQUERY = 'subquery';
-    const IN_LIST = 'in-list';
-    const OPERATOR = 'operator';
-    const SIGN = 'sign';
-    const RECORD = 'record';
-
-    const MATCH_ARGUMENTS = 'match-arguments';
-    const MATCH_MODE = 'match-mode';
-
-    const ALIAS = 'alias';
-    const POSITION = 'pos';
-
-    const TEMPORARY_TABLE = 'temporary_table';
-    const TABLE = 'table';
-    const VIEW = 'view';
-    const DATABASE = 'database';
-    const SCHEMA = 'schema';
+    /**
+     * Renders the object as a SQL string without quote if its a numeric
+     *
+     * @param array $parameters
+     * @param Connection $dbConnection
+     * @param int|number $indent
+     * @param int $conditionsMode
+     * @return string
+     */
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode);
+        $name = str_replace("'", "", $name);
+        return is_numeric($name) ? (int)$name : $name;
+    }
 }

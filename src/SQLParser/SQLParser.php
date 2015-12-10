@@ -691,7 +691,10 @@ class SQLParser extends PHPSQLParserUtils
             }
         }
 
-        return array('offset' => trim($offset), 'rowcount' => trim($rowcount));
+        return [
+            ['expr_type' => 'limit_const', 'base_expr' => trim($offset), 'sub_tree' => false ],
+            ['expr_type' => 'limit_const', 'base_expr' => trim($rowcount), 'sub_tree' => false ]
+        ];
     }
 
     /**

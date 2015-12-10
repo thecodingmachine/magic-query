@@ -229,6 +229,22 @@ class Select implements StatementInterface, NodeInterface
         $this->options = $options;
     }
 
+    private $limit;
+
+    /**
+     * @return NodeInterface[]|NodeInterface $limit
+     */
+    public function getLimit() {
+        return $this->limit;
+    }
+
+    /**
+     * @param NodeInterface[]|NodeInterface $limit
+     */
+    public function setLimit($limit) {
+        $this->limit = $limit;
+    }
+
     /**
      * @param MoufManager $moufManager
      *
@@ -244,6 +260,7 @@ class Select implements StatementInterface, NodeInterface
         $instanceDescriptor->getProperty('group')->setValue(NodeFactory::nodeToInstanceDescriptor($this->group, $moufManager));
         $instanceDescriptor->getProperty('having')->setValue(NodeFactory::nodeToInstanceDescriptor($this->having, $moufManager));
         $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
+        $instanceDescriptor->getProperty('limit')->setValue(NodeFactory::nodeToInstanceDescriptor($this->limit, $moufManager));
         $instanceDescriptor->getProperty('options')->setValue($this->options);
 
         return $instanceDescriptor;
@@ -267,6 +284,7 @@ class Select implements StatementInterface, NodeInterface
         $instanceDescriptor->getProperty('group')->setValue(NodeFactory::nodeToInstanceDescriptor($this->group, $moufManager));
         $instanceDescriptor->getProperty('having')->setValue(NodeFactory::nodeToInstanceDescriptor($this->having, $moufManager));
         $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
+        $instanceDescriptor->getProperty('limit')->setValue(NodeFactory::nodeToInstanceDescriptor($this->limit, $moufManager));
         $instanceDescriptor->getProperty('options')->setValue($this->options);
 
         return $instanceDescriptor;
@@ -275,11 +293,10 @@ class Select implements StatementInterface, NodeInterface
     /**
      * Renders the object as a SQL string.
      *
+     * @param array $parameters
      * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
-     *
+     * @param int|number $indent
+     * @param int $conditionsMode
      * @return string
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
@@ -328,6 +345,13 @@ class Select implements StatementInterface, NodeInterface
             $order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
             if ($order) {
                 $sql .= "\nORDER BY ".$order;
+            }
+        }
+
+        if (!empty($this->limit)) {
+            $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
+            if ($limit) {
+                $sql .= "\nLIMIT ".$limit;
             }
         }
 

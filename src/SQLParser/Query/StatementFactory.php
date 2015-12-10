@@ -95,6 +95,12 @@ class StatementFactory
                 $select->setOrder($order);
             }
 
+            if (isset($desc['LIMIT'])) {
+                $limit = self::mapArrayToNodeObjectList($desc['LIMIT']);
+                $limit = NodeFactory::simplify($limit);
+                $select->setLimit($limit);
+            }
+
             return $select;
         } else {
             throw new \BadMethodCallException('Unknown query');

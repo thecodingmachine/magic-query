@@ -54,6 +54,32 @@ class NodeFactory
         }
 
         switch ($desc['expr_type']) {
+            case ExpressionType::LIMIT_CONST:
+                if (substr($desc['base_expr'], 0, 1) == ':') {
+                    $instance = new UnquotedParameter();
+                    $instance->setName(substr($desc['base_expr'], 1));
+                } else {
+                    $instance = new LimitNode();
+                    $expr = $desc['base_expr'];
+                    if (strpos($expr, "'") === 0) {
+                        $expr = substr($expr, 1);
+                    }
+                    if (strrpos($expr, "'") === strlen($expr) - 1) {
+                        $expr = substr($expr, 0, strlen($expr) - 1);
+                    }
+                    $expr = stripslashes($expr);
+
+                    $instance->setValue($expr);
+                }
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                }
+
+                return $instance;
             case ExpressionType::CONSTANT:
                 $const = new ConstNode();
                 $expr = $desc['base_expr'];
@@ -108,10 +134,10 @@ class NodeFactory
                     if (!empty($desc['alias'])) {
                         $instance->setAlias($desc['alias']['name']);
                     }
-                }
 
-                if (!empty($desc['direction'])) {
-                    $instance->setDirection($desc['direction']);
+                    if (!empty($desc['direction'])) {
+                        $instance->setDirection($desc['direction']);
+                    }
                 }
 
                 // Debug:
