@@ -296,10 +296,6 @@ class NodeFactory
                 $res = new Reserved();
                 $res->setBaseExpression($desc['base_expr']);
 
-                if (isset($desc['sub_tree'])) {
-                    $res->setSubTree(self::buildFromSubtree($desc['sub_tree']));
-                }
-
                 if ($desc['expr_type'] == ExpressionType::BRACKET_EXPRESSION) {
                     $res->setBrackets(true);
                 }
