@@ -12,6 +12,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
+        $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
+
         $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 

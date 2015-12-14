@@ -292,14 +292,29 @@ class NodeFactory
                 }
 
                 return $expr;
+            case ExpressionType::RESERVED:
+                $res = new Reserved();
+                $res->setBaseExpression($desc['base_expr']);
 
+                if ($desc['expr_type'] == ExpressionType::BRACKET_EXPRESSION) {
+                    $res->setBrackets(true);
+                }
+
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                unset($desc['alias']);
+                unset($desc['direction']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                }
+
+                return $res;
             case ExpressionType::USER_VARIABLE:
             case ExpressionType::SESSION_VARIABLE:
             case ExpressionType::GLOBAL_VARIABLE:
             case ExpressionType::LOCAL_VARIABLE:
-
-            case ExpressionType::RESERVED:
-
             case ExpressionType::EXPRESSION:
             case ExpressionType::BRACKET_EXPRESSION:
             case ExpressionType::TABLE_EXPRESSION:
