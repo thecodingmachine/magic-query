@@ -183,9 +183,8 @@ class MagicQuery
         $tableNode = new Table();
         $tableNode->setTable($mainTable);
         $tables = [
-            $tableNode
+            $mainTable => $tableNode
         ];
-        $currentTable = $mainTable;
 
         foreach ($completePath as $foreignKey) {
             /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
@@ -206,15 +205,13 @@ class MagicQuery
             $tableNode->setJoinType("LEFT JOIN");
             $tableNode->setRefClause($onNode);
 
-            if ($foreignKey->getLocalTableName() == $currentTable) {
+            if (isset($tables[$foreignKey->getLocalTableName()])) {
                 $tableNode->setTable($foreignKey->getForeignTableName());
-                $currentTable = $foreignKey->getForeignTableName();
+                $tables[$foreignKey->getForeignTableName()] = $tableNode;
             } else {
                 $tableNode->setTable($foreignKey->getLocalTableName());
-                $currentTable = $foreignKey->getLocalTableName();
+                $tables[$foreignKey->getLocalTableName()] = $tableNode;
             }
-
-            $tables[] = $tableNode;
         }
 
         $select->setFrom($tables);
