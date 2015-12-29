@@ -146,6 +146,71 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
     }
 
+    public function testMagicJoin2() {
+        $schema = new Schema();
+        $role = $schema->createTable("role");
+        $role->addColumn("id", "integer", array("unsigned" => true));
+        $role->addColumn("label", "string", array("length" => 32));
+
+        $right = $schema->createTable("right");
+        $right->addColumn("id", "integer", array("unsigned" => true));
+        $right->addColumn("label", "string", array("length" => 32));
+        $role_right = $schema->createTable("role_right");
+
+        $role_right->addColumn("role_id", "integer", array("unsigned" => true));
+        $role_right->addColumn("right_id", "integer", array("unsigned" => true));
+        $role_right->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $role_right->setPrimaryKey(["role_id", "right_id"]);
+
+        $user = $schema->createTable("user");
+        $user->addColumn("id", "integer", array("unsigned" => true));
+        $user->addColumn("login", "string", array("length" => 32));
+        $user->addColumn("role_id", "integer", array("unsigned" => true));
+        $user->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
+
+        $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
+
+        $magicQuery = new MagicQuery(null, null, $schemaAnalyzer);
+
+        $sql = "SELECT role.* FROM magicjoin(role) WHERE right.label = 'my_right' AND user.login = 'foo'";
+        $expectedSql = "SELECT role.* FROM role LEFT JOIN role_right ON (role_right.role_id = role.id) LEFT JOIN right ON (role_right.right_id = right.id) LEFT JOIN user ON (user.role_id = role.id) WHERE (right.label = 'my_right') AND (user.login = 'foo')";
+        $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
+    }
+
+    public function testMagicJoin3() {
+        $schema = new Schema();
+        $role = $schema->createTable("role");
+        $role->addColumn("id", "integer", array("unsigned" => true));
+        $role->addColumn("label", "string", array("length" => 32));
+
+        $right = $schema->createTable("right");
+        $right->addColumn("id", "integer", array("unsigned" => true));
+        $right->addColumn("label", "string", array("length" => 32));
+        $role_right = $schema->createTable("role_right");
+
+        $role_right->addColumn("role_id", "integer", array("unsigned" => true));
+        $role_right->addColumn("right_id", "integer", array("unsigned" => true));
+        $role_right->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $role_right->setPrimaryKey(["role_id", "right_id"]);
+
+        $status = $schema->createTable("status");
+        $status->addColumn("id", "integer", array("unsigned" => true));
+        $status->addColumn("name", "string", array("length" => 32));
+
+        $role->addColumn("status_id", "integer", array("unsigned" => true));
+        $role->addForeignKeyConstraint($schema->getTable('status'), array("status_id"), array("id"), array("onUpdate" => "CASCADE"));
+
+        $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
+
+        $magicQuery = new MagicQuery(null, null, $schemaAnalyzer);
+
+        $sql = "SELECT role.* FROM magicjoin(role) WHERE right.label = 'my_right' AND status.name = 'foo'";
+        $expectedSql = "SELECT role.* FROM role LEFT JOIN role_right ON (role_right.role_id = role.id) LEFT JOIN right ON (role_right.right_id = right.id) LEFT JOIN status ON (role.status_id = status.id) WHERE (right.label = 'my_right') AND (status.name = 'foo')";
+        $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
+    }
+
     /**
      * @expectedException \Mouf\Database\MagicQueryMissingConnectionException
      */
