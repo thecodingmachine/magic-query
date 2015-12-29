@@ -133,7 +133,7 @@ $completeSql = $magicQuery->build($sql, ['isAdmin' => true]);
 into the SQL query. You should use classic SQL parameters for this. This means that instead if writing 
 <code>{{ id }}</code>, you should write <code>:id</code>.</div>
 
-Want to know more? <a class="btn btn-primary" href="doc/magic_twig.md">Check out the MagicTwig guide!</a>
+Want to know more? <a class="btn btn-primary btn-large" href="doc/magic_twig.md">Check out the MagicTwig guide!</a>
 
 <a name="twig"></a>
 Use Twig templating in your SQL queries!
