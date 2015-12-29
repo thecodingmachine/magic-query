@@ -44,7 +44,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Expression implements NodeInterface
+class Reserved implements NodeInterface
 {
     private $baseExpression;
 
@@ -66,64 +66,6 @@ class Expression implements NodeInterface
     public function setBaseExpression($baseExpression)
     {
         $this->baseExpression = $baseExpression;
-    }
-
-    private $subTree;
-
-    public function getSubTree()
-    {
-        return $this->subTree;
-    }
-
-    /**
-     * Sets the subtree.
-     *
-     * @Important
-     *
-     * @param array<NodeInterface>|NodeInterface $subTree
-     */
-    public function setSubTree($subTree)
-    {
-        $this->subTree = $subTree;
-        $this->subTree = NodeFactory::simplify($this->subTree);
-    }
-
-    private $alias;
-
-    public function getAlias()
-    {
-        return $this->alias;
-    }
-
-    /**
-     * Sets the alias.
-     *
-     * @Important
-     *
-     * @param string $alias
-     */
-    public function setAlias($alias)
-    {
-        $this->alias = $alias;
-    }
-
-    private $direction;
-
-    public function getDiretion()
-    {
-        return $this->direction;
-    }
-
-    /**
-     * Sets the direction.
-     *
-     * @Important
-     *
-     * @param string $direction
-     */
-    public function setDirection($direction)
-    {
-        $this->direction = $direction;
     }
 
     private $brackets = false;
@@ -161,9 +103,6 @@ class Expression implements NodeInterface
     {
         $instanceDescriptor = $moufManager->createInstance(get_called_class());
         $instanceDescriptor->getProperty('baseExpression')->setValue(NodeFactory::nodeToInstanceDescriptor($this->baseExpression, $moufManager));
-        $instanceDescriptor->getProperty('subTree')->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
-        $instanceDescriptor->getProperty('alias')->setValue(NodeFactory::nodeToInstanceDescriptor($this->alias, $moufManager));
-        $instanceDescriptor->getProperty('direction')->setValue(NodeFactory::nodeToInstanceDescriptor($this->direction, $moufManager));
         $instanceDescriptor->getProperty('brackets')->setValue(NodeFactory::nodeToInstanceDescriptor($this->brackets, $moufManager));
 
         return $instanceDescriptor;
@@ -172,23 +111,20 @@ class Expression implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
+     * @param array $parameters
      * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
-     *
+     * @param int|number $indent
+     * @param int $conditionsMode
      * @return string
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql = '';
 
-        if ($this->alias) {
-            $sql .= ' AS '.$this->alias;
+        if($this->baseExpression) {
+            $sql .= ' '.$this->baseExpression.' ';
         }
-        if ($this->direction) {
-            $sql .= ' '.$this->direction;
-        }
+
         if ($this->brackets) {
             $sql = '('.$sql.')';
         }
@@ -206,16 +142,6 @@ class Expression implements NodeInterface
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
             $node = $result;
-        }
-        if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            foreach ($this->subTree as $key => $operand) {
-                $result2 = $operand->walk($visitor);
-                if ($result2 === NodeTraverser::REMOVE_NODE) {
-                    unset($this->subTree[$key]);
-                } elseif ($result2 instanceof NodeInterface) {
-                    $this->subTree[$key] = $result2;
-                }
-            }
         }
         return $visitor->leaveNode($node);
     }

@@ -33,6 +33,7 @@
 
 namespace SQLParser\Node;
 
+use Mouf\Database\MagicQueryException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
@@ -53,6 +54,32 @@ class NodeFactory
         }
 
         switch ($desc['expr_type']) {
+            case ExpressionType::LIMIT_CONST:
+                if (substr($desc['base_expr'], 0, 1) == ':') {
+                    $instance = new UnquotedParameter();
+                    $instance->setName(substr($desc['base_expr'], 1));
+                } else {
+                    $instance = new LimitNode();
+                    $expr = $desc['base_expr'];
+                    if (strpos($expr, "'") === 0) {
+                        $expr = substr($expr, 1);
+                    }
+                    if (strrpos($expr, "'") === strlen($expr) - 1) {
+                        $expr = substr($expr, 0, strlen($expr) - 1);
+                    }
+                    $expr = stripslashes($expr);
+
+                    $instance->setValue($expr);
+                }
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                }
+
+                return $instance;
             case ExpressionType::CONSTANT:
                 $const = new ConstNode();
                 $expr = $desc['base_expr'];
@@ -107,10 +134,10 @@ class NodeFactory
                     if (!empty($desc['alias'])) {
                         $instance->setAlias($desc['alias']['name']);
                     }
-                }
 
-                if (!empty($desc['direction'])) {
-                    $instance->setDirection($desc['direction']);
+                    if (!empty($desc['direction'])) {
+                        $instance->setDirection($desc['direction']);
+                    }
                 }
 
                 // Debug:
@@ -239,16 +266,55 @@ class NodeFactory
                 }
 
                 return $expr;
+            case ExpressionType::SIMPLE_FUNCTION:
+                $expr = new SimpleFunction();
+                $expr->setBaseExpression($desc['base_expr']);
 
+                if (isset($desc['sub_tree'])) {
+                    $expr->setSubTree(self::buildFromSubtree($desc['sub_tree']));
+                }
+
+                if (isset($desc['alias'])) {
+                    $expr->setAlias($desc['alias']['name']);
+                }
+                if (isset($desc['direction'])) {
+                    $expr->setDirection($desc['direction']);
+                }
+
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                unset($desc['alias']);
+                unset($desc['direction']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in simple function: '.var_export($desc, true));
+                }
+
+                return $expr;
+            case ExpressionType::RESERVED:
+                $res = new Reserved();
+                $res->setBaseExpression($desc['base_expr']);
+
+                if ($desc['expr_type'] == ExpressionType::BRACKET_EXPRESSION) {
+                    $res->setBrackets(true);
+                }
+
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                unset($desc['alias']);
+                unset($desc['direction']);
+                if (!empty($desc)) {
+                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                }
+
+                return $res;
             case ExpressionType::USER_VARIABLE:
             case ExpressionType::SESSION_VARIABLE:
             case ExpressionType::GLOBAL_VARIABLE:
             case ExpressionType::LOCAL_VARIABLE:
-
-            case ExpressionType::RESERVED:
-
-            case ExpressionType::SIMPLE_FUNCTION:
-
             case ExpressionType::EXPRESSION:
             case ExpressionType::BRACKET_EXPRESSION:
             case ExpressionType::TABLE_EXPRESSION:
@@ -276,7 +342,7 @@ class NodeFactory
                 }
 
                 if (isset($desc['alias'])) {
-                    $expr->setAlias($desc['alias']);
+                    $expr->setAlias($desc['alias']['name']);
                 }
                 if (isset($desc['direction'])) {
                     $expr->setDirection($desc['direction']);
@@ -335,6 +401,7 @@ class NodeFactory
             array('&'),
             array('|'),
             array('=' /*(comparison)*/, '<=>', '>=', '>', '<=', '<', '<>', '!=', 'IS', 'LIKE', 'REGEXP', 'IN', 'IS NOT', 'NOT IN'),
+            array('AND_FROM_BETWEEN'),
             array('BETWEEN', 'CASE', 'WHEN', 'THEN', 'ELSE'),
             array('NOT'),
             array('&&', 'AND'),
@@ -383,7 +450,9 @@ class NodeFactory
      */
     public static function simplify($nodes)
     {
-        if (!is_array($nodes)) {
+        if (empty($nodes)) {
+            $nodes = array();
+        } elseif (!is_array($nodes)) {
             $nodes = array($nodes);
         }
         $minPriority = -1;
@@ -437,8 +506,8 @@ class NodeFactory
         // At this point, the $selectedOperator list contains a list of operators of the same kind that will apply
         // at the same time.
         if (empty($selectedOperators)) {
-            // If we have an Expression, let's simply discard it.
-            // Indeed, the tree will add brackets by itself, and no Expression in needed for that.
+            // If we have an Expression with no base expression, let's simply discard it.
+            // Indeed, the tree will add brackets by itself, and no Expression is needed for that.
             $newNodes = array();
             /*foreach ($nodes as $key=>$operand) {
                 if ($operand instanceof Expression) {
@@ -450,9 +519,13 @@ class NodeFactory
             }*/
             foreach ($nodes as $operand) {
                 if ($operand instanceof Expression) {
-                    $subTree = $operand->getSubTree();
-                    if (count($subTree) == 1) {
-                        $newNodes = array_merge($newNodes, self::simplify($subTree));
+                    if (empty($operand->getBaseExpression())) {
+                        $subTree = $operand->getSubTree();
+                        if (count($subTree) == 1) {
+                            $newNodes = array_merge($newNodes, self::simplify($subTree));
+                        } else {
+                            $newNodes[] = $operand;
+                        }
                     } else {
                         $newNodes[] = $operand;
                     }
@@ -533,6 +606,23 @@ class NodeFactory
         } elseif (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractManyInstancesOperator')) {
             $instance = new self::$OPERATOR_TO_CLASS[$operation]();
             $instance->setOperands($operands);
+
+            return $instance;
+        } elseif ($operation === 'BETWEEN') {
+            $leftOperand = array_shift($operands);
+            $rightOperand = array_shift($operands);
+            if (!$rightOperand instanceof Operation || $rightOperand->getOperatorSymbol() !== 'AND_FROM_BETWEEN') {
+                throw new MagicQueryException('Missing AND in BETWEEN filter.');
+            }
+
+            $innerOperands = $rightOperand->getOperands();
+            $minOperand = array_shift($innerOperands);
+            $maxOperand = array_shift($innerOperands);
+
+            $instance = new Between();
+            $instance->setLeftOperand($leftOperand);
+            $instance->setMinValueOperand($minOperand);
+            $instance->setMaxValueOperand($maxOperand);
 
             return $instance;
         } else {
@@ -638,12 +728,12 @@ class NodeFactory
             $item = $nodes;
             if ($item instanceof SqlRenderInterface) {
                 $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
-                if ($itemSql == null) {
+                if ($itemSql === null || $itemSql === '') {
                     return;
                 }
                 $sql = str_repeat(' ', $indent).$itemSql;
             } else {
-                if ($item == null) {
+                if ($item === null || $item === '') {
                     return;
                 }
                 $sql = str_repeat(' ', $indent).$item;

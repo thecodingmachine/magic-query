@@ -45,8 +45,8 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Parameter implements NodeInterface
 {
-    private $name;
-    private $discardedOnNull = true;
+    protected $name;
+    protected $discardedOnNull = true;
 
     /**
      * Returns the name.
@@ -80,12 +80,12 @@ class Parameter implements NodeInterface
     /**
      * @var string
      */
-    private $autoPrepend;
+    protected $autoPrepend;
 
     /**
      * @var string
      */
-    private $autoAppend;
+    protected $autoAppend;
 
     /**
      * @return string
@@ -180,9 +180,8 @@ class Parameter implements NodeInterface
                             return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
                         }, $parameters[$this->name])).')';
                     } else{
-                       return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'"; 
+                        return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
                     }
-                    
                 }
             }
         } elseif (!$this->isDiscardedOnNull()) {

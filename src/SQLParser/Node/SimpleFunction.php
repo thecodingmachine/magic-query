@@ -40,11 +40,11 @@ use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
- * This class represents a node that is an SQL expression.
+ * This class represents a node that is an SQL function call.
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Expression implements NodeInterface
+class SimpleFunction implements NodeInterface
 {
     private $baseExpression;
 
@@ -139,18 +139,6 @@ class Expression implements NodeInterface
     }
 
     /**
-     * Sets to true if the expression is between brackets.
-     *
-     * @Important
-     *
-     * @param bool $brackets
-     */
-    public function setBrackets($brackets)
-    {
-        $this->brackets = $brackets;
-    }
-
-    /**
      * Returns a Mouf instance descriptor describing this object.
      *
      * @param MoufManager $moufManager
@@ -164,7 +152,6 @@ class Expression implements NodeInterface
         $instanceDescriptor->getProperty('subTree')->setValue(NodeFactory::nodeToInstanceDescriptor($this->subTree, $moufManager));
         $instanceDescriptor->getProperty('alias')->setValue(NodeFactory::nodeToInstanceDescriptor($this->alias, $moufManager));
         $instanceDescriptor->getProperty('direction')->setValue(NodeFactory::nodeToInstanceDescriptor($this->direction, $moufManager));
-        $instanceDescriptor->getProperty('brackets')->setValue(NodeFactory::nodeToInstanceDescriptor($this->brackets, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -181,16 +168,20 @@ class Expression implements NodeInterface
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql = '';
+        if (!empty($this->baseExpression)) {
+            $sql .= $this->baseExpression.'(';
+        }
+        $sql .= NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ',', false, $indent, $conditionsMode);
+        if (!empty($this->baseExpression)) {
+            $sql .= ')';
+        }
 
         if ($this->alias) {
             $sql .= ' AS '.$this->alias;
         }
         if ($this->direction) {
             $sql .= ' '.$this->direction;
-        }
-        if ($this->brackets) {
-            $sql = '('.$sql.')';
         }
 
         return $sql;

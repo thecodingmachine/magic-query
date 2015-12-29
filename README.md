@@ -191,7 +191,7 @@ with Doctrine Cache. You simply have to pass a Doctrine Cache instance has the s
  
 ```php
 use Mouf\Database\MagicQuery;
-use Doctrine\Common\Cache\ApcCache();
+use Doctrine\Common\Cache\ApcCache;
 
 // $conn is a Doctrine connection
 $magicQuery = new MagicQuery($conn, new ApcCache());

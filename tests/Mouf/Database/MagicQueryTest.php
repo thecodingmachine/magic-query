@@ -12,6 +12,49 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     {
         $magicQuery = new MagicQuery();
 
+        $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
+        $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
+
+        try {
+            $exceptionOccurred = false;
+            $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+            self::simplifySql($magicQuery->build($sql, ['name' => 'foo']));
+        } catch(\Exception $e) {
+            // We have no limit provided in the parameters so we test that the script return an exception for this case
+            $exceptionOccurred = true;
+        }
+        $this->assertEquals(true, $exceptionOccurred);
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = "SELECT id FROM users LIMIT 10";
+        $this->assertEquals("SELECT id FROM users LIMIT 10", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users LIMIT 10 OFFSET 20";
+        $this->assertEquals("SELECT id FROM users LIMIT 20, 10", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0, 'limit' => 20])));
+
+        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 0, 20";
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = "SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS current_date FROM users WHERE name LIKE :name";
+        $this->assertEquals("SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS current_date FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
+        $sql = 'SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE :name';
+        $this->assertEquals("SELECT YEAR(CURDATE()) AS current_year FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+
         $sql = 'SELECT * FROM users';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
 
@@ -25,6 +68,12 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE status in :status';
         $this->assertEquals("SELECT * FROM users WHERE status IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2,4]])));
+
+        $sql = 'SELECT * FROM myTable where someField BETWEEN :value1 AND :value2';
+        $this->assertEquals("SELECT * FROM myTable WHERE someField BETWEEN '2' AND '4'", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4])));
+        $this->assertEquals("SELECT * FROM myTable WHERE someField >= '2'", self::simplifySql($magicQuery->build($sql, ['value1' => 2])));
+        $this->assertEquals("SELECT * FROM myTable WHERE someField <= '4'", self::simplifySql($magicQuery->build($sql, ['value2' => 4])));
+        $this->assertEquals("SELECT * FROM myTable", self::simplifySql($magicQuery->build($sql, [])));
 
         // Triggers an "expression"
         // TODO: find why it fails!
