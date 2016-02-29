@@ -10,12 +10,32 @@ use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
- * This class represents a set of WHEN ... THEN ... construct (inside a CASE).
+ * This class represents a set of ... WHEN ... THEN ... construct (inside a CASE).
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
 class WhenConditions extends AbstractManyInstancesOperator
 {
+
+    private $value;
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @Important
+     *
+     * @param NodeInterface|NodeInterface[]|string $value
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
     /**
      * Renders the object as a SQL string.
      *
@@ -29,6 +49,11 @@ class WhenConditions extends AbstractManyInstancesOperator
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         $fullSql = '';
+
+        if ($this->value) {
+            $fullSql = NodeFactory::toSql($this->value, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        }
+
         foreach ($this->getOperands() as $operand) {
             $sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
             if ($sql != null) {

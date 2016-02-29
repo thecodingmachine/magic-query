@@ -462,7 +462,6 @@ class NodeFactory
             '||' => 'SQLParser\Node\OrOp',
             'OR' => 'SQLParser\Node\OrOp',
             'XOR' => 'SQLParser\Node\XorOp',
-            'WHEN' => 'SQLParser\Node\WhenConditions',
             'THEN' => 'SQLParser\Node\Then',
             'ELSE' => 'SQLParser\Node\ElseOperation'
     );
@@ -567,8 +566,13 @@ class NodeFactory
         $tmpOperators = $selectedOperators;
         $nextOperator = array_shift($tmpOperators);
 
+        $isSelectedOperatorFirst = null;
+
         foreach ($nodes as $node) {
             if ($node === $nextOperator) {
+                if ($isSelectedOperatorFirst === null) {
+                    $isSelectedOperatorFirst = true;
+                }
                 // Let's apply the "simplify" method on the operand before storing it.
                 //$operands[] = self::simplify($operand);
                 $simple = self::simplify($operand);
@@ -581,6 +585,9 @@ class NodeFactory
                 $operand = array();
                 $nextOperator = array_shift($tmpOperators);
             } else {
+                if ($isSelectedOperatorFirst === null) {
+                    $isSelectedOperatorFirst = false;
+                }
                 $operand[] = $node;
             }
         }
@@ -611,7 +618,6 @@ class NodeFactory
         array('INTERVAL'),
         array('BINARY', 'COLLATE'),
         array('!'),
-        array('CASE', 'WHEN', 'THEN', 'ELSE'),
         array('NOT'),
         */
 
@@ -649,19 +655,17 @@ class NodeFactory
             $instance->setMaxValueOperand($maxOperand);
 
             return $instance;
-        /*} elseif ($operation === 'WHEN') {
-            $when = array_shift($operands);
+        } elseif ($operation === 'WHEN') {
 
-            $whenOperands = $when->getOperands();
-            $condition = array_shift($whenOperands);
-            $result = array_shift($whenOperands);
+            $instance = new WhenConditions();
 
-            $instance = new WhenThen();
-            $instance->setCondition($condition);
-            $instance->setResult($result);
+            if (!$isSelectedOperatorFirst) {
+                $value = array_shift($operands);
+                $instance->setValue($value);
+            }
+            $instance->setOperands($operands);
 
             return $instance;
-*/
         } elseif ($operation === 'CASE') {
             $innerOperation = array_shift($operands);
 
