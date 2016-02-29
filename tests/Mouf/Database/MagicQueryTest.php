@@ -88,6 +88,10 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         // Tests parameters with a ! (to force NULL values)
         $sql = 'SELECT * FROM users WHERE status = :status!';
         $this->assertEquals("SELECT * FROM users WHERE status = null", self::simplifySql($magicQuery->build($sql, ['status' => null])));
+
+        // Test CASE WHERE
+        $sql = "SELECT CASE WHEN status = 'on' THEN '1' WHEN status = 'off' THEN '0' ELSE '-1' END AS my_case FROM users";
+        $this->assertEquals("SELECT CASE WHEN status = 'on' THEN '1' WHEN status = 'off' THEN '0' ELSE '-1' END AS my_case FROM users", self::simplifySql($magicQuery->build($sql)));
     }
 
     public function testWithCache() {
