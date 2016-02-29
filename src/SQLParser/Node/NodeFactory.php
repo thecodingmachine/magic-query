@@ -293,24 +293,42 @@ class NodeFactory
 
                 return $expr;
             case ExpressionType::RESERVED:
-                $res = new Reserved();
-                $res->setBaseExpression($desc['base_expr']);
+                if (in_array(strtoupper($desc['base_expr']), ['CASE', 'WHEN', 'THEN', 'ELSE', 'END'])) {
+                    $operator = new Operator();
+                    $operator->setValue($desc['base_expr']);
+                    // Debug:
+                    unset($desc['base_expr']);
+                    unset($desc['expr_type']);
+                    if (!empty($desc['sub_tree'])) {
+                        throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
+                    }
+                    unset($desc['sub_tree']);
+                    if (!empty($desc)) {
+                        throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    }
 
-                if ($desc['expr_type'] == ExpressionType::BRACKET_EXPRESSION) {
-                    $res->setBrackets(true);
+                    return $operator;
+                } else {
+
+                    $res = new Reserved();
+                    $res->setBaseExpression($desc['base_expr']);
+
+                    if ($desc['expr_type'] == ExpressionType::BRACKET_EXPRESSION) {
+                        $res->setBrackets(true);
+                    }
+
+                    // Debug:
+                    unset($desc['base_expr']);
+                    unset($desc['expr_type']);
+                    unset($desc['sub_tree']);
+                    unset($desc['alias']);
+                    unset($desc['direction']);
+                    if (!empty($desc)) {
+                        throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    }
+
+                    return $res;
                 }
-
-                // Debug:
-                unset($desc['base_expr']);
-                unset($desc['expr_type']);
-                unset($desc['sub_tree']);
-                unset($desc['alias']);
-                unset($desc['direction']);
-                if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
-                }
-
-                return $res;
             case ExpressionType::USER_VARIABLE:
             case ExpressionType::SESSION_VARIABLE:
             case ExpressionType::GLOBAL_VARIABLE:
@@ -402,7 +420,10 @@ class NodeFactory
             array('|'),
             array('=' /*(comparison)*/, '<=>', '>=', '>', '<=', '<', '<>', '!=', 'IS', 'LIKE', 'REGEXP', 'IN', 'IS NOT', 'NOT IN'),
             array('AND_FROM_BETWEEN'),
-            array('BETWEEN', 'CASE', 'WHEN', 'THEN', 'ELSE'),
+            array('THEN'),
+            array('WHEN'),
+            array('ELSE'),
+            array('BETWEEN', 'CASE', 'END'),
             array('NOT'),
             array('&&', 'AND'),
             array('XOR'),
@@ -441,6 +462,8 @@ class NodeFactory
             '||' => 'SQLParser\Node\OrOp',
             'OR' => 'SQLParser\Node\OrOp',
             'XOR' => 'SQLParser\Node\XorOp',
+            'THEN' => 'SQLParser\Node\Then',
+            'ELSE' => 'SQLParser\Node\ElseOperation'
     );
 
     /**
@@ -543,8 +566,13 @@ class NodeFactory
         $tmpOperators = $selectedOperators;
         $nextOperator = array_shift($tmpOperators);
 
+        $isSelectedOperatorFirst = null;
+
         foreach ($nodes as $node) {
             if ($node === $nextOperator) {
+                if ($isSelectedOperatorFirst === null) {
+                    $isSelectedOperatorFirst = true;
+                }
                 // Let's apply the "simplify" method on the operand before storing it.
                 //$operands[] = self::simplify($operand);
                 $simple = self::simplify($operand);
@@ -557,6 +585,9 @@ class NodeFactory
                 $operand = array();
                 $nextOperator = array_shift($tmpOperators);
             } else {
+                if ($isSelectedOperatorFirst === null) {
+                    $isSelectedOperatorFirst = false;
+                }
                 $operand[] = $node;
             }
         }
@@ -587,7 +618,6 @@ class NodeFactory
         array('INTERVAL'),
         array('BINARY', 'COLLATE'),
         array('!'),
-        array('BETWEEN', 'CASE', 'WHEN', 'THEN', 'ELSE'),
         array('NOT'),
         */
 
@@ -625,6 +655,31 @@ class NodeFactory
             $instance->setMaxValueOperand($maxOperand);
 
             return $instance;
+        } elseif ($operation === 'WHEN') {
+
+            $instance = new WhenConditions();
+
+            if (!$isSelectedOperatorFirst) {
+                $value = array_shift($operands);
+                $instance->setValue($value);
+            }
+            $instance->setOperands($operands);
+
+            return $instance;
+        } elseif ($operation === 'CASE') {
+            $innerOperation = array_shift($operands);
+
+            if (!empty($operands)) {
+                throw new MagicQueryException('A CASE statement should contain only a ThenConditions or a ElseOperand object.');
+            }
+
+            $instance = new CaseOperation();
+            $instance->setOperation($innerOperation);
+            return $instance;
+        } elseif ($operation === 'END') {
+            // Simply bypass the END operation. We already have a CASE matching node:
+            $caseOperation = array_shift($operands);
+            return $caseOperation;
         } else {
             $instance = new Operation();
             $instance->setOperatorSymbol($operation);
