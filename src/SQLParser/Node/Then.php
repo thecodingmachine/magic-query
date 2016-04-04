@@ -3,7 +3,7 @@
 namespace SQLParser\Node;
 
 /**
- * This class represents a THEN (in a CASE WHEN ... THEN ... END construct)
+ * This class represents a THEN (in a CASE WHEN ... THEN ... END construct).
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */

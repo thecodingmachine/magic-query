@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
@@ -60,7 +59,7 @@ class Parameter implements NodeInterface
 
     /**
      * Sets the name.
-     * If the name ends with !, the parameter will be considered not nullable (regarding magicparameter settings)
+     * If the name ends with !, the parameter will be considered not nullable (regarding magicparameter settings).
      *
      * @Important
      *
@@ -68,8 +67,8 @@ class Parameter implements NodeInterface
      */
     public function setName($name)
     {
-        if (strrpos($name, '!') === strlen($name)-1) {
-            $this->name = substr($name, 0, strlen($name)-1);
+        if (strrpos($name, '!') === strlen($name) - 1) {
+            $this->name = substr($name, 0, strlen($name) - 1);
             $this->discardedOnNull = false;
         } else {
             $this->name = $name;
@@ -164,22 +163,22 @@ class Parameter implements NodeInterface
     {
         if (isset($parameters[$this->name])) {
             if ($dbConnection) {
-                if(is_array($parameters[$this->name])){
-                    return '('.implode(',',array_map(function($item) use ($dbConnection) {
+                if (is_array($parameters[$this->name])) {
+                    return '('.implode(',', array_map(function ($item) use ($dbConnection) {
                             return $dbConnection->quote($this->autoPrepend.$item.$this->autoAppend);
                         }, $parameters[$this->name])).')';
-                } else{
+                } else {
                     return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
                 }
             } else {
                 if ($parameters[$this->name] === null) {
-                    return "null";
+                    return 'null';
                 } else {
-                    if(is_array($parameters[$this->name])){
-                        return '('.implode(',',array_map(function($item) {
+                    if (is_array($parameters[$this->name])) {
+                        return '('.implode(',', array_map(function ($item) {
                             return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
                         }, $parameters[$this->name])).')';
-                    } else{
+                    } else {
                         return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
                     }
                 }
@@ -195,22 +194,27 @@ class Parameter implements NodeInterface
      * Walks the tree of nodes, calling the visitor passed in parameter.
      *
      * @param VisitorInterface $visitor
+     *
      * @return NodeInterface|null|string Can return null if nothing is to be done or a node that should replace this node, or NodeTraverser::REMOVE_NODE to remove the node
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
             $node = $result;
         }
+
         return $visitor->leaveNode($node);
     }
 
     /**
      * Returns whether the parameter can be discarded if provided value is null.
+     *
      * @return bool
      */
-    public function isDiscardedOnNull() {
-       return $this->discardedOnNull;
+    public function isDiscardedOnNull()
+    {
+        return $this->discardedOnNull;
     }
 }

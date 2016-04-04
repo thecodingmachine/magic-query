@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Query;
 
 use Doctrine\DBAL\Connection;
@@ -234,14 +233,16 @@ class Select implements StatementInterface, NodeInterface
     /**
      * @return NodeInterface
      */
-    public function getLimit() {
+    public function getLimit()
+    {
         return $this->limit;
     }
 
     /**
      * @param NodeInterface $limit
      */
-    public function setLimit($limit) {
+    public function setLimit($limit)
+    {
         $this->limit = $limit;
     }
 
@@ -313,10 +314,11 @@ class Select implements StatementInterface, NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param array $parameters
+     * @param array      $parameters
      * @param Connection $dbConnection
      * @param int|number $indent
-     * @param int $conditionsMode
+     * @param int        $conditionsMode
+     *
      * @return string
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
@@ -370,7 +372,7 @@ class Select implements StatementInterface, NodeInterface
 
         if (!empty($this->offset) && empty($this->limit)) {
             throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
-        } else if (!empty($this->limit)) {
+        } elseif (!empty($this->limit)) {
             $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
             if ($limit === '' || substr(trim($limit), 0, 1) == ':') {
                 $limit = null;
@@ -388,7 +390,7 @@ class Select implements StatementInterface, NodeInterface
                 throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
             }
 
-            if($limit !== null) {
+            if ($limit !== null) {
                 $sql .= "\nLIMIT ";
                 if ($offset !== null) {
                     $sql .= $offset.', ';
@@ -405,7 +407,8 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
@@ -419,14 +422,16 @@ class Select implements StatementInterface, NodeInterface
             $this->walkChildren($this->having, $visitor);
             $this->walkChildren($this->order, $visitor);
         }
+
         return $visitor->leaveNode($node);
     }
 
-    private function walkChildren(&$children, VisitorInterface $visitor) {
+    private function walkChildren(&$children, VisitorInterface $visitor)
+    {
         if ($children) {
             if (is_array($children)) {
                 foreach ($children as $key => $operand) {
-                    if($operand) {
+                    if ($operand) {
                         $result2 = $operand->walk($visitor);
                         if ($result2 === NodeTraverser::REMOVE_NODE) {
                             unset($children[$key]);

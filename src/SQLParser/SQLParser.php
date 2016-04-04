@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser;
 
 /**
@@ -692,8 +691,8 @@ class SQLParser extends PHPSQLParserUtils
         }
 
         return [
-            ['expr_type' => 'limit_const', 'base_expr' => trim($offset), 'sub_tree' => false ],
-            ['expr_type' => 'limit_const', 'base_expr' => trim($rowcount), 'sub_tree' => false ]
+            ['expr_type' => 'limit_const', 'base_expr' => trim($offset), 'sub_tree' => false],
+            ['expr_type' => 'limit_const', 'base_expr' => trim($rowcount), 'sub_tree' => false],
         ];
     }
 

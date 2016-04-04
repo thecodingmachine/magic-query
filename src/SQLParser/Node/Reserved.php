@@ -30,13 +30,11 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
-use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
@@ -111,17 +109,18 @@ class Reserved implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param array $parameters
+     * @param array      $parameters
      * @param Connection $dbConnection
      * @param int|number $indent
-     * @param int $conditionsMode
+     * @param int        $conditionsMode
+     *
      * @return string
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         $sql = '';
 
-        if($this->baseExpression) {
+        if ($this->baseExpression) {
             $sql .= ' '.$this->baseExpression.' ';
         }
 
@@ -137,12 +136,14 @@ class Reserved implements NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
             $node = $result;
         }
+
         return $visitor->leaveNode($node);
     }
 }

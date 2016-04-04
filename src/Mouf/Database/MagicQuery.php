@@ -34,9 +34,9 @@ class MagicQuery
     private $enableTwig = false;
 
     /**
-     * @param \Doctrine\DBAL\Connection $connection
+     * @param \Doctrine\DBAL\Connection    $connection
      * @param \Doctrine\Common\Cache\Cache $cache
-     * @param SchemaAnalyzer $schemaAnalyzer (optional). If not set, it is initialized from the connection.
+     * @param SchemaAnalyzer               $schemaAnalyzer (optional). If not set, it is initialized from the connection.
      */
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
     {
@@ -54,11 +54,15 @@ class MagicQuery
     /**
      * Whether Twig parsing should be enabled or not.
      * Defaults to false.
+     *
      * @param bool $enableTwig
+     *
      * @return $this
      */
-    public function setEnableTwig($enableTwig = true) {
+    public function setEnableTwig($enableTwig = true)
+    {
         $this->enableTwig = $enableTwig;
+
         return $this;
     }
 
@@ -79,6 +83,7 @@ class MagicQuery
             $sql = $this->getTwigEnvironment()->render($sql, $parameters);
         }
         $select = $this->parse($sql);
+
         return $this->toSql($select, $parameters);
     }
 
@@ -87,13 +92,16 @@ class MagicQuery
      * This tree representation can be used to manipulate the SQL.
      *
      * @param string $sql
+     *
      * @return NodeInterface
+     *
      * @throws MagicQueryMissingConnectionException
      * @throws MagicQueryParserException
      */
-    public function parse($sql) {
+    public function parse($sql)
+    {
         // We choose md4 because it is fast.
-        $cacheKey = "request_".hash("md4", $sql);
+        $cacheKey = 'request_'.hash('md4', $sql);
         $select = $this->cache->fetch($cacheKey);
 
         if ($select === false) {
@@ -111,6 +119,7 @@ class MagicQuery
             // Let's store the tree
             $this->cache->save($cacheKey, $select);
         }
+
         return $select;
     }
 
@@ -118,10 +127,12 @@ class MagicQuery
      * Transforms back a tree of SQL node into a SQL string.
      *
      * @param NodeInterface $sqlNode
-     * @param array $parameters
+     * @param array         $parameters
+     *
      * @return string
      */
-    public function toSql(NodeInterface $sqlNode, array $parameters = array()) {
+    public function toSql(NodeInterface $sqlNode, array $parameters = array())
+    {
         return $sqlNode->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS);
     }
 
@@ -129,9 +140,11 @@ class MagicQuery
      * Scans the SQL statement and replaces the "magicjoin" part with the correct joins.
      *
      * @param NodeInterface $select
+     *
      * @throws MagicQueryMissingConnectionException
      */
-    private function magicJoin(NodeInterface $select) {
+    private function magicJoin(NodeInterface $select)
+    {
         // Let's find if this is a MagicJoin query.
         $magicJoinDetector = new DetectMagicJoinSelectVisitor();
         $nodeTraverser = new NodeTraverser();
@@ -147,11 +160,14 @@ class MagicQuery
     }
 
     /**
-     * For one given MagicJoin select, let's apply MagicJoin
+     * For one given MagicJoin select, let's apply MagicJoin.
+     *
      * @param MagicJoinSelect $magicJoinSelect
+     *
      * @return Select
      */
-    private function magicJoinOnOneQuery(MagicJoinSelect $magicJoinSelect) {
+    private function magicJoinOnOneQuery(MagicJoinSelect $magicJoinSelect)
+    {
         $tableSearchNodeTraverser = new NodeTraverser();
         $detectTableVisitor = new DetectTablesVisitor($magicJoinSelect->getMainTable());
         $tableSearchNodeTraverser->addVisitor($detectTableVisitor);
@@ -183,7 +199,7 @@ class MagicQuery
         $tableNode = new Table();
         $tableNode->setTable($mainTable);
         $tables = [
-            $mainTable => $tableNode
+            $mainTable => $tableNode,
         ];
 
         foreach ($completePath as $foreignKey) {
@@ -202,7 +218,7 @@ class MagicQuery
             $onNode->setRightOperand($rightCol);
 
             $tableNode = new Table();
-            $tableNode->setJoinType("LEFT JOIN");
+            $tableNode->setJoinType('LEFT JOIN');
             $tableNode->setRefClause($onNode);
 
             if (isset($tables[$foreignKey->getLocalTableName()])) {
@@ -215,13 +231,13 @@ class MagicQuery
         }
 
         $select->setFrom($tables);
-
     }
 
     /**
      * @return SchemaAnalyzer
      */
-    private function getSchemaAnalyzer() {
+    private function getSchemaAnalyzer()
+    {
         if ($this->schemaAnalyzer === null) {
             if (!$this->connection) {
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
@@ -229,20 +245,24 @@ class MagicQuery
 
             $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId());
         }
+
         return $this->schemaAnalyzer;
     }
 
-    private function getConnectionUniqueId() {
-        return hash('md4', $this->connection->getHost()."-".$this->connection->getPort()."-".$this->connection->getDatabase()."-".$this->connection->getDriver()->getName());
+    private function getConnectionUniqueId()
+    {
+        return hash('md4', $this->connection->getHost().'-'.$this->connection->getPort().'-'.$this->connection->getDatabase().'-'.$this->connection->getDriver()->getName());
     }
 
     /**
      * @return \Twig_Environment
      */
-    private function getTwigEnvironment() {
+    private function getTwigEnvironment()
+    {
         if ($this->twigEnvironment === null) {
             $this->twigEnvironment = SqlTwigEnvironmentFactory::getTwigEnvironment();
         }
+
         return $this->twigEnvironment;
     }
 }

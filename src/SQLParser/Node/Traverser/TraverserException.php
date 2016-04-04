@@ -1,8 +1,7 @@
 <?php
-namespace SQLParser\Node\Traverser;
 
+namespace SQLParser\Node\Traverser;
 
 class TraverserException extends \Exception
 {
-
 }

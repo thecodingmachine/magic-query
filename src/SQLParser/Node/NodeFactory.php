@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Mouf\Database\MagicQueryException;
@@ -309,7 +308,6 @@ class NodeFactory
 
                     return $operator;
                 } else {
-
                     $res = new Reserved();
                     $res->setBaseExpression($desc['base_expr']);
 
@@ -463,7 +461,7 @@ class NodeFactory
             'OR' => 'SQLParser\Node\OrOp',
             'XOR' => 'SQLParser\Node\XorOp',
             'THEN' => 'SQLParser\Node\Then',
-            'ELSE' => 'SQLParser\Node\ElseOperation'
+            'ELSE' => 'SQLParser\Node\ElseOperation',
     );
 
     /**
@@ -656,7 +654,6 @@ class NodeFactory
 
             return $instance;
         } elseif ($operation === 'WHEN') {
-
             $instance = new WhenConditions();
 
             if (!$isSelectedOperatorFirst) {
@@ -675,10 +672,12 @@ class NodeFactory
 
             $instance = new CaseOperation();
             $instance->setOperation($innerOperation);
+
             return $instance;
         } elseif ($operation === 'END') {
             // Simply bypass the END operation. We already have a CASE matching node:
             $caseOperation = array_shift($operands);
+
             return $caseOperation;
         } else {
             $instance = new Operation();

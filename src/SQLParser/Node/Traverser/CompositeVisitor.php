@@ -1,6 +1,6 @@
 <?php
-namespace SQLParser\Node\Traverser;
 
+namespace SQLParser\Node\Traverser;
 
 use SQLParser\Node\NodeInterface;
 
@@ -24,11 +24,11 @@ class CompositeVisitor implements VisitorInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function addVisitor(VisitorInterface $visitor) {
+    public function addVisitor(VisitorInterface $visitor)
+    {
         $this->visitors[] = $visitor;
         array_unshift($this->reverseVisitors, $visitor);
     }
-
 
     /**
      * Called on every node when the traverser enters the node.
@@ -37,6 +37,7 @@ class CompositeVisitor implements VisitorInterface
      * which instructs the traverser to skip all children of the current node.
      *
      * @param NodeInterface $node
+     *
      * @return NodeInterface|string|null
      */
     public function enterNode(NodeInterface $node)
@@ -51,6 +52,7 @@ class CompositeVisitor implements VisitorInterface
                 throw new TraverserException('Unexpected return value for enterNode. Return value should be a NodeInterface instance or the NodeTraverser::DONT_TRAVERSE_CHILDREN constant or null.');
             }
         }
+
         return $node;
     }
 
@@ -74,6 +76,7 @@ class CompositeVisitor implements VisitorInterface
                 throw new TraverserException('Unexpected return value for leaveNode. Return value should be a NodeInterface instance or the NodeTraverser::REMOVE_NODE constant or null.');
             }
         }
+
         return $node;
     }
 }

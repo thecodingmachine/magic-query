@@ -1,6 +1,6 @@
 <?php
-namespace SQLParser\Node\Traverser;
 
+namespace SQLParser\Node\Traverser;
 
 use SQLParser\Node\NodeInterface;
 use SQLParser\Node\Table;
@@ -11,7 +11,6 @@ use SQLParser\Query\Select;
  */
 class DetectMagicJoinSelectVisitor implements VisitorInterface
 {
-
     private $lastVisitedSelect;
 
     private $magicJoinSelects = array();
@@ -20,13 +19,15 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      * Removes all detected magic join selects.
      * Useful for reusing the visitor instance on another node traversal.
      */
-    public function resetVisitor() {
+    public function resetVisitor()
+    {
         $this->magicJoinSelects = array();
         $this->lastVisitedSelect = null;
     }
 
     /**
      * Return the list of all Select object that have a MagicJoin table.
+     *
      * @return MagicJoinSelect[]
      */
     public function getMagicJoinSelects()
@@ -42,6 +43,7 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      * which instructs the traverser to skip all children of the current node.
      *
      * @param NodeInterface $node
+     *
      * @return NodeInterface|string|null
      */
     public function enterNode(NodeInterface $node)
@@ -55,7 +57,7 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -68,6 +70,6 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node)
     {
-        return null;
+        return;
     }
 }

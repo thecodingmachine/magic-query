@@ -117,12 +117,19 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
             }
         }
         if ($conditionsMode == self::CONDITION_IGNORE || !$this->condition || $this->condition->isOk($parameters)) {
-            $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
-            $sql .= ' '.$this->getOperatorSymbol().' ';
-            $sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+            $sql = $this->getSql($parameters, $dbConnection, $indent, $conditionsMode);
         } else {
             $sql = null;
         }
+
+        return $sql;
+    }
+
+    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql .= ' '.$this->getOperatorSymbol().' ';
+        $sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
 
         return $sql;
     }
@@ -132,7 +139,8 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
@@ -153,9 +161,9 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
                 $this->rightOperand = $result2;
             }
         }
+
         return $visitor->leaveNode($node);
     }
-
 
     /**
      * Returns the symbol for this operator.
