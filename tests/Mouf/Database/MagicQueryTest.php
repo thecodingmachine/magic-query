@@ -15,38 +15,38 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
         $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
 
         try {
             $exceptionOccurred = false;
-            $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit";
+            $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit';
             self::simplifySql($magicQuery->build($sql, ['name' => 'foo']));
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // We have no limit provided in the parameters so we test that the script return an exception for this case
             $exceptionOccurred = true;
         }
         $this->assertEquals(true, $exceptionOccurred);
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0])));
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 5';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 5", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 
-        $sql = "SELECT id FROM users LIMIT 10";
-        $this->assertEquals("SELECT id FROM users LIMIT 10", self::simplifySql($magicQuery->build($sql)));
+        $sql = 'SELECT id FROM users LIMIT 10';
+        $this->assertEquals('SELECT id FROM users LIMIT 10', self::simplifySql($magicQuery->build($sql)));
 
-        $sql = "SELECT id FROM users LIMIT 10 OFFSET 20";
-        $this->assertEquals("SELECT id FROM users LIMIT 20, 10", self::simplifySql($magicQuery->build($sql)));
+        $sql = 'SELECT id FROM users LIMIT 10 OFFSET 20';
+        $this->assertEquals('SELECT id FROM users LIMIT 20, 10', self::simplifySql($magicQuery->build($sql)));
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'offset' => 0, 'limit' => 20])));
 
-        $sql = "SELECT id FROM users WHERE name LIKE :name LIMIT 0, 20";
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 0, 20';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 0, 20", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 
         $sql = "SELECT DATE_FORMAT(CURDATE(), '%d/%m/%Y') AS current_date FROM users WHERE name LIKE :name";
@@ -67,13 +67,13 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT SUM(users.age) FROM users WHERE (name LIKE 'foo') AND (company LIKE 'bar')", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'company' => 'bar'])));
 
         $sql = 'SELECT * FROM users WHERE status in :status';
-        $this->assertEquals("SELECT * FROM users WHERE status IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2,4]])));
+        $this->assertEquals("SELECT * FROM users WHERE status IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2, 4]])));
 
         $sql = 'SELECT * FROM myTable where someField BETWEEN :value1 AND :value2';
         $this->assertEquals("SELECT * FROM myTable WHERE someField BETWEEN '2' AND '4'", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4])));
         $this->assertEquals("SELECT * FROM myTable WHERE someField >= '2'", self::simplifySql($magicQuery->build($sql, ['value1' => 2])));
         $this->assertEquals("SELECT * FROM myTable WHERE someField <= '4'", self::simplifySql($magicQuery->build($sql, ['value2' => 4])));
-        $this->assertEquals("SELECT * FROM myTable", self::simplifySql($magicQuery->build($sql, [])));
+        $this->assertEquals('SELECT * FROM myTable', self::simplifySql($magicQuery->build($sql, [])));
 
         // Triggers an "expression"
         // TODO: find why it fails!
@@ -86,8 +86,13 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT id + '1' FROM users", self::simplifySql($magicQuery->build($sql)));
 
         // Tests parameters with a ! (to force NULL values)
+        // Bonus: the = transforms into a IS
         $sql = 'SELECT * FROM users WHERE status = :status!';
-        $this->assertEquals("SELECT * FROM users WHERE status = null", self::simplifySql($magicQuery->build($sql, ['status' => null])));
+        $this->assertEquals('SELECT * FROM users WHERE status IS null', self::simplifySql($magicQuery->build($sql, ['status' => null])));
+
+        // Bonus 2: the <> transforms into a IS NOT NULL
+        $sql = 'SELECT * FROM users WHERE status <> :status!';
+        $this->assertEquals('SELECT * FROM users WHERE status IS NOT null', self::simplifySql($magicQuery->build($sql, ['status' => null])));
 
         // Test CASE WHERE
         $sql = "SELECT CASE WHEN status = 'on' THEN '1' WHEN status = 'off' THEN '0' ELSE '-1' END AS my_case FROM users";
@@ -96,10 +101,10 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         // Test CASE WHERE like SWITCH CASE
         $sql = "SELECT CASE status WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE '-1' END AS my_case FROM users";
         $this->assertEquals("SELECT CASE status WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE '-1' END AS my_case FROM users", self::simplifySql($magicQuery->build($sql)));
-
     }
 
-    public function testWithCache() {
+    public function testWithCache()
+    {
         global $db_url;
         $config = new \Doctrine\DBAL\Configuration();
         // TODO: put this in conf variable
@@ -114,7 +119,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
-        $select = $cache->fetch("request_".hash("md4", $sql));
+        $select = $cache->fetch('request_'.hash('md4', $sql));
         $this->assertInstanceOf('SQLParser\\Query\\Select', $select);
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
@@ -122,29 +127,31 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Mouf\Database\MagicQueryParserException
      */
-    public function testParseError() {
+    public function testParseError()
+    {
         $magicQuery = new MagicQuery();
 
         $sql = '';
         $magicQuery->build($sql);
     }
 
-    public function testMagicJoin() {
+    public function testMagicJoin()
+    {
         $schema = new Schema();
-        $role = $schema->createTable("role");
-        $role->addColumn("id", "integer", array("unsigned" => true));
-        $role->addColumn("label", "string", array("length" => 32));
+        $role = $schema->createTable('role');
+        $role->addColumn('id', 'integer', array('unsigned' => true));
+        $role->addColumn('label', 'string', array('length' => 32));
 
-        $right = $schema->createTable("right");
-        $right->addColumn("id", "integer", array("unsigned" => true));
-        $right->addColumn("label", "string", array("length" => 32));
-        $role_right = $schema->createTable("role_right");
+        $right = $schema->createTable('right');
+        $right->addColumn('id', 'integer', array('unsigned' => true));
+        $right->addColumn('label', 'string', array('length' => 32));
+        $role_right = $schema->createTable('role_right');
 
-        $role_right->addColumn("role_id", "integer", array("unsigned" => true));
-        $role_right->addColumn("right_id", "integer", array("unsigned" => true));
-        $role_right->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->setPrimaryKey(["role_id", "right_id"]);
+        $role_right->addColumn('role_id', 'integer', array('unsigned' => true));
+        $role_right->addColumn('right_id', 'integer', array('unsigned' => true));
+        $role_right->addForeignKeyConstraint($schema->getTable('role'), array('role_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->addForeignKeyConstraint($schema->getTable('right'), array('right_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->setPrimaryKey(['role_id', 'right_id']);
 
         $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
 
@@ -155,28 +162,29 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
     }
 
-    public function testMagicJoin2() {
+    public function testMagicJoin2()
+    {
         $schema = new Schema();
-        $role = $schema->createTable("role");
-        $role->addColumn("id", "integer", array("unsigned" => true));
-        $role->addColumn("label", "string", array("length" => 32));
+        $role = $schema->createTable('role');
+        $role->addColumn('id', 'integer', array('unsigned' => true));
+        $role->addColumn('label', 'string', array('length' => 32));
 
-        $right = $schema->createTable("right");
-        $right->addColumn("id", "integer", array("unsigned" => true));
-        $right->addColumn("label", "string", array("length" => 32));
-        $role_right = $schema->createTable("role_right");
+        $right = $schema->createTable('right');
+        $right->addColumn('id', 'integer', array('unsigned' => true));
+        $right->addColumn('label', 'string', array('length' => 32));
+        $role_right = $schema->createTable('role_right');
 
-        $role_right->addColumn("role_id", "integer", array("unsigned" => true));
-        $role_right->addColumn("right_id", "integer", array("unsigned" => true));
-        $role_right->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->setPrimaryKey(["role_id", "right_id"]);
+        $role_right->addColumn('role_id', 'integer', array('unsigned' => true));
+        $role_right->addColumn('right_id', 'integer', array('unsigned' => true));
+        $role_right->addForeignKeyConstraint($schema->getTable('role'), array('role_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->addForeignKeyConstraint($schema->getTable('right'), array('right_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->setPrimaryKey(['role_id', 'right_id']);
 
-        $user = $schema->createTable("user");
-        $user->addColumn("id", "integer", array("unsigned" => true));
-        $user->addColumn("login", "string", array("length" => 32));
-        $user->addColumn("role_id", "integer", array("unsigned" => true));
-        $user->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $user = $schema->createTable('user');
+        $user->addColumn('id', 'integer', array('unsigned' => true));
+        $user->addColumn('login', 'string', array('length' => 32));
+        $user->addColumn('role_id', 'integer', array('unsigned' => true));
+        $user->addForeignKeyConstraint($schema->getTable('role'), array('role_id'), array('id'), array('onUpdate' => 'CASCADE'));
 
         $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
 
@@ -187,29 +195,30 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
     }
 
-    public function testMagicJoin3() {
+    public function testMagicJoin3()
+    {
         $schema = new Schema();
-        $role = $schema->createTable("role");
-        $role->addColumn("id", "integer", array("unsigned" => true));
-        $role->addColumn("label", "string", array("length" => 32));
+        $role = $schema->createTable('role');
+        $role->addColumn('id', 'integer', array('unsigned' => true));
+        $role->addColumn('label', 'string', array('length' => 32));
 
-        $right = $schema->createTable("right");
-        $right->addColumn("id", "integer", array("unsigned" => true));
-        $right->addColumn("label", "string", array("length" => 32));
-        $role_right = $schema->createTable("role_right");
+        $right = $schema->createTable('right');
+        $right->addColumn('id', 'integer', array('unsigned' => true));
+        $right->addColumn('label', 'string', array('length' => 32));
+        $role_right = $schema->createTable('role_right');
 
-        $role_right->addColumn("role_id", "integer", array("unsigned" => true));
-        $role_right->addColumn("right_id", "integer", array("unsigned" => true));
-        $role_right->addForeignKeyConstraint($schema->getTable('role'), array("role_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->addForeignKeyConstraint($schema->getTable('right'), array("right_id"), array("id"), array("onUpdate" => "CASCADE"));
-        $role_right->setPrimaryKey(["role_id", "right_id"]);
+        $role_right->addColumn('role_id', 'integer', array('unsigned' => true));
+        $role_right->addColumn('right_id', 'integer', array('unsigned' => true));
+        $role_right->addForeignKeyConstraint($schema->getTable('role'), array('role_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->addForeignKeyConstraint($schema->getTable('right'), array('right_id'), array('id'), array('onUpdate' => 'CASCADE'));
+        $role_right->setPrimaryKey(['role_id', 'right_id']);
 
-        $status = $schema->createTable("status");
-        $status->addColumn("id", "integer", array("unsigned" => true));
-        $status->addColumn("name", "string", array("length" => 32));
+        $status = $schema->createTable('status');
+        $status->addColumn('id', 'integer', array('unsigned' => true));
+        $status->addColumn('name', 'string', array('length' => 32));
 
-        $role->addColumn("status_id", "integer", array("unsigned" => true));
-        $role->addForeignKeyConstraint($schema->getTable('status'), array("status_id"), array("id"), array("onUpdate" => "CASCADE"));
+        $role->addColumn('status_id', 'integer', array('unsigned' => true));
+        $role->addForeignKeyConstraint($schema->getTable('status'), array('status_id'), array('id'), array('onUpdate' => 'CASCADE'));
 
         $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
 
@@ -223,26 +232,26 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Mouf\Database\MagicQueryMissingConnectionException
      */
-    public function testMisconfiguration() {
+    public function testMisconfiguration()
+    {
         $magicQuery = new MagicQuery();
 
         $sql = "SELECT role.* FROM magicjoin(role) WHERE right.label = 'my_right'";
         $magicQuery->build($sql);
-
     }
 
     /**
      *
      */
-    public function testTwig() {
+    public function testTwig()
+    {
         $magicQuery = new MagicQuery();
         $magicQuery->setEnableTwig(true);
 
         $sql = "SELECT * FROM toto {% if id %}WHERE status = 'on'{% endif %}";
-        $this->assertEquals("SELECT * FROM toto WHERE status = 'on'", $this->simplifySql($magicQuery->build($sql, ["id"=>12])));
-        $this->assertEquals("SELECT * FROM toto", $this->simplifySql($magicQuery->build($sql, ['id'=>null])));
+        $this->assertEquals("SELECT * FROM toto WHERE status = 'on'", $this->simplifySql($magicQuery->build($sql, ['id' => 12])));
+        $this->assertEquals('SELECT * FROM toto', $this->simplifySql($magicQuery->build($sql, ['id' => null])));
     }
-
 
     /**
      * Removes all artifacts.

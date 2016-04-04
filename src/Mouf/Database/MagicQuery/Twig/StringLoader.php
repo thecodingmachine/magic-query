@@ -1,6 +1,6 @@
 <?php
-namespace Mouf\Database\MagicQuery\Twig;
 
+namespace Mouf\Database\MagicQuery\Twig;
 
 /**
  * This loader completely bypasses the loader mechanism, by directly passing the key as a template.

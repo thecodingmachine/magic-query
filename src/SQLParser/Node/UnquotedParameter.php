@@ -30,13 +30,9 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
-use Mouf\MoufInstanceDescriptor;
-use Mouf\MoufManager;
-use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents a parameter (as in parameterized query).
@@ -46,18 +42,20 @@ use SQLParser\Node\Traverser\VisitorInterface;
 class UnquotedParameter extends Parameter
 {
     /**
-     * Renders the object as a SQL string without quote if its a numeric
+     * Renders the object as a SQL string without quote if its a numeric.
      *
-     * @param array $parameters
+     * @param array      $parameters
      * @param Connection $dbConnection
      * @param int|number $indent
-     * @param int $conditionsMode
+     * @param int        $conditionsMode
+     *
      * @return string
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode);
-        $name = str_replace("'", "", $name);
+        $name = str_replace("'", '', $name);
+
         return $name;
     }
 }

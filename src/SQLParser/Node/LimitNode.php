@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
@@ -82,22 +81,24 @@ class LimitNode implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param array $parameters
+     * @param array      $parameters
      * @param Connection $dbConnection
      * @param int|number $indent
-     * @param int $conditionsMode
+     * @param int        $conditionsMode
+     *
      * @return string
+     *
      * @throws \Exception
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-        if($this->value === null) {
+        if ($this->value === null) {
             throw new \Exception('A limit parameter must be an integer');
         }
 
-        if(is_numeric($this->value)) {
-           return (int) $this->value;
-        } else if ($dbConnection != null) {
+        if (is_numeric($this->value)) {
+            return (int) $this->value;
+        } elseif ($dbConnection != null) {
             return $dbConnection->quote($this->value);
         } else {
             return addslashes($this->value);
@@ -108,14 +109,17 @@ class LimitNode implements NodeInterface
      * Walks the tree of nodes, calling the visitor passed in parameter.
      *
      * @param VisitorInterface $visitor
+     *
      * @return NodeInterface|null|string Can return null if nothing is to be done or a node that should replace this node, or NodeTraverser::REMOVE_NODE to remove the node
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
             $node = $result;
         }
+
         return $visitor->leaveNode($node);
     }
 }

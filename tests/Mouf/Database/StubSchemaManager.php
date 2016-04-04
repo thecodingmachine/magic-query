@@ -1,4 +1,5 @@
 <?php
+
 namespace Mouf\Database;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;

@@ -1,4 +1,5 @@
 <?php
+
 namespace SQLParser\Node\Traverser;
 
 use SQLParser\Query\StatementFactory;
@@ -26,7 +27,7 @@ class NodeTraverserTest extends \PHPUnit_Framework_TestCase
         $select = StatementFactory::toObject($parsed);
         $nodeTraverser->walk($select);
         $this->assertCount(1, $magicJoinDetector->getMagicJoinSelects());
-        $this->assertEquals("mytable", $magicJoinDetector->getMagicJoinSelects()[0]->getMainTable());
+        $this->assertEquals('mytable', $magicJoinDetector->getMagicJoinSelects()[0]->getMainTable());
         $magicJoinDetector->resetVisitor();
 
         $sql = 'SELECT SUM(users.age) FROM users WHERE name LIKE :name AND company LIKE :company';
@@ -50,6 +51,5 @@ class NodeTraverserTest extends \PHPUnit_Framework_TestCase
         $nodeTraverser->walk($select);
         $this->assertCount(0, $magicJoinDetector->getMagicJoinSelects());
         $magicJoinDetector->resetVisitor();
-
     }
 }

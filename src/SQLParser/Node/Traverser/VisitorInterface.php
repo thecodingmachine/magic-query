@@ -1,4 +1,5 @@
 <?php
+
 namespace SQLParser\Node\Traverser;
 
 use SQLParser\Node\NodeInterface;
@@ -16,6 +17,7 @@ interface VisitorInterface
      * which instructs the traverser to skip all children of the current node.
      *
      * @param NodeInterface $node
+     *
      * @return NodeInterface|string|null
      */
     public function enterNode(NodeInterface $node);

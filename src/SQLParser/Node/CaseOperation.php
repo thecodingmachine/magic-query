@@ -2,7 +2,6 @@
 
 namespace SQLParser\Node;
 
-use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
@@ -62,7 +61,6 @@ class CaseOperation implements NodeInterface
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-
         $sql = 'CASE '.NodeFactory::toSql($this->operation, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode).' END';
 
         return $sql;
@@ -73,7 +71,8 @@ class CaseOperation implements NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
@@ -87,6 +86,7 @@ class CaseOperation implements NodeInterface
                 $this->operation = $result2;
             }
         }
+
         return $visitor->leaveNode($node);
     }
 }

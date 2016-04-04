@@ -2,7 +2,6 @@
 
 namespace SQLParser\Node;
 
-use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
@@ -86,9 +85,11 @@ class Between implements NodeInterface
      * Sets the condition.
      *
      * @Important IfSet
+     *
      * @param ConditionInterface $minValueCondition
      */
-    public function setMinValueCondition(ConditionInterface $minValueCondition = null) {
+    public function setMinValueCondition(ConditionInterface $minValueCondition = null)
+    {
         $this->minValueCondition = $minValueCondition;
     }
 
@@ -101,12 +102,13 @@ class Between implements NodeInterface
      * Sets the condition.
      *
      * @Important IfSet
+     *
      * @param ConditionInterface $maxValueCondition
      */
-    public function setMaxValueCondition(ConditionInterface $maxValueCondition = null) {
+    public function setMaxValueCondition(ConditionInterface $maxValueCondition = null)
+    {
         $this->maxValueCondition = $maxValueCondition;
     }
-
 
     /**
      * Returns a Mouf instance descriptor describing this object.
@@ -204,7 +206,8 @@ class Between implements NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
@@ -232,6 +235,7 @@ class Between implements NodeInterface
                 $this->maxValueOperand = $result2;
             }
         }
+
         return $visitor->leaveNode($node);
     }
 }

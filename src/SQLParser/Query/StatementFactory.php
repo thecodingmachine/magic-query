@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Query;
 
 use SQLParser\Node\NodeFactory;
@@ -106,6 +105,7 @@ class StatementFactory
                 //$offset = NodeFactory::simplify($offset);
                 $select->setOffset($offset);
             }
+
             return $select;
         } else {
             throw new \BadMethodCallException('Unknown query');
@@ -114,20 +114,25 @@ class StatementFactory
 
     /**
      * @param array $descLimit
+     *
      * @return array
+     *
      * @throws \Exception
      */
-    private static function checkLimitDesc(array $descLimit) {
-        if(count($descLimit) > 2) {
+    private static function checkLimitDesc(array $descLimit)
+    {
+        if (count($descLimit) > 2) {
             throw new \Exception('The limit returned by the SQLParser contains more than 2 items, something might went wrong.');
         }
+
         return ['offset' => $descLimit[0], 'limit' => $descLimit[1]];
     }
 
     /**
      * @param array $items An array of objects represented as SQLParser arrays.
      */
-    private static function mapArrayToNodeObjectList(array $items) {
+    private static function mapArrayToNodeObjectList(array $items)
+    {
         $list = [];
 
         $nextAndPartOfBetween = false;
@@ -145,6 +150,7 @@ class StatementFactory
             }
             $list[] = $obj;
         }
+
         return $list;
     }
 }

@@ -1,6 +1,6 @@
 <?php
-namespace SQLParser\Node\Traverser;
 
+namespace SQLParser\Node\Traverser;
 
 use SQLParser\Node\ColRef;
 use SQLParser\Node\NodeInterface;
@@ -8,11 +8,10 @@ use SQLParser\Query\Select;
 
 /**
  * This visitor is in charge of detecting references to tables in columns.
- * Also, it will modify all references to tables that have no table specified by adding the $defaultTable
+ * Also, it will modify all references to tables that have no table specified by adding the $defaultTable.
  */
 class DetectTablesVisitor implements VisitorInterface
 {
-
     private $isSelectVisited = false;
 
     private $tables = array();
@@ -23,7 +22,8 @@ class DetectTablesVisitor implements VisitorInterface
      * Removes all detected magic join selects.
      * Useful for reusing the visitor instance on another node traversal.
      */
-    public function resetVisitor() {
+    public function resetVisitor()
+    {
         $this->tables = array();
         $this->isSelectVisited = false;
     }
@@ -36,10 +36,9 @@ class DetectTablesVisitor implements VisitorInterface
         $this->defaultTable = $defaultTable;
     }
 
-
-
     /**
      * Return the list of tables referenced in the Select.
+     *
      * @return string[] The key and the value are the table name.
      */
     public function getTables()
@@ -54,6 +53,7 @@ class DetectTablesVisitor implements VisitorInterface
      * which instructs the traverser to skip all children of the current node.
      *
      * @param NodeInterface $node
+     *
      * @return NodeInterface|string|null
      */
     public function enterNode(NodeInterface $node)
@@ -71,7 +71,7 @@ class DetectTablesVisitor implements VisitorInterface
             $this->tables[$node->getTable()] = $node->getTable();
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -84,6 +84,6 @@ class DetectTablesVisitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node)
     {
-        return null;
+        return;
     }
 }

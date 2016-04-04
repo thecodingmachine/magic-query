@@ -30,7 +30,6 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
-
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
@@ -104,14 +103,17 @@ class ConstNode implements NodeInterface
      * Walks the tree of nodes, calling the visitor passed in parameter.
      *
      * @param VisitorInterface $visitor
+     *
      * @return NodeInterface|null|string Can return null if nothing is to be done or a node that should replace this node, or NodeTraverser::REMOVE_NODE to remove the node
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
             $node = $result;
         }
+
         return $visitor->leaveNode($node);
     }
 }

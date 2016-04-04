@@ -1,9 +1,11 @@
 <?php
+
 namespace SQLParser\Node\Traverser;
+
 use SQLParser\Query\Select;
 
 /**
- * Wraps a select that contains a MagicJoin
+ * Wraps a select that contains a MagicJoin.
  */
 class MagicJoinSelect
 {
@@ -19,6 +21,7 @@ class MagicJoinSelect
 
     /**
      * MagicJoinSelect constructor.
+     *
      * @param Select $select
      * @param string $mainTable
      */

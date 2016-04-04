@@ -81,7 +81,8 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function walk(VisitorInterface $visitor) {
+    public function walk(VisitorInterface $visitor)
+    {
         $node = $this;
         $result = $visitor->enterNode($node);
         if ($result instanceof NodeInterface) {
@@ -97,6 +98,7 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
                 }
             }
         }
+
         return $visitor->leaveNode($node);
     }
 

@@ -1,8 +1,7 @@
 <?php
-namespace Mouf\Database;
 
+namespace Mouf\Database;
 
 class MagicQueryMissingConnectionException extends MagicQueryException
 {
-
 }

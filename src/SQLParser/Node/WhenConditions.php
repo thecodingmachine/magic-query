@@ -2,12 +2,7 @@
 
 namespace SQLParser\Node;
 
-use Mouf\Utils\Common\ConditionInterface\ConditionTrait;
 use Doctrine\DBAL\Connection;
-use Mouf\MoufManager;
-use Mouf\MoufInstanceDescriptor;
-use SQLParser\Node\Traverser\NodeTraverser;
-use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
  * This class represents a set of ... WHEN ... THEN ... construct (inside a CASE).
@@ -16,7 +11,6 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class WhenConditions extends AbstractManyInstancesOperator
 {
-
     private $value;
 
     public function getValue()
