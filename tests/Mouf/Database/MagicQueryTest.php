@@ -101,6 +101,19 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         // Test CASE WHERE like SWITCH CASE
         $sql = "SELECT CASE status WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE '-1' END AS my_case FROM users";
         $this->assertEquals("SELECT CASE status WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE '-1' END AS my_case FROM users", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT * FROM users WHERE status IN :statuses!';
+        $this->assertEquals('SELECT * FROM users WHERE FALSE', self::simplifySql($magicQuery->build($sql, ['statuses' => []])));
+    }
+
+    /**
+     * @expectedException \Mouf\Database\MagicQueryException
+     */
+    public function testInNullException() {
+        $magicQuery = new MagicQuery();
+
+        $sql = 'SELECT * FROM users WHERE status IN :statuses!';
+        $magicQuery->build($sql, ['statuses' => NULL]);
     }
 
     public function testWithCache()

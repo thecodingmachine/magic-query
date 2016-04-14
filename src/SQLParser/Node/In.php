@@ -1,6 +1,8 @@
 <?php
 
 namespace SQLParser\Node;
+use Doctrine\DBAL\Connection;
+use Mouf\Database\MagicQueryException;
 
 /**
  * This class represents an In operation in an SQL expression.
@@ -17,5 +19,20 @@ class In extends AbstractTwoOperandsOperator
     protected function getOperatorSymbol()
     {
         return 'IN';
+    }
+
+    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    {
+        $rightOperand = $this->getRightOperand();
+        if ($rightOperand instanceof Parameter) {
+            if (!isset($parameters[$rightOperand->getName()])) {
+                throw new MagicQueryException("Missing parameter '" . $rightOperand->getName() . "' for 'IN' operand.");
+            }
+            if ($parameters[$rightOperand->getName()] === []) {
+                return "FALSE";
+            }
+        }
+
+        return parent::getSql($parameters, $dbConnection, $indent, $conditionsMode);
     }
 }
