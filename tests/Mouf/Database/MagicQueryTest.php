@@ -116,6 +116,16 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $magicQuery->build($sql, ['statuses' => NULL]);
     }
 
+    /**
+     * @expectedException \Mouf\Database\MagicQueryException
+     */
+    public function testInvalidSql() {
+        $magicQuery = new MagicQuery();
+
+        $sql = 'SELECT * FROM users WHERE date_end => :startDate';
+        $this->assertEquals('SELECT * FROM users WHERE date_end => \'2014-06-06\'', self::simplifySql($magicQuery->build($sql, ['startDate' => '2014-06-06'])));
+    }
+
     public function testWithCache()
     {
         global $db_url;

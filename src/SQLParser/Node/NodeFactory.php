@@ -620,15 +620,16 @@ class NodeFactory
         */
 
         if (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractTwoOperandsOperator')) {
-            $leftOperand = array_shift($operands);
-            while (!empty($operands)) {
-                $rightOperand = array_shift($operands);
-
-                $instance = new self::$OPERATOR_TO_CLASS[$operation]();
-                $instance->setLeftOperand($leftOperand);
-                $instance->setRightOperand($rightOperand);
-                $leftOperand = $instance;
+            if (count($operands) != 2) {
+                throw new MagicQueryException('An error occured while parsing SQL statement. Invalid character found next to "'.$operation.'"');
             }
+
+            $leftOperand = array_shift($operands);
+            $rightOperand = array_shift($operands);
+
+            $instance = new self::$OPERATOR_TO_CLASS[$operation]();
+            $instance->setLeftOperand($leftOperand);
+            $instance->setRightOperand($rightOperand);
 
             return $instance;
         } elseif (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractManyInstancesOperator')) {
