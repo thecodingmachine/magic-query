@@ -158,7 +158,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $magicQuery->build($sql);
     }
 
-    public function testMagicJoin()
+    private function getSchema()
     {
         $schema = new Schema();
         $role = $schema->createTable('role');
@@ -175,6 +175,12 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $role_right->addForeignKeyConstraint($schema->getTable('role'), array('role_id'), array('id'), array('onUpdate' => 'CASCADE'));
         $role_right->addForeignKeyConstraint($schema->getTable('right'), array('right_id'), array('id'), array('onUpdate' => 'CASCADE'));
         $role_right->setPrimaryKey(['role_id', 'right_id']);
+        return $schema;
+    }
+
+    public function testMagicJoin()
+    {
+        $schema = $this->getSchema();
 
         $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
 
@@ -182,6 +188,19 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = "SELECT role.* FROM magicjoin(role) WHERE right.label = 'my_right'";
         $expectedSql = "SELECT role.* FROM role LEFT JOIN role_right ON (role_right.role_id = role.id) LEFT JOIN right ON (role_right.right_id = right.id) WHERE right.label = 'my_right'";
+        $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
+    }
+
+    public function testMagicJoinNodeWalker()
+    {
+        $schema = $this->getSchema();
+
+        $schemaAnalyzer = new SchemaAnalyzer(new StubSchemaManager($schema));
+
+        $magicQuery = new MagicQuery(null, null, $schemaAnalyzer);
+
+        $sql = "SELECT role.* FROM magicjoin(role) WHERE role.label = 'my_role' AND (right.label LIKE '%test%' OR right.label LIKE '%testBis%')";
+        $expectedSql = "SELECT role.* FROM role LEFT JOIN role_right ON (role_right.role_id = role.id) LEFT JOIN right ON (role_right.right_id = right.id) WHERE (role.label = 'my_role') AND (((right.label LIKE '%test%') OR (right.label LIKE '%testBis%')))";
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
     }
 

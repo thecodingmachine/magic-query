@@ -33,6 +33,7 @@
 namespace SQLParser\Node;
 
 use Mouf\Database\MagicQueryException;
+use Mouf\Database\MagicQueryParserException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
