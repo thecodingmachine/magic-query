@@ -33,6 +33,7 @@
 namespace SQLParser\Node;
 
 use Mouf\Database\MagicQueryException;
+use Mouf\Database\MagicQueryParserException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
@@ -627,6 +628,12 @@ class NodeFactory
             $leftOperand = array_shift($operands);
             $rightOperand = array_shift($operands);
 
+            $instance = new self::$OPERATOR_TO_CLASS[$operation]();
+            $instance->setLeftOperand($leftOperand);
+            $instance->setRightOperand($rightOperand);
+
+            $leftOperand = array_shift($operands);
+            $rightOperand = array_shift($operands);
             $instance = new self::$OPERATOR_TO_CLASS[$operation]();
             $instance->setLeftOperand($leftOperand);
             $instance->setRightOperand($rightOperand);
