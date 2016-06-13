@@ -208,12 +208,21 @@ class Expression implements NodeInterface
             $node = $result;
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            foreach ($this->subTree as $key => $operand) {
-                $result2 = $operand->walk($visitor);
+            if (is_array($this->subTree)) {
+                foreach ($this->subTree as $key => $operand) {
+                    $result2 = $operand->walk($visitor);
+                    if ($result2 === NodeTraverser::REMOVE_NODE) {
+                        unset($this->subTree[$key]);
+                    } elseif ($result2 instanceof NodeInterface) {
+                        $this->subTree[$key] = $result2;
+                    }
+                }
+            } else {
+                $result2 = $this->subTree->walk($visitor);
                 if ($result2 === NodeTraverser::REMOVE_NODE) {
-                    unset($this->subTree[$key]);
+                    $this->subTree = [];
                 } elseif ($result2 instanceof NodeInterface) {
-                    $this->subTree[$key] = $result2;
+                    $this->subTree = $result2;
                 }
             }
         }
