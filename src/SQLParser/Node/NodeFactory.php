@@ -33,6 +33,7 @@
 namespace SQLParser\Node;
 
 use Mouf\Database\MagicQueryException;
+use Mouf\Database\MagicQueryParserException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
@@ -620,15 +621,15 @@ class NodeFactory
         */
 
         if (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractTwoOperandsOperator')) {
-            $leftOperand = array_shift($operands);
-            while (!empty($operands)) {
-                $rightOperand = array_shift($operands);
-
-                $instance = new self::$OPERATOR_TO_CLASS[$operation]();
-                $instance->setLeftOperand($leftOperand);
-                $instance->setRightOperand($rightOperand);
-                $leftOperand = $instance;
+            if (count($operands) !== 2) {
+                throw new MagicQueryParserException("Expected exactly 2 operands on ".self::$OPERATOR_TO_CLASS[$operation].". Found ".count($operands));
             }
+
+            $leftOperand = array_shift($operands);
+            $rightOperand = array_shift($operands);
+            $instance = new self::$OPERATOR_TO_CLASS[$operation]();
+            $instance->setLeftOperand($leftOperand);
+            $instance->setRightOperand($rightOperand);
 
             return $instance;
         } elseif (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractManyInstancesOperator')) {
