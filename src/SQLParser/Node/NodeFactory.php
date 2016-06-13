@@ -632,12 +632,6 @@ class NodeFactory
             $instance->setLeftOperand($leftOperand);
             $instance->setRightOperand($rightOperand);
 
-            $leftOperand = array_shift($operands);
-            $rightOperand = array_shift($operands);
-            $instance = new self::$OPERATOR_TO_CLASS[$operation]();
-            $instance->setLeftOperand($leftOperand);
-            $instance->setRightOperand($rightOperand);
-
             return $instance;
         } elseif (isset(self::$OPERATOR_TO_CLASS[$operation]) && is_subclass_of(self::$OPERATOR_TO_CLASS[$operation], 'SQLParser\Node\AbstractManyInstancesOperator')) {
             $instance = new self::$OPERATOR_TO_CLASS[$operation]();
