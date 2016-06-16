@@ -83,7 +83,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         // Triggers a const node
         $sql = 'SELECT id+1 FROM users';
-        $this->assertEquals("SELECT id + '1' FROM users", self::simplifySql($magicQuery->build($sql)));
+        $this->assertEquals("SELECT id + 1 FROM users", self::simplifySql($magicQuery->build($sql)));
 
         // Tests parameters with a ! (to force NULL values)
         // Bonus: the = transforms into a IS
@@ -104,6 +104,20 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE status IN :statuses!';
         $this->assertEquals('SELECT * FROM users WHERE FALSE', self::simplifySql($magicQuery->build($sql, ['statuses' => []])));
+
+        // Test strings with "
+        $sql = 'SELECT * FROM users WHERE status = \'"\'';
+        $this->assertEquals('SELECT * FROM users WHERE status = \'\\"\'', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT 1+2 as toto FROM users';
+        $this->assertEquals('SELECT 1 + 2 AS toto FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT -1 as toto FROM users';
+        $this->assertEquals('SELECT -1 AS toto FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT \'hello\' as toto FROM users';
+        $this->assertEquals('SELECT \'hello\' AS toto FROM users', self::simplifySql($magicQuery->build($sql)));
+
     }
 
     /**

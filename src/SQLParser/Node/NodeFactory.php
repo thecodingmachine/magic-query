@@ -85,17 +85,35 @@ class NodeFactory
                 $expr = $desc['base_expr'];
                 if (strpos($expr, "'") === 0) {
                     $expr = substr($expr, 1);
+                } else {
+                    $const->setIsString(false);
                 }
                 if (strrpos($expr, "'") === strlen($expr) - 1) {
-                    $expr = substr($expr, 0, strlen($expr) - 1);
+                    $expr = substr($expr, 0, -1);
                 }
                 $expr = stripslashes($expr);
 
                 $const->setValue($expr);
+
+                // If the constant has an alias, it is declared in the columns section.
+                // If this is the case, let's wrap it in an "expression"
+                if (isset($desc['alias'])) {
+                    $expression = new Expression();
+                    $expression->setBaseExpression($desc['base_expr']);
+                    $expression->setSubTree($const);
+                    $expression->setAlias($desc['alias']['name']);
+                    $expression->setBrackets(false);
+
+                    $const = $expression;
+
+                    unset($desc['alias']);
+                }
+
                 // Debug:
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 unset($desc['sub_tree']);
+
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                 }
