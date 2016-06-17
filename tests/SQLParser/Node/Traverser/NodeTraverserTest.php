@@ -2,8 +2,8 @@
 
 namespace SQLParser\Node\Traverser;
 
+use PHPSQLParser\PHPSQLParser;
 use SQLParser\Query\StatementFactory;
-use SQLParser\SQLParser;
 
 class NodeTraverserTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +13,7 @@ class NodeTraverserTest extends \PHPUnit_Framework_TestCase
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($magicJoinDetector);
 
-        $parser = new SQLParser();
+        $parser = new PHPSQLParser();
 
         $sql = 'SELECT * FROM users';
         $parsed = $parser->parse($sql);
