@@ -43,6 +43,28 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class ColRef implements NodeInterface
 {
+    private $database;
+
+    /**
+     * Returns the name of the database.
+     *
+     * @return mixed
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+    /**
+     * Sets the name of the database
+     *
+     * @param mixed $database
+     */
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
     private $table;
 
     /**
@@ -149,6 +171,7 @@ class ColRef implements NodeInterface
     public function toInstanceDescriptor(MoufManager $moufManager)
     {
         $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('database')->setValue($this->database);
         $instanceDescriptor->getProperty('table')->setValue($this->table);
         $instanceDescriptor->getProperty('column')->setValue($this->column);
         $instanceDescriptor->getProperty('alias')->setValue($this->alias);
@@ -170,10 +193,13 @@ class ColRef implements NodeInterface
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         $sql = '';
+        if ($this->database) {
+            $sql .= NodeFactory::escapeDBItem($this->database, $dbConnection).'.';
+        }
         if ($this->table) {
             $sql .= NodeFactory::escapeDBItem($this->table, $dbConnection).'.';
         }
-        if ($this->column != '*') {
+        if ($this->column !== '*') {
             $sql .= NodeFactory::escapeDBItem($this->column, $dbConnection);
         } else {
             $sql .= '*';

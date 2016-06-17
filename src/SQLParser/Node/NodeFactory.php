@@ -54,32 +54,6 @@ class NodeFactory
         }
 
         switch ($desc['expr_type']) {
-            case ExpressionType::LIMIT_CONST:
-                if (substr($desc['base_expr'], 0, 1) == ':') {
-                    $instance = new UnquotedParameter();
-                    $instance->setName(substr($desc['base_expr'], 1));
-                } else {
-                    $instance = new LimitNode();
-                    $expr = $desc['base_expr'];
-                    if (strpos($expr, "'") === 0) {
-                        $expr = substr($expr, 1);
-                    }
-                    if (strrpos($expr, "'") === strlen($expr) - 1) {
-                        $expr = substr($expr, 0, strlen($expr) - 1);
-                    }
-                    $expr = stripslashes($expr);
-
-                    $instance->setValue($expr);
-                }
-                // Debug:
-                unset($desc['base_expr']);
-                unset($desc['expr_type']);
-                unset($desc['sub_tree']);
-                if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
-                }
-
-                return $instance;
             case ExpressionType::CONSTANT:
                 $const = new ConstNode();
                 $expr = $desc['base_expr'];
@@ -113,6 +87,7 @@ class NodeFactory
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 unset($desc['sub_tree']);
+                unset($desc['delim']);
 
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
@@ -137,18 +112,31 @@ class NodeFactory
                 return $operator;
 
             case ExpressionType::COLREF:
-                if (substr($desc['base_expr'], 0, 1) == ':') {
+                if (substr($desc['base_expr'], 0, 1) === ':') {
                     $instance = new Parameter();
                     $instance->setName(substr($desc['base_expr'], 1));
                 } else {
                     $instance = new ColRef();
-                    $lastDot = strrpos($desc['base_expr'], '.');
-                    if ($lastDot === false) {
-                        $instance->setColumn(str_replace('`', '', $desc['base_expr']));
+
+                    if (isset($desc['no_quotes'])) {
+                        $parts = $desc['no_quotes']['parts'];
                     } else {
-                        $instance->setColumn(str_replace('`', '', substr($desc['base_expr'], $lastDot + 1)));
-                        $instance->setTable(str_replace('`', '', substr($desc['base_expr'], 0, $lastDot)));
+                        $parts = explode('.', str_replace('`', '', $desc['base_expr']));
                     }
+
+                    $columnName = array_pop($parts);
+                    $instance->setColumn($columnName);
+
+                    if (!empty($parts)) {
+                        $tableName = array_pop($parts);
+                        $instance->setTable($tableName);
+                    }
+
+                    if (!empty($parts)) {
+                        $baseName = array_pop($parts);
+                        $instance->setDatabase($baseName);
+                    }
+
                     if (!empty($desc['alias'])) {
                         $instance->setAlias($desc['alias']['name']);
                     }
@@ -167,6 +155,8 @@ class NodeFactory
                 }
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
+                unset($desc['no_quotes']);
+                unset($desc['delim']);
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                 }
@@ -174,6 +164,23 @@ class NodeFactory
                 return $instance;
             case ExpressionType::TABLE:
                 $expr = new Table();
+
+                if (isset($desc['no_quotes'])) {
+                    $parts = $desc['no_quotes']['parts'];
+
+                    $tableName = array_pop($parts);
+                    $expr->setTable($tableName);
+
+                    if (!empty($parts)) {
+                        $baseName = array_pop($parts);
+                        $expr->setDatabase($baseName);
+                    }
+                } else {
+                    $expr->setTable($desc['table']);
+                }
+
+
+
                 $expr->setTable(str_replace('`', '', $desc['table']));
                 switch ($desc['join_type']) {
                     case 'CROSS':
@@ -225,6 +232,8 @@ class NodeFactory
                 unset($desc['table']);
                 unset($desc['ref_type']);
                 unset($desc['ref_clause']);
+                unset($desc['hints']);
+                unset($desc['no_quotes']);
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                 }
@@ -279,8 +288,9 @@ class NodeFactory
                 unset($desc['expr_type']);
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
+                unset($desc['delim']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    throw new \InvalidArgumentException('Unexpected parameters in aggregate function: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -305,6 +315,7 @@ class NodeFactory
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
                 unset($desc['direction']);
+                unset($desc['delim']);
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in simple function: '.var_export($desc, true));
                 }
@@ -393,6 +404,7 @@ class NodeFactory
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
                 unset($desc['direction']);
+                unset($desc['delim']);
                 if (!empty($desc)) {
                     throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                 }
@@ -401,6 +413,34 @@ class NodeFactory
             default:
                 throw new \Exception('Unknown expression type');
         }
+    }
+
+
+    /**
+     * Transforms a limit or offset value/parameter into a node.
+     *
+     * @param string $value
+     * @return NodeInterface
+     */
+    public static function toLimitNode($value)
+    {
+        if (substr($value, 0, 1) === ':') {
+            $instance = new UnquotedParameter();
+            $instance->setName(substr($value, 1));
+        } else {
+            $instance = new LimitNode();
+            $expr = $value;
+            if (strpos($expr, "'") === 0) {
+                $expr = substr($expr, 1);
+            }
+            if (strrpos($expr, "'") === strlen($expr) - 1) {
+                $expr = substr($expr, 0, -1);
+            }
+            $expr = stripslashes($expr);
+
+            $instance->setValue($expr);
+        }
+        return $instance;
     }
 
     private static function buildFromSubtree($subTree)

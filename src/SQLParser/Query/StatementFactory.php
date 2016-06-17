@@ -95,15 +95,22 @@ class StatementFactory
             }
 
             if (isset($desc['LIMIT'])) {
-                $descLimit = self::checkLimitDesc($desc['LIMIT']);
+                $descLimit = $desc['LIMIT'];
 
-                $limit = NodeFactory::toObject($descLimit['limit']);
+                //$limit = NodeFactory::toObject($descLimit['limit']);
                 //$limit = NodeFactory::simplify($limit);
-                $select->setLimit($limit);
+                if (isset($descLimit['rowcount'])) {
+                    $select->setLimit(NodeFactory::toLimitNode($descLimit['rowcount']));
+                }
 
-                $offset = NodeFactory::toObject($descLimit['offset']);
+                if (isset($descLimit['offset'])) {
+                    $select->setOffset(NodeFactory::toLimitNode($descLimit['offset']));
+                }
+
+
+                //$offset = NodeFactory::toObject($descLimit['offset']);
                 //$offset = NodeFactory::simplify($offset);
-                $select->setOffset($offset);
+                //$select->setOffset($offset);
             }
 
             return $select;
@@ -119,14 +126,14 @@ class StatementFactory
      *
      * @throws \Exception
      */
-    private static function checkLimitDesc(array $descLimit)
+    /*private static function checkLimitDesc(array $descLimit)
     {
         if (count($descLimit) > 2) {
             throw new \Exception('The limit returned by the SQLParser contains more than 2 items, something might went wrong.');
         }
 
-        return ['offset' => $descLimit[0], 'limit' => $descLimit[1]];
-    }
+        return ['offset' => $descLimit['offset'], 'limit' => $descLimit['rowcount']];
+    }*/
 
     /**
      * @param array $items An array of objects represented as SQLParser arrays.
