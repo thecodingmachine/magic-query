@@ -2,8 +2,8 @@
 
 namespace SQLParser\Node\Traverser;
 
+use PHPSQLParser\PHPSQLParser;
 use SQLParser\Query\StatementFactory;
-use SQLParser\SQLParser;
 
 class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +13,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
-        $parser = new SQLParser();
+        $parser = new PHPSQLParser();
 
         $sql = 'SELECT foo.bar FROM users';
         $parsed = $parser->parse($sql);
@@ -41,7 +41,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
-        $parser = new SQLParser();
+        $parser = new PHPSQLParser();
 
         $sql = 'SELECT foo.bar, foo.baz FROM users WHERE toto.tata = (SELECT mii.id FROM mii WHERE mii.yo=42) GROUP BY yop.goo ORDER BY zap.do';
         $parsed = $parser->parse($sql);
@@ -61,7 +61,7 @@ class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($visitor);
 
-        $parser = new SQLParser();
+        $parser = new PHPSQLParser();
 
         $sql = 'SELECT foo.bar, foo.baz FROM users WHERE tata = (SELECT mii.id FROM mii WHERE mii.yo=42) GROUP BY yop.goo ORDER BY zap.do';
         $parsed = $parser->parse($sql);

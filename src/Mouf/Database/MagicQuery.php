@@ -5,6 +5,7 @@ namespace Mouf\Database;
 use Doctrine\Common\Cache\VoidCache;
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
+use PHPSQLParser\PHPSQLParser;
 use SQLParser\Node\ColRef;
 use SQLParser\Node\Equal;
 use SQLParser\Node\NodeInterface;
@@ -105,7 +106,8 @@ class MagicQuery
         $select = $this->cache->fetch($cacheKey);
 
         if ($select === false) {
-            $parser = new SQLParser();
+            //$parser = new SQLParser();
+            $parser = new PHPSQLParser();
             $parsed = $parser->parse($sql);
 
             if ($parsed == false) {

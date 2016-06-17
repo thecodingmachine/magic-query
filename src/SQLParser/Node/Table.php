@@ -45,6 +45,28 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Table implements NodeInterface
 {
+    private $database;
+
+    /**
+     * Returns the name of the database.
+     *
+     * @return mixed
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+    /**
+     * Sets the name of the database
+     *
+     * @param mixed $database
+     */
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
     private $table;
 
     /**
@@ -151,6 +173,7 @@ class Table implements NodeInterface
     public function toInstanceDescriptor(MoufManager $moufManager)
     {
         $instanceDescriptor = $moufManager->createInstance(get_called_class());
+        $instanceDescriptor->getProperty('database')->setValue($this->database);
         $instanceDescriptor->getProperty('table')->setValue($this->table);
         $instanceDescriptor->getProperty('alias')->setValue($this->alias);
         $instanceDescriptor->getProperty('joinType')->setValue($this->joinType);
@@ -174,6 +197,9 @@ class Table implements NodeInterface
         $sql = '';
         if ($this->refClause) {
             $sql .= "\n  ".$this->joinType.' ';
+        }
+        if ($this->database) {
+            $sql .= NodeFactory::escapeDBItem($this->database, $dbConnection).'.';
         }
         $sql .= NodeFactory::escapeDBItem($this->table, $dbConnection);
         if ($this->alias) {
