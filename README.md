@@ -135,34 +135,6 @@ into the SQL query. You should use classic SQL parameters for this. This means t
 
 Want to know more? <a class="btn btn-primary btn-large" href="doc/magic_twig.md">Check out the MagicTwig guide!</a>
 
-<a name="twig"></a>
-Use Twig templating in your SQL queries!
-----------------------------------------
-
-Discarding unused parameters and auto-joining keys is not enough? You have very specific needs? Say hello to 
-Twig integration!
-
-Using Twig integration, you can directly add Twig conditions right into your SQL.
-
-```php
-use Mouf\Database\MagicQuery;
-
-$sql = "SELECT users.* FROM users {% if isAdmin %} WHERE users.admin = 1 {% endif %}";
-
-$magicQuery = new MagicQuery();
-// By default, Twig integration is disabled. You need to enable it.
-$magicQuery->setEnableTwig(true);
-
-$completeSql = $magicQuery->build($sql, ['isAdmin' => true]);
-// Parameters are passed to the Twig SQL query, and the SQL query is returned.
-```
-
-<div class="alert alert-info"><strong>Heads up!</strong> The Twig integration cannot be used to insert parameters
-into the SQL query. You should use classic SQL parameters for this. This means that instead if writing 
-<code>{{ id }}</code>, you should write <code>:id</code>.</div>
-
-Want to know more? <a class="btn btn-primary" href="doc/magic_twig.md">Check out the MagicTwig guide!</a>
-
 Is it a MySQL only tool?
 ------------------------
 
