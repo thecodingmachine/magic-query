@@ -10,7 +10,7 @@ What is Magic-query?
 
 Magic-query is a PHP library that helps you work with complex SQL queries.
 
-It comes with 2 great features:
+It comes with 3 great features:
 
 - [**MagicParameters**: it helps you work with SQL queries that require a variable number of parameters.](#parameters)
 - [**MagicJoin**: it writes JOINs for you!](#joins)
