@@ -350,7 +350,7 @@ class Select implements StatementInterface, NodeInterface
         }
 
         if (!empty($this->group)) {
-            $groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode);
+            $groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
             if ($groupBy) {
                 $sql .= "\nGROUP BY ".$groupBy;
             }

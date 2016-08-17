@@ -104,6 +104,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE status IN :statuses!';
         $this->assertEquals('SELECT * FROM users WHERE FALSE', self::simplifySql($magicQuery->build($sql, ['statuses' => []])));
+
+        $sql = 'SELECT * FROM users GROUP BY id, login';
+        $this->assertEquals('SELECT * FROM users GROUP BY id, login', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
