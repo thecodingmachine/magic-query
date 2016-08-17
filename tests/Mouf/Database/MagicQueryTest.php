@@ -121,6 +121,8 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = "SELECT Substring_index(ee.`data`, ':', -1) as foo FROM users";
         $this->assertEquals("SELECT Substring_index(ee.data, ':', -1) AS foo FROM users", self::simplifySql($magicQuery->build($sql)));
         
+        $sql = 'SELECT * FROM users GROUP BY id, login';
+        $this->assertEquals('SELECT * FROM users GROUP BY id, login', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
