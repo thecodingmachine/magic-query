@@ -129,6 +129,27 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT DISTINCT login FROM users';
         $this->assertEquals('SELECT DISTINCT login FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT * FROM users WHERE create_date > :date';
+        $this->assertEquals("SELECT * FROM users WHERE create_date > '2016-01-01'", self::simplifySql($magicQuery->build($sql, [
+            'date' => '2016-01-01'
+        ])));
+
+        $sql = 'SELECT * FROM users WHERE create_date >= :date';
+        $this->assertEquals("SELECT * FROM users WHERE create_date >= '2016-01-01'", self::simplifySql($magicQuery->build($sql, [
+            'date' => '2016-01-01'
+        ])));
+
+        $sql = 'SELECT * FROM users WHERE create_date < :date';
+        $this->assertEquals("SELECT * FROM users WHERE create_date < '2016-01-01'", self::simplifySql($magicQuery->build($sql, [
+            'date' => '2016-01-01'
+        ])));
+
+        $sql = 'SELECT * FROM users WHERE create_date <= :date';
+        $this->assertEquals("SELECT * FROM users WHERE create_date <= '2016-01-01'", self::simplifySql($magicQuery->build($sql, [
+            'date' => '2016-01-01'
+        ])));
+
     }
 
     /**

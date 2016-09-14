@@ -464,7 +464,7 @@ class NodeFactory
             '<' => 'SQLParser\Node\Less',
             '>' => 'SQLParser\Node\Greater',
             '<=' => 'SQLParser\Node\LessOrEqual',
-            '=>' => 'SQLParser\Node\GreaterOrEqual',
+            '>=' => 'SQLParser\Node\GreaterOrEqual',
             //'<=>' => '????',
             '<>' => 'SQLParser\Node\Different',
             '!=' => 'SQLParser\Node\Different',
