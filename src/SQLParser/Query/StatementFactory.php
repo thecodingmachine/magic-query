@@ -4,6 +4,7 @@ namespace SQLParser\Query;
 
 use SQLParser\Node\NodeFactory;
 use SQLParser\Node\Operator;
+use SQLParser\Node\Reserved;
 
 /**
  * This class has the ability to create instances implementing NodeInterface based on a descriptive array.
@@ -21,19 +22,21 @@ class StatementFactory
                 return NodeFactory::toObject($item);
             }, $desc['SELECT']);
             $columns = NodeFactory::simplify($columns);
-            $select->setColumns($columns);
 
-            if (isset($desc['OPTIONS'])) {
-                $options = $desc['OPTIONS'];
-                $key = array_search('DISTINCT', $options);
-                if ($key !== false) {
-                    $select->setDistinct(true);
-                    unset($options[$key]);
-                } else {
-                    $select->setDistinct(false);
+            $options = [];
+            foreach ($columns as $key => $column) {
+                if ($column instanceof Reserved) {
+                    if (strtoupper($column->getBaseExpression()) === 'DISTINCT') {
+                        $select->setDistinct(true);
+                    } else {
+                        $options[] = $column->getBaseExpression();
+                    }
+                    unset($columns[$key]);
                 }
-                $select->setOptions($options);
             }
+            $select->setOptions($options);
+
+            $select->setColumns($columns);
 
             if (isset($desc['FROM'])) {
                 $from = self::mapArrayToNodeObjectList($desc['FROM']);

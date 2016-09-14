@@ -303,6 +303,7 @@ class NodeFactory
                         throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
                     }
                     unset($desc['sub_tree']);
+                    unset($desc['delim']);
                     if (!empty($desc)) {
                         throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                     }
@@ -322,6 +323,7 @@ class NodeFactory
                     unset($desc['sub_tree']);
                     unset($desc['alias']);
                     unset($desc['direction']);
+                    unset($desc['delim']);
                     if (!empty($desc)) {
                         throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
                     }

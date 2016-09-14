@@ -126,6 +126,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE (login LIKE :login)';
         $this->assertEquals('SELECT * FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT DISTINCT login FROM users';
+        $this->assertEquals('SELECT DISTINCT login FROM users', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
