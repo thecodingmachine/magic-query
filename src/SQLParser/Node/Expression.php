@@ -182,6 +182,10 @@ class Expression implements NodeInterface
     {
         $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
 
+        if ($sql === null) {
+            return null;
+        }
+
         if ($this->alias) {
             $sql .= ' AS '.$this->alias;
         }
@@ -191,6 +195,7 @@ class Expression implements NodeInterface
         if ($this->brackets) {
             $sql = '('.$sql.')';
         }
+
 
         return $sql;
     }

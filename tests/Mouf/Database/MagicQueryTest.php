@@ -123,6 +123,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         
         $sql = 'SELECT * FROM users GROUP BY id, login';
         $this->assertEquals('SELECT * FROM users GROUP BY id, login', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT * FROM users WHERE (login LIKE :login)';
+        $this->assertEquals('SELECT * FROM users', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
