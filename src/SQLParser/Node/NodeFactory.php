@@ -1,5 +1,4 @@
 <?php
-
 namespace SQLParser\Node;
 
 use Mouf\Database\MagicQueryException;
@@ -61,7 +60,7 @@ class NodeFactory
                 unset($desc['delim']);
 
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $const;
@@ -73,11 +72,11 @@ class NodeFactory
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 if (!empty($desc['sub_tree'])) {
-                    throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
+                    error_log('MagicQuery - NodeFactory: Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
                 }
                 unset($desc['sub_tree']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $operator;
@@ -122,14 +121,14 @@ class NodeFactory
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 if (!empty($desc['sub_tree'])) {
-                    throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
+                    error_log('MagicQuery - NodeFactory: Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
                 }
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
                 unset($desc['no_quotes']);
                 unset($desc['delim']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $instance;
@@ -195,7 +194,7 @@ class NodeFactory
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 if (!empty($desc['sub_tree'])) {
-                    throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
+                    error_log('MagicQuery - NodeFactory: Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
                 }
                 unset($desc['sub_tree']);
                 unset($desc['join_type']);
@@ -206,7 +205,7 @@ class NodeFactory
                 unset($desc['hints']);
                 unset($desc['no_quotes']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -239,8 +238,9 @@ class NodeFactory
                 unset($desc['sub_tree']);
                 unset($desc['ref_type']);
                 unset($desc['ref_clause']);
+                unset($desc['hints']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -261,7 +261,7 @@ class NodeFactory
                 unset($desc['alias']);
                 unset($desc['delim']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in aggregate function: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in aggregate function: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -288,7 +288,7 @@ class NodeFactory
                 unset($desc['direction']);
                 unset($desc['delim']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in simple function: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in simple function: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -300,12 +300,12 @@ class NodeFactory
                     unset($desc['base_expr']);
                     unset($desc['expr_type']);
                     if (!empty($desc['sub_tree'])) {
-                        throw new \InvalidArgumentException('Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
+                        error_log('MagicQuery - NodeFactory: Unexpected operator with subtree: '.var_export($desc['sub_tree'], true));
                     }
                     unset($desc['sub_tree']);
                     unset($desc['delim']);
                     if (!empty($desc)) {
-                        throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                        error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                     }
 
                     return $operator;
@@ -325,7 +325,7 @@ class NodeFactory
                     unset($desc['direction']);
                     unset($desc['delim']);
                     if (!empty($desc)) {
-                        throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                        error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                     }
 
                     return $res;
@@ -379,7 +379,7 @@ class NodeFactory
                 unset($desc['direction']);
                 unset($desc['delim']);
                 if (!empty($desc)) {
-                    throw new \InvalidArgumentException('Unexpected parameters in exception: '.var_export($desc, true));
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }
 
                 return $expr;
@@ -726,7 +726,7 @@ class NodeFactory
      *
      * @param Operator $node
      *
-     * @throws \Exception
+     * @throws MagicQueryException
      *
      * @return unknown
      */
@@ -741,7 +741,7 @@ class NodeFactory
                 }
             }
         }
-        throw new \Exception('Unknown operator precedence for operator '.$value);
+        throw new MagicQueryException('Unknown operator precedence for operator '.$value);
     }
 
     /**
@@ -752,8 +752,6 @@ class NodeFactory
      */
     public static function nodeToInstanceDescriptor($node, MoufManager $moufManager)
     {
-        $instanceDescriptor = $moufManager->createInstance(get_called_class());
-
         return self::array_map_deep($node, function ($item) use ($moufManager) {
             if ($item instanceof NodeInterface) {
                 return $item->toInstanceDescriptor($moufManager);
