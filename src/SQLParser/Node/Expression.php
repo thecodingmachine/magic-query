@@ -154,7 +154,7 @@ class Expression implements NodeInterface
     /**
      * @return string
      */
-    public function getDelimiter(): string
+    public function getDelimiter()
     {
         return $this->delimiter;
     }
