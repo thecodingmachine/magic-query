@@ -371,6 +371,11 @@ class NodeFactory
                     $expr->setBrackets(true);
                 }
 
+                if ($desc['expr_type'] == ExpressionType::IN_LIST) {
+                    $expr->setBrackets(true);
+                    $expr->setDelimiter(',');
+                }
+
                 // Debug:
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);

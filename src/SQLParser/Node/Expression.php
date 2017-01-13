@@ -149,6 +149,28 @@ class Expression implements NodeInterface
         $this->brackets = $brackets;
     }
 
+    private $delimiter = ' ';
+
+    /**
+     * @return string
+     */
+    public function getDelimiter()
+    {
+        return $this->delimiter;
+    }
+
+    /**
+     * Sets the delimiter for the list. Defaults to ' '.
+     *
+     * @param string $delimiter
+     */
+    public function setDelimiter($delimiter)
+    {
+        $this->delimiter = $delimiter;
+    }
+
+
+
     /**
      * Returns a Mouf instance descriptor describing this object.
      *
@@ -164,6 +186,7 @@ class Expression implements NodeInterface
         $instanceDescriptor->getProperty('alias')->setValue(NodeFactory::nodeToInstanceDescriptor($this->alias, $moufManager));
         $instanceDescriptor->getProperty('direction')->setValue(NodeFactory::nodeToInstanceDescriptor($this->direction, $moufManager));
         $instanceDescriptor->getProperty('brackets')->setValue(NodeFactory::nodeToInstanceDescriptor($this->brackets, $moufManager));
+        $instanceDescriptor->getProperty('delimiter')->setValue(NodeFactory::nodeToInstanceDescriptor($this->delimiter, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -180,7 +203,7 @@ class Expression implements NodeInterface
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, $this->delimiter, false, $indent, $conditionsMode);
 
         if ($sql === null) {
             return null;

@@ -150,6 +150,8 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
             'date' => '2016-01-01'
         ])));
 
+        $sql = 'SELECT * FROM users WHERE id IN (1, 3)';
+        $this->assertEquals("SELECT * FROM users WHERE id IN (1, 3)", self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
