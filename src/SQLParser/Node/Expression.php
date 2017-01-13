@@ -164,7 +164,7 @@ class Expression implements NodeInterface
      *
      * @param string $delimiter
      */
-    public function setDelimiter(string $delimiter)
+    public function setDelimiter($delimiter)
     {
         $this->delimiter = $delimiter;
     }
