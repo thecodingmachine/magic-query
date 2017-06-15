@@ -105,6 +105,25 @@ class AggregateFunction implements NodeInterface
         $this->alias = $alias;
     }
 
+    private $direction;
+
+    public function getDirection()
+    {
+        return $this->direction;
+    }
+
+    /**
+     * Sets the direction.
+     *
+     * @Important
+     *
+     * @param string $direction
+     */
+    public function setDirection($direction)
+    {
+        $this->direction = $direction;
+    }
+
     /**
      * Returns a Mouf instance descriptor describing this object.
      *
@@ -144,6 +163,9 @@ class AggregateFunction implements NodeInterface
                 $alias = is_array($this->alias) ? $this->alias['name'] : $this->alias;
 
                 $sql .= ' AS '.$alias;
+            }
+            if ($this->direction) {
+                $sql .= ' '.$this->direction;
             }
         } else {
             $sql = null;

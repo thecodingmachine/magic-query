@@ -254,12 +254,17 @@ class NodeFactory
                     $expr->setAlias($desc['alias']);
                 }
 
+                if (isset($desc['direction'])) {
+                    $expr->setDirection($desc['direction']);
+                }
+
                 // Debug:
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
                 unset($desc['sub_tree']);
                 unset($desc['alias']);
                 unset($desc['delim']);
+                unset($desc['direction']);
                 if (!empty($desc)) {
                     error_log('MagicQuery - NodeFactory: Unexpected parameters in aggregate function: '.var_export($desc, true));
                 }

@@ -152,6 +152,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT * FROM users WHERE id IN (1, 3)';
         $this->assertEquals("SELECT * FROM users WHERE id IN (1, 3)", self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT country.* FROM country JOIN users ON country.id = users.country_id GROUP BY country.id ORDER BY COUNT(users.id) DESC';
+        $this->assertEquals('SELECT country.* FROM country JOIN users ON (country.id = users.country_id) GROUP BY country.id ORDER BY COUNT(users.id) DESC', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
@@ -177,12 +180,13 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     public function testWithCache()
     {
         global $db_url;
-        $config = new \Doctrine\DBAL\Configuration();
-        // TODO: put this in conf variable
         $connectionParams = array(
-            'url' => $db_url,
+            'user' => $GLOBALS['db_username'],
+            'password' => $GLOBALS['db_password'],
+            'host' => $GLOBALS['db_host'],
+            'driver' => $GLOBALS['db_driver'],
         );
-        $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams);
 
         $cache = new ArrayCache();
 
