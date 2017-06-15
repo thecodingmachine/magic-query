@@ -177,12 +177,13 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
     public function testWithCache()
     {
         global $db_url;
-        $config = new \Doctrine\DBAL\Configuration();
-        // TODO: put this in conf variable
         $connectionParams = array(
-            'url' => $db_url,
+            'user' => $GLOBALS['db_username'],
+            'password' => $GLOBALS['db_password'],
+            'host' => $GLOBALS['db_host'],
+            'driver' => $GLOBALS['db_driver'],
         );
-        $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
+        $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams);
 
         $cache = new ArrayCache();
 
