@@ -210,11 +210,12 @@ class MagicQuery
             $onNode = new Equal();
             $leftCol = new ColRef();
             $leftCol->setTable($foreignKey->getLocalTableName());
-            $leftCol->setColumn($foreignKey->getLocalColumns()[0]);
+            // For some reasons, with Oracle, DBAL returns quoted identifiers. We need to unquote them.
+            $leftCol->setColumn($foreignKey->getUnquotedLocalColumns()[0]);
 
             $rightCol = new ColRef();
             $rightCol->setTable($foreignKey->getForeignTableName());
-            $rightCol->setColumn($foreignKey->getForeignColumns()[0]);
+            $rightCol->setColumn($foreignKey->getUnquotedForeignColumns()[0]);
 
             $onNode->setLeftOperand($leftCol);
             $onNode->setRightOperand($rightCol);
