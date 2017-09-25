@@ -19,8 +19,9 @@
     	"mouf/utils.common.paginable-interface": "~1.0",
     	"mouf/utils.common.sortable-interface": "~1.0",
         "mouf/schema-analyzer": "~1.0",
-        "twig/twig": "^1.14 || ^2",
-        "greenlion/php-sql-parser": "^4.0"
+        "twig/twig": "^1.34.4 || ^2",
+        "greenlion/php-sql-parser": "^4.0",
+        "doctrine/cache": "^1.5"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",
