@@ -153,7 +153,7 @@ class AggregateFunction implements NodeInterface
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
-        $subTreeSql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $subTreeSql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ', ', false, $indent, $conditionsMode);
         if ($subTreeSql !== null) {
             $sql = $this->functionName.'(';
             $sql .= $subTreeSql;
