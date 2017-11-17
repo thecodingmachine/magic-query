@@ -158,6 +158,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT COUNT(DISTINCT a, b) FROM users';
         $this->assertEquals('SELECT COUNT(DISTINCT a, b) FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT a FROM users UNION SELECT a FROM users';
+        $this->assertEquals('SELECT a FROM users UNION SELECT a FROM users', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
