@@ -87,6 +87,10 @@ class StatementFactory
             }
 
             return $select;
+        } elseif (isset($desc['UNION'])) {
+            $selects = array_map([self::class, 'toObject'], $desc['UNION']);
+
+            return new Union($selects);
         } else {
             throw new \BadMethodCallException('Unknown query');
         }
