@@ -96,37 +96,27 @@ class Union implements StatementInterface, NodeInterface
             $node = $result;
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
-            $this->walkChildren($this->columns, $visitor);
-            $this->walkChildren($this->from, $visitor);
-            $this->walkChildren($this->where, $visitor);
-            $this->walkChildren($this->group, $visitor);
-            $this->walkChildren($this->having, $visitor);
-            $this->walkChildren($this->order, $visitor);
+            $this->walkChildren($this->selects, $visitor);
         }
 
         return $visitor->leaveNode($node);
     }
 
-    private function walkChildren(&$children, VisitorInterface $visitor)
+    /**
+     * @param Select[] $children
+     * @param VisitorInterface $visitor
+     */
+    private function walkChildren(array &$children, VisitorInterface $visitor)
     {
         if ($children) {
-            if (is_array($children)) {
-                foreach ($children as $key => $operand) {
-                    if ($operand) {
-                        $result2 = $operand->walk($visitor);
-                        if ($result2 === NodeTraverser::REMOVE_NODE) {
-                            unset($children[$key]);
-                        } elseif ($result2 instanceof NodeInterface) {
-                            $children[$key] = $result2;
-                        }
+            foreach ($children as $key => $operand) {
+                if ($operand) {
+                    $result2 = $operand->walk($visitor);
+                    if ($result2 === NodeTraverser::REMOVE_NODE) {
+                        unset($children[$key]);
+                    } elseif ($result2 instanceof NodeInterface) {
+                        $children[$key] = $result2;
                     }
-                }
-            } else {
-                $result2 = $children->walk($visitor);
-                if ($result2 === NodeTraverser::REMOVE_NODE) {
-                    $children = null;
-                } elseif ($result2 instanceof NodeInterface) {
-                    $children = $result2;
                 }
             }
         }
