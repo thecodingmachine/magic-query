@@ -38,6 +38,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
 use SQLParser\Query\Select;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
+use SQLParser\Query\Union;
 
 /**
  * This class represents a subquery (and optionally a JOIN .. ON expression in an SQL expression.
@@ -51,7 +52,7 @@ class SubQuery implements NodeInterface
     /**
      * Returns the list of subQuery statements.
      *
-     * @return Select
+     * @return Select|Union
      */
     public function getSubQuery()
     {
@@ -61,9 +62,9 @@ class SubQuery implements NodeInterface
     /**
      * Sets the list of subQuery statements.
      *
-     * @param Select $subQuery
+     * @param Select|Union $subQuery
      */
-    public function setSubQuery(Select $subQuery)
+    public function setSubQuery($subQuery)
     {
         $this->subQuery = $subQuery;
     }
