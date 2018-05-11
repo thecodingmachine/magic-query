@@ -54,7 +54,7 @@
             "doc": [
                 {
                     "title": "MagicParameters: automatically discard unused parameters",
-                    "url": "doc/discard_unused_parameters.html"
+                    "url": "doc/discard_unused_parameters.md"
                 },
                 {
                     "title": "MagicJoin: let MagicQuery write JOINs for you",
