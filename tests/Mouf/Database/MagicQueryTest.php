@@ -329,6 +329,22 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql)));
     }
 
+    public function testMatchAgainst()
+    {
+        $magicQuery = new MagicQuery();
+
+        $sql = "
+            SELECT MATCH(column) AGAINST(:searchTerm IN BOOLEAN MODE) AS rang FROM table
+            WHERE MATCH(column) AGAINST(:searchTerm IN BOOLEAN MODE)
+            ORDER BY MATCH(column) AGAINST(:searchTerm IN BOOLEAN MODE) DESC
+        ";
+        $expectedSql = "SELECT MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) AS rang FROM table WHERE MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) ORDER BY MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) DESC";
+        
+        $params["searchTerm"] = "searchString";
+        
+        $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql, $params)));
+    }
+
     /**
      * @expectedException \Mouf\Database\MagicQueryMissingConnectionException
      */

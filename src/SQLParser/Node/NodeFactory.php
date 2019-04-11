@@ -292,6 +292,7 @@ class NodeFactory
                 unset($desc['alias']);
                 unset($desc['direction']);
                 unset($desc['delim']);
+                unset($desc['no_quotes']);
                 if (!empty($desc)) {
                     error_log('MagicQuery - NodeFactory: Unexpected parameters in simple function: '.var_export($desc, true));
                 }
@@ -349,7 +350,6 @@ class NodeFactory
             case ExpressionType::RECORD:
 
             case ExpressionType::MATCH_ARGUMENTS:
-            case ExpressionType::MATCH_MODE:
 
             case ExpressionType::ALIAS:
             case ExpressionType::POSITION:
@@ -380,6 +380,23 @@ class NodeFactory
                     $expr->setBrackets(true);
                     $expr->setDelimiter(',');
                 }
+
+                // Debug:
+                unset($desc['base_expr']);
+                unset($desc['expr_type']);
+                unset($desc['sub_tree']);
+                unset($desc['alias']);
+                unset($desc['direction']);
+                unset($desc['delim']);
+                if (!empty($desc)) {
+                    error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
+                }
+
+                return $expr;
+            case ExpressionType::MATCH_MODE:
+                $expr = new ConstNode();
+                $expr->setValue($desc['base_expr']);
+                $expr->setIsString(false);
 
                 // Debug:
                 unset($desc['base_expr']);
@@ -542,6 +559,18 @@ class NodeFactory
             } else {
                 $newNodes[] = $node;
             }
+        }
+        $nodes = $newNodes;
+
+        // Handle AGAINST function. Without this patch params will be placed after AGAINST() and not inside the brackets
+        $newNodes = array();
+        for ($i = 0; $i < count($nodes); ++$i) {
+            $node = $nodes[$i];
+            if ($node instanceof SimpleFunction && $node->getBaseExpression() === 'AGAINST' && isset($nodes[$i + 1])) {
+                $node->setSubTree($nodes[$i + 1]);
+                $i++;
+            }
+            $newNodes[] = $node;
         }
         $nodes = $newNodes;
 
