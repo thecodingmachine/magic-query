@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\Common\Cache\VoidCache;
+use function hash;
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use PHPSQLParser\PHPSQLParser;
@@ -83,9 +84,19 @@ class MagicQuery
         if ($this->enableTwig) {
             $sql = $this->getTwigEnvironment()->render($sql, $parameters);
         }
-        $select = $this->parse($sql);
 
-        return $this->toSql($select, $parameters);
+        $availableParameterKeys = array_keys(array_filter($parameters, static function($param) { return $param !== null;}));
+        // We choose md4 because it is fast.
+        $cacheKey = 'request_build_'.hash('md4', $sql.'__'.implode('_/_', $availableParameterKeys));
+        $newSql = $this->cache->fetch($cacheKey);
+        if ($newSql === false) {
+            $select = $this->parse($sql);
+            $newSql = $this->toSql($select, $parameters);
+
+            $this->cache->save($cacheKey, $newSql);
+        }
+
+        return $newSql;
     }
 
     /**
