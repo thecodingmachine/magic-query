@@ -10,7 +10,7 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 {
     public function testStandardSelect()
     {
-        $magicQuery = new MagicQuery();
+        $magicQuery = new MagicQuery(null, new ArrayCache());
 
         $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
         $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
