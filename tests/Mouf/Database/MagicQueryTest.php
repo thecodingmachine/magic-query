@@ -20,6 +20,8 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
+        // Test cache
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'bar' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'bar', 'limit' => 10])));
 
         try {
             $exceptionOccurred = false;
