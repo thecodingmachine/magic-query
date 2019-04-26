@@ -161,6 +161,9 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT a FROM users UNION SELECT a FROM users';
         $this->assertEquals('SELECT a FROM users UNION SELECT a FROM users', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT a FROM users u, users u2';
+        $this->assertEquals('SELECT a FROM users AS u, users AS u2', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
