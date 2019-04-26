@@ -195,7 +195,7 @@ class Table implements NodeInterface
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
     {
         $sql = '';
-        if ($this->refClause) {
+        if ($this->refClause || $this->joinType === 'CROSS JOIN') {
             $sql .= "\n  ".$this->joinType.' ';
         }
         if ($this->database) {
