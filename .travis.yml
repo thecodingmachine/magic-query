@@ -1,20 +1,34 @@
 language: php
 
-php:
- - "7.1"
- - "7.2"
-
-env:
-  matrix:
-  - PREFER_LOWEST=""
-  - PREFER_LOWEST="--prefer-lowest"
-
-before_script:
- - composer update --no-interaction $PREFER_LOWEST
-
-script:
- - vendor/bin/phpunit
- - composer phpstan
-
-after_script:
- - php vendor/bin/coveralls -v
+cache:
+ directories:
+  - $HOME/.composer/cache
+  - .php_cs
+jobs:
+ include:
+  - stage: test
+    php: 7.2
+    env: PREFER_LOWEST=""
+    before_script:
+     - &composerupdate
+        composer update --prefer-dist $PREFER_LOWEST
+    script:
+     - &phpunit
+        "./vendor/bin/phpunit"
+     - composer phpstan
+    after_script:
+     - ./vendor/bin/coveralls -v
+  - stage: test
+    php: 7.2
+    env: PREFER_LOWEST="--prefer-lowest"
+    before_script:
+     - *composerupdate
+    script:
+     - *phpunit
+  - stage: test
+    php: 7.1
+    env: PREFER_LOWEST=""
+    before_script:
+     - *composerupdate
+    script:
+     - *phpunit
