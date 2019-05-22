@@ -199,7 +199,7 @@ class Expression implements NodeInterface
      * @param number     $indent
      * @param int        $conditionsMode
      *
-     * @return string
+     * @return string|null
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
