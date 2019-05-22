@@ -98,6 +98,15 @@ $sql = $magicQuery->build($sql, []);
 // $sql == "SELECT * FROM products p WHERE status2 = null"
 ```
 
+####Working with prepared statements
+
+The `MagicQuery::build` method will remove unused parameters AND replace placeholders with the values.
+If you are looking for the best possible performance, you can use the alternative `MagicQuery::buildPreparedStatement` method.
+
+The "buildPreparedStatement" method is removing unused parameters BUT it does not replace placeholders.
+As a result, MagicQuery can perform some more internal caching and if you have many similar requests, 
+you will get some performance gains.
+
 ###Other alternatives
 
 To avoid concatenating strings, frameworks and libraries have used different strategies. Using a full ORM (like

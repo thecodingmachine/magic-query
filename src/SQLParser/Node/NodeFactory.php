@@ -6,6 +6,7 @@ use Mouf\Database\MagicQueryParserException;
 use SQLParser\SqlRenderInterface;
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
+use Mouf\MoufInstanceDescriptor;
 use SQLParser\Query\StatementFactory;
 use PHPSQLParser\utils\ExpressionType;
 
@@ -767,9 +768,9 @@ class NodeFactory
      *
      * @throws MagicQueryException
      *
-     * @return unknown
+     * @return int
      */
-    private static function getOperatorPrecedence(Operator $node)
+    private static function getOperatorPrecedence(Operator $node): int
     {
         $value = strtoupper($node->getValue());
 
@@ -831,13 +832,13 @@ class NodeFactory
      *
      * @return null|string
      */
-    public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY)
+    public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         if (is_array($nodes)) {
             $elems = array();
-            array_walk_recursive($nodes, function ($item) use (&$elems, $dbConnection, $indent, $delimiter, $parameters, $conditionsMode) {
+            array_walk_recursive($nodes, function ($item) use (&$elems, $dbConnection, $indent, $parameters, $conditionsMode, $extrapolateParameters) {
                 if ($item instanceof SqlRenderInterface) {
-                    $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
+                    $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
                     if ($itemSql !== null) {
                         $elems[] = str_repeat(' ', $indent).$itemSql;
                     }
@@ -851,14 +852,14 @@ class NodeFactory
         } else {
             $item = $nodes;
             if ($item instanceof SqlRenderInterface) {
-                $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode);
+                $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
                 if ($itemSql === null || $itemSql === '') {
-                    return;
+                    return null;
                 }
                 $sql = str_repeat(' ', $indent).$itemSql;
             } else {
                 if ($item === null || $item === '') {
-                    return;
+                    return null;
                 }
                 $sql = str_repeat(' ', $indent).$item;
             }

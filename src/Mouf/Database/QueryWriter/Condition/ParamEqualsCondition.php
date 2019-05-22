@@ -28,9 +28,6 @@ class ParamEqualsCondition implements ConditionInterface
         $this->value = $value;
     }
 
-    /**
-     * @param string $caller
-     */
     public function isOk($parameters = null)
     {
         return isset($parameters[$this->parameterName]) && $parameters[$this->parameterName] == ValueUtils::val($this->value);

@@ -2,8 +2,11 @@
 
 namespace Mouf\Database;
 
+use function array_filter;
+use function array_keys;
 use Doctrine\Common\Cache\VoidCache;
 use function hash;
+use function implode;
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use PHPSQLParser\PHPSQLParser;
@@ -85,13 +88,36 @@ class MagicQuery
             $sql = $this->getTwigEnvironment()->render($sql, $parameters);
         }
 
+        $select = $this->parse($sql);
+        $newSql = $this->toSql($select, $parameters, true);
+
+        return $newSql;
+    }
+
+    /**
+     * Returns modified SQL from $sql and $parameters. Any parameters not available will be striped down
+     * from the SQL. Unlike with the `build` method, the parameters are NOT merged into the SQL.
+     * This method is more efficient than `build`  (because result is cached and statements interpolation
+     * can be delegated to the database.
+     *
+     * @param string $sql
+     * @param array  $parameters
+     *
+     * @return string
+     */
+    public function buildPreparedStatement(string $sql, array $parameters = []): string
+    {
+        if ($this->enableTwig) {
+            $sql = $this->getTwigEnvironment()->render($sql, $parameters);
+        }
+
         $availableParameterKeys = array_keys(array_filter($parameters, static function($param) { return $param !== null;}));
         // We choose md4 because it is fast.
         $cacheKey = 'request_build_'.hash('md4', $sql.'__'.implode('_/_', $availableParameterKeys));
         $newSql = $this->cache->fetch($cacheKey);
         if ($newSql === false) {
             $select = $this->parse($sql);
-            $newSql = $this->toSql($select, $parameters);
+            $newSql = $this->toSql($select, $parameters, false);
 
             $this->cache->save($cacheKey, $newSql);
         }
@@ -140,13 +166,14 @@ class MagicQuery
      * Transforms back a tree of SQL node into a SQL string.
      *
      * @param NodeInterface $sqlNode
-     * @param array         $parameters
-     *
+     * @param array $parameters
+     * @param bool $extrapolateParameters Whether the parameters should be fed into the returned SQL query
+
      * @return string
      */
-    public function toSql(NodeInterface $sqlNode, array $parameters = array())
+    public function toSql(NodeInterface $sqlNode, array $parameters = array(), bool $extrapolateParameters = true)
     {
-        return $sqlNode->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS);
+        return $sqlNode->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
     }
 
     /**

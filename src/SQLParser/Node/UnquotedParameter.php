@@ -51,9 +51,9 @@ class UnquotedParameter extends Parameter
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
-        $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode);
+        $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
         $name = str_replace("'", '', $name);
 
         return $name;

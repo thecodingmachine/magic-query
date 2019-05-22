@@ -3,9 +3,10 @@
 namespace SQLParser\Node\Traverser;
 
 use PHPSQLParser\PHPSQLParser;
+use PHPUnit\Framework\TestCase;
 use SQLParser\Query\StatementFactory;
 
-class DetectTableVisitorTest extends \PHPUnit_Framework_TestCase
+class DetectTableVisitorTest extends TestCase
 {
     public function testStandardSelect()
     {

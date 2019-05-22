@@ -59,7 +59,7 @@ class CaseOperation implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $sql = 'CASE '.NodeFactory::toSql($this->operation, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode).' END';
 

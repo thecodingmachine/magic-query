@@ -165,13 +165,13 @@ class SimpleFunction implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $sql = '';
         if (!empty($this->baseExpression)) {
             $sql .= $this->baseExpression.'(';
         }
-        $sql .= NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ',', false, $indent, $conditionsMode);
+        $sql .= NodeFactory::toSql($this->subTree, $dbConnection, $parameters, ',', false, $indent, $conditionsMode, $extrapolateParameters);
         if (!empty($this->baseExpression)) {
             $sql .= ')';
         }

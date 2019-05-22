@@ -34,6 +34,7 @@ namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
+use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
@@ -190,7 +191,7 @@ class ColRef implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $sql = '';
         if ($this->database) {

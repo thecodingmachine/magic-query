@@ -38,7 +38,7 @@ use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\Traverser\VisitorInterface;
 
 /**
- * This class represents a constant of a LIMIT in an SQL expression.
+ * This class represents a constant of a LIMIT in an SQL expression (so either a limit or an offset)
  *
  * @author David MAECHLER <d.maechler@thecodingmachine.com>
  */
@@ -90,7 +90,7 @@ class LimitNode implements NodeInterface
      *
      * @throws \Exception
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         if ($this->value === null) {
             throw new \Exception('A limit parameter must be an integer');

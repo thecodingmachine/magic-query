@@ -159,9 +159,9 @@ class Parameter implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
-        if (isset($parameters[$this->name])) {
+        if ($extrapolateParameters && isset($parameters[$this->name])) {
             if ($dbConnection) {
                 if (is_array($parameters[$this->name])) {
                     return '('.implode(',', array_map(function ($item) use ($dbConnection) {
@@ -183,7 +183,7 @@ class Parameter implements NodeInterface
                     }
                 }
             }
-        } elseif (!$this->isDiscardedOnNull()) {
+        } elseif ($extrapolateParameters && !$this->isDiscardedOnNull()) {
             return 'null';
         } else {
             return ':'.$this->name;

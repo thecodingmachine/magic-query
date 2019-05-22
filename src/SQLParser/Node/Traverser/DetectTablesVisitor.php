@@ -71,7 +71,7 @@ class DetectTablesVisitor implements VisitorInterface
             $this->tables[$node->getTable()] = $node->getTable();
         }
 
-        return;
+        return null;
     }
 
     /**

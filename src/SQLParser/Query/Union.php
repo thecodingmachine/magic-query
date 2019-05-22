@@ -72,10 +72,10 @@ class Union implements StatementInterface, NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
-        $selectsSql = array_map(function(Select $select) use ($parameters, $dbConnection, $indent, $conditionsMode) {
-            return $select->toSql($parameters, $dbConnection, $indent, $conditionsMode);
+        $selectsSql = array_map(function(Select $select) use ($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters) {
+            return $select->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
         }, $this->selects);
 
         $sql = implode(' UNION ', $selectsSql);

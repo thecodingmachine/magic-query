@@ -3,9 +3,10 @@
 namespace SQLParser\Node\Traverser;
 
 use PHPSQLParser\PHPSQLParser;
+use PHPUnit\Framework\TestCase;
 use SQLParser\Query\StatementFactory;
 
-class NodeTraverserTest extends \PHPUnit_Framework_TestCase
+class NodeTraverserTest extends TestCase
 {
     public function testStandardSelect()
     {
