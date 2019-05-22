@@ -23,9 +23,6 @@ class ParamAvailableCondition implements ConditionInterface
         $this->parameterName = $parameterName;
     }
 
-    /**
-     * @param string $caller
-     */
     public function isOk($parameters = null)
     {
         return isset($parameters[$this->parameterName]) && !empty($parameters[$this->parameterName]);

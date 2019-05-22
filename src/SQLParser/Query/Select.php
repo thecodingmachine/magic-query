@@ -39,6 +39,7 @@ use Mouf\MoufManager;
 use SQLParser\Node\NodeInterface;
 use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
+use SQLParser\Node\UnquotedParameter;
 
 /**
  * This class represents a <code>SELECT</code> query. You can use it to generate a SQL query statement
@@ -321,7 +322,7 @@ class Select implements StatementInterface, NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $sql = 'SELECT ';
         if ($this->distinct) {
@@ -332,39 +333,39 @@ class Select implements StatementInterface, NodeInterface
         }
 
         if (!empty($this->columns)) {
-            $sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
+            $sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
         }
 
         if (!empty($this->from)) {
-            $from = NodeFactory::toSql($this->from, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode);
+            $from = NodeFactory::toSql($this->from, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($from) {
                 $sql .= "\nFROM ".$from;
             }
         }
 
         if (!empty($this->where)) {
-            $where = NodeFactory::toSql($this->where, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode);
+            $where = NodeFactory::toSql($this->where, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($where) {
                 $sql .= "\nWHERE ".$where;
             }
         }
 
         if (!empty($this->group)) {
-            $groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
+            $groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($groupBy) {
                 $sql .= "\nGROUP BY ".$groupBy;
             }
         }
 
         if (!empty($this->having)) {
-            $having = NodeFactory::toSql($this->having, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode);
+            $having = NodeFactory::toSql($this->having, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($having) {
                 $sql .= "\nHAVING ".$having;
             }
         }
 
         if (!empty($this->order)) {
-            $order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
+            $order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($order) {
                 $sql .= "\nORDER BY ".$order;
             }
@@ -373,13 +374,19 @@ class Select implements StatementInterface, NodeInterface
         if (!empty($this->offset) && empty($this->limit)) {
             throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
         } elseif (!empty($this->limit)) {
-            $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
-            if ($limit === '' || substr(trim($limit), 0, 1) == ':') {
+            $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            if ($limit === '' || ($extrapolateParameters && substr(trim($limit), 0, 1) == ':')) {
+                $limit = null;
+            }
+            if (!$extrapolateParameters && $this->limit instanceof UnquotedParameter && !isset($parameters[$this->limit->getName()])) {
                 $limit = null;
             }
             if (!empty($this->offset)) {
-                $offset = NodeFactory::toSql($this->offset, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode);
-                if ($offset === '' || substr(trim($offset), 0, 1) == ':') {
+                $offset = NodeFactory::toSql($this->offset, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+                if ($offset === '' || ($extrapolateParameters && substr(trim($offset), 0, 1) == ':')) {
+                    $offset = null;
+                }
+                if (!$extrapolateParameters && $this->offset instanceof UnquotedParameter && !isset($parameters[$this->offset->getName()])) {
                     $offset = null;
                 }
             } else {

@@ -57,7 +57,7 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -70,6 +70,5 @@ class DetectMagicJoinSelectVisitor implements VisitorInterface
      */
     public function leaveNode(NodeInterface $node)
     {
-        return;
     }
 }

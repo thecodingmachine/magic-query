@@ -3,8 +3,9 @@
 namespace Mouf\Database;
 
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
+use PHPUnit\Framework\TestCase;
 
-class SqlTwigEnvironmentFactoryTest extends \PHPUnit_Framework_TestCase
+class SqlTwigEnvironmentFactoryTest extends TestCase
 {
     /**
      *

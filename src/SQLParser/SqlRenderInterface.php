@@ -21,10 +21,11 @@ interface SqlRenderInterface
      *
      * @param Connection $dbConnection
      * @param array      $parameters
-     * @param number     $indent
+     * @param int        $indent
      * @param int        $conditionsMode
+     * @param bool       $extrapolateParameters Whether the parameters should be fed into the returned SQL query
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY);
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true);
 }

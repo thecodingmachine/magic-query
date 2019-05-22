@@ -1,0 +1,5 @@
+parameters:
+    level: 2
+    ignoreErrors:
+        - "#Mouf\\\\MoufManager#"
+        - "#Mouf\\\\MoufInstanceDescriptor#"

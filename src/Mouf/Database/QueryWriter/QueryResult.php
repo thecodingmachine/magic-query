@@ -2,6 +2,7 @@
 
 namespace Mouf\Database\QueryWriter;
 
+use function method_exists;
 use Mouf\Database\QueryWriter\Utils\DbHelper;
 use Mouf\Utils\Value\ValueUtils;
 use SQLParser\Query\Select;
@@ -114,7 +115,9 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
             if (method_exists($columnObj, 'setAlias')) {
                 $columnObj->setAlias(null);
             }
-            $columnObj->setDirection($direction);
+            if (method_exists($columnObj, 'setDirection')) {
+                $columnObj->setDirection($direction);
+            }
         } else {
             $columnObj = new ColRef();
             $columnObj->setColumn($key);

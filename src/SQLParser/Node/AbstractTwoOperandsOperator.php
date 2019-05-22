@@ -96,7 +96,7 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         if ($conditionsMode == self::CONDITION_GUESS) {
             $bypass = false;
@@ -117,7 +117,7 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
             }
         }
         if ($conditionsMode == self::CONDITION_IGNORE || !$this->condition || $this->condition->isOk($parameters)) {
-            $sql = $this->getSql($parameters, $dbConnection, $indent, $conditionsMode);
+            $sql = $this->getSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
         } else {
             $sql = null;
         }
@@ -125,11 +125,11 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
         return $sql;
     }
 
-    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
-        $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         $sql .= ' '.$this->getOperatorSymbol().' ';
-        $sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+        $sql .= NodeFactory::toSql($this->rightOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
 
         return $sql;
     }

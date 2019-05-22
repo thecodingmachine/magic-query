@@ -5,12 +5,13 @@ namespace Mouf\Database;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Schema\Schema;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
+use PHPUnit\Framework\TestCase;
 
-class MagicQueryTest extends \PHPUnit_Framework_TestCase
+class MagicQueryTest extends TestCase
 {
     public function testStandardSelect()
     {
-        $magicQuery = new MagicQuery();
+        $magicQuery = new MagicQuery(null, new ArrayCache());
 
         $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
         $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
@@ -20,6 +21,8 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
 
         $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
+        // Test cache
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'bar' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'bar', 'limit' => 10])));
 
         try {
             $exceptionOccurred = false;
@@ -395,5 +398,16 @@ class MagicQueryTest extends \PHPUnit_Framework_TestCase
         $sql = trim($sql);
 
         return $sql;
+    }
+
+    public function testBuildPreparedStatement()
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+
+        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 2';
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 2", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['name' => 'foo', 'offset' => 10])));
+        // Test cache
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE :name LIMIT :offset, 2", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['name' => 'bar', 'offset' => 10])));
+        $this->assertEquals("SELECT id FROM users WHERE name LIKE :name LIMIT 2", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['name' => 'bar'])));
     }
 }

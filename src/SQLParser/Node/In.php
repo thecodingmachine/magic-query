@@ -21,7 +21,7 @@ class In extends AbstractTwoOperandsOperator
         return 'IN';
     }
 
-    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $rightOperand = $this->getRightOperand();
         if ($rightOperand instanceof Parameter) {
@@ -33,6 +33,6 @@ class In extends AbstractTwoOperandsOperator
             }
         }
 
-        return parent::getSql($parameters, $dbConnection, $indent, $conditionsMode);
+        return parent::getSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
     }
 }

@@ -40,16 +40,16 @@ class WhenConditions extends AbstractManyInstancesOperator
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $fullSql = '';
 
         if ($this->value) {
-            $fullSql = NodeFactory::toSql($this->value, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+            $fullSql = NodeFactory::toSql($this->value, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         }
 
         foreach ($this->getOperands() as $operand) {
-            $sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode);
+            $sql = NodeFactory::toSql($operand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
             if ($sql != null) {
                 $fullSql .= "\n".str_repeat(' ', $indent).'WHEN '.$sql;
             }

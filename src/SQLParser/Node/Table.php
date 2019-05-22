@@ -192,7 +192,7 @@ class Table implements NodeInterface
      *
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY)
+    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $sql = '';
         if ($this->refClause || $this->joinType === 'CROSS JOIN') {
@@ -207,7 +207,7 @@ class Table implements NodeInterface
         }
         if ($this->refClause) {
             $sql .= ' ON ';
-            $sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode);
+            $sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode, $extrapolateParameters);
         }
 
         return $sql;
