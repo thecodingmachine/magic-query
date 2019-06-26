@@ -452,17 +452,37 @@ class NodeFactory
             if (!empty($subTree) && !isset($subTree[0])) {
                 $subTree = StatementFactory::toObject($subTree);
             } else {
-                $subTree = array_map(function ($item) {
-                    if (is_array($item)) {
-                        return self::toObject($item);
-                    } else {
-                        return $item;
-                    }
-                }, $subTree);
+                $subTree = self::mapArrayToNodeObjectList($subTree);
             }
         }
 
         return $subTree;
+    }
+
+    /**
+     * @param array $items An array of objects represented as SQLParser arrays.
+     */
+    public static function mapArrayToNodeObjectList(array $items)
+    {
+        $list = [];
+
+        $nextAndPartOfBetween = false;
+
+        // Special case, let's replace the AND of a between with a ANDBETWEEN object.
+        foreach ($items as $item) {
+            $obj = NodeFactory::toObject($item);
+            if ($obj instanceof Operator) {
+                if ($obj->getValue() == 'BETWEEN') {
+                    $nextAndPartOfBetween = true;
+                } elseif ($nextAndPartOfBetween && $obj->getValue() == 'AND') {
+                    $nextAndPartOfBetween = false;
+                    $obj->setValue('AND_FROM_BETWEEN');
+                }
+            }
+            $list[] = $obj;
+        }
+
+        return $list;
     }
 
     private static $PRECEDENCE = array(
