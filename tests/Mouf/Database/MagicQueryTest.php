@@ -79,7 +79,7 @@ class MagicQueryTest extends TestCase
         $this->assertEquals('SELECT * FROM myTable', self::simplifySql($magicQuery->build($sql, [])));
 
         $sql = 'SELECT * FROM myTable where (someField BETWEEN :value1 AND :value2) AND otherField = :value3';
-        $this->assertEquals("SELECT * FROM myTable WHERE (someField BETWEEN '2' AND '4') AND otherField = 8", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4, 'value3' => 8])));
+        $this->assertEquals("SELECT * FROM myTable WHERE ((someField BETWEEN '2' AND '4')) AND (otherField = '8')", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4, 'value3' => 8])));
 
 
         // Triggers an "expression"
