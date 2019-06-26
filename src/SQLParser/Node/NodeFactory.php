@@ -452,13 +452,7 @@ class NodeFactory
             if (!empty($subTree) && !isset($subTree[0])) {
                 $subTree = StatementFactory::toObject($subTree);
             } else {
-                $subTree = self::mapArrayToNodeObjectList($subTree); /*array_map(function ($item) {
-                    if (is_array($item)) {
-                        return self::toObject($item);
-                    } else {
-                        return $item;
-                    }
-                }, $subTree);*/
+                $subTree = self::mapArrayToNodeObjectList($subTree);
             }
         }
 
