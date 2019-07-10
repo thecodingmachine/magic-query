@@ -100,15 +100,11 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
     {
         if ($conditionsMode == self::CONDITION_GUESS) {
             $bypass = false;
-            if ($this->leftOperand instanceof Parameter) {
-                if ($this->leftOperand->isDiscardedOnNull() && !isset($parameters[$this->leftOperand->getName()])) {
-                    $bypass = true;
-                }
+            if ($this->leftOperand instanceof BypassableInterface && $this->leftOperand->canBeBypassed($parameters)) {
+                $bypass = true;
             }
-            if ($this->rightOperand instanceof Parameter) {
-                if ($this->rightOperand->isDiscardedOnNull() && !isset($parameters[$this->rightOperand->getName()])) {
-                    $bypass = true;
-                }
+            if ($this->rightOperand instanceof BypassableInterface && $this->rightOperand->canBeBypassed($parameters)) {
+                $bypass = true;
             }
             if ($bypass === true) {
                 return;

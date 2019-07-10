@@ -43,7 +43,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Expression implements NodeInterface
+class Expression implements NodeInterface, BypassableInterface
 {
     private $baseExpression;
 
@@ -256,5 +256,18 @@ class Expression implements NodeInterface
         }
 
         return $visitor->leaveNode($node);
+    }
+
+    /**
+     * Returns if this node should be removed from the tree.
+     */
+    public function canBeBypassed(array $parameters): bool
+    {
+        foreach ($this->subTree as $node) {
+            if (!$node instanceof BypassableInterface || !$node->canBeBypassed($parameters)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
