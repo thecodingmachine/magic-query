@@ -42,7 +42,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class Parameter implements NodeInterface
+class Parameter implements NodeInterface, BypassableInterface
 {
     protected $name;
     protected $discardedOnNull = true;
@@ -175,9 +175,9 @@ class Parameter implements NodeInterface
                     return 'null';
                 } else {
                     if (is_array($parameters[$this->name])) {
-                        return '('.implode(',', array_map(function ($item) {
+                        return implode(',', array_map(function ($item) {
                             return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
-                        }, $parameters[$this->name])).')';
+                        }, $parameters[$this->name]));
                     } else {
                         return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
                     }
@@ -216,5 +216,13 @@ class Parameter implements NodeInterface
     public function isDiscardedOnNull()
     {
         return $this->discardedOnNull;
+    }
+
+    /**
+     * Returns if this node should be removed from the tree.
+     */
+    public function canBeBypassed(array $parameters): bool
+    {
+        return $this->isDiscardedOnNull() && !isset($parameters[$this->getName()]);
     }
 }
