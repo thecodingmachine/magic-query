@@ -221,16 +221,16 @@ class MagicQuery
         // Let's remove the main table from the list of tables to be linked:
         unset($tables[$mainTable]);
 
-        $foreignKeysSet = new \SplObjectStorage();
+        $foreignKeysSet = [];
         $completePath = [];
 
         foreach ($tables as $table) {
             $path = $this->getSchemaAnalyzer()->getShortestPath($mainTable, $table);
             foreach ($path as $foreignKey) {
                 // If the foreign key is not already in our complete path, let's add it.
-                if (!$foreignKeysSet->contains($foreignKey)) {
+                if (!isset($foreignKeysSet[$foreignKey->getName()])) {
                     $completePath[] = $foreignKey;
-                    $foreignKeysSet->attach($foreignKey);
+                    $foreignKeysSet[$foreignKey->getName()] = true;
                 }
             }
         }
