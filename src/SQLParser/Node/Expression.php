@@ -33,6 +33,7 @@
 namespace SQLParser\Node;
 
 use Doctrine\DBAL\Connection;
+use function is_iterable;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
 use SQLParser\Node\Traverser\NodeTraverser;
@@ -263,10 +264,14 @@ class Expression implements NodeInterface, BypassableInterface
      */
     public function canBeBypassed(array $parameters): bool
     {
-        foreach ($this->subTree as $node) {
-            if (!$node instanceof BypassableInterface || !$node->canBeBypassed($parameters)) {
-                return false;
+        if (is_iterable($this->subTree)) {
+            foreach ($this->subTree as $node) {
+                if (!$node instanceof BypassableInterface || !$node->canBeBypassed($parameters)) {
+                    return false;
+                }
             }
+        } elseif (!$this->subTree instanceof BypassableInterface || !$this->subTree->canBeBypassed($parameters)) {
+            return false;
         }
         return true;
     }
