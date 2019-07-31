@@ -389,6 +389,7 @@ class NodeFactory
                 unset($desc['alias']);
                 unset($desc['direction']);
                 unset($desc['delim']);
+                unset($desc['no_quotes']);
                 if (!empty($desc)) {
                     error_log('MagicQuery - NodeFactory: Unexpected parameters in exception: '.var_export($desc, true));
                 }

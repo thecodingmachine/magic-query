@@ -180,6 +180,9 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT a FROM users u WHERE status = (CASE WHEN u.id = 1 THEN u.status_1 ELSE u.status_2 END)';
         $this->assertEquals('SELECT a FROM users AS u WHERE status = (CASE WHEN u.id = 1 THEN u.status_1 ELSE u.status_2 END)', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT 42 as fooalias FROM bar HAVING fooalias = 24';
+        $this->assertEquals('SELECT 42 AS fooalias FROM bar HAVING fooalias = 24', self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
