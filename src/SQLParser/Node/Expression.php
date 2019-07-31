@@ -204,6 +204,9 @@ class Expression implements NodeInterface, BypassableInterface
      */
     public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
+        if (empty($this->subTree)) {
+            return $this->getBaseExpression();
+        }
         $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, $this->delimiter, false, $indent, $conditionsMode, $extrapolateParameters);
 
         if ($sql === null) {
@@ -264,6 +267,10 @@ class Expression implements NodeInterface, BypassableInterface
      */
     public function canBeBypassed(array $parameters): bool
     {
+        if (empty($this->subTree)) {
+            // Some expression can (rarely) have no subtree. Don't know why.
+            return false;
+        }
         if (is_iterable($this->subTree)) {
             foreach ($this->subTree as $node) {
                 if (!$node instanceof BypassableInterface || !$node->canBeBypassed($parameters)) {
