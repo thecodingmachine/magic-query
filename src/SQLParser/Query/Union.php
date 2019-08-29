@@ -105,7 +105,7 @@ class Union implements StatementInterface, NodeInterface
     }
 
     /**
-     * @param Select[] $children
+     * @param (Select|null)[] $children
      * @param VisitorInterface $visitor
      */
     private function walkChildren(array &$children, VisitorInterface $visitor)

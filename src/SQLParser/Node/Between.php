@@ -79,7 +79,7 @@ class Between implements NodeInterface
     }
 
     /**
-     * @var ConditionInterface
+     * @var ConditionInterface|null
      */
     protected $minValueCondition;
 
@@ -96,7 +96,7 @@ class Between implements NodeInterface
     }
 
     /**
-     * @var ConditionInterface
+     * @var ConditionInterface|null
      */
     protected $maxValueCondition;
 
