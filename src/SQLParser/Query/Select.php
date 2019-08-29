@@ -318,13 +318,13 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param array $parameters
      * @param AbstractPlatform $platform
-     * @param int|number $indent
+     * @param int $indent
      * @param int $conditionsMode
      *
      * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $sql = 'SELECT ';
         if ($this->distinct) {

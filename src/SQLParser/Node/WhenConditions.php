@@ -41,7 +41,7 @@ class WhenConditions extends AbstractManyInstancesOperator
      * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $fullSql = '';
 

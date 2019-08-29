@@ -37,17 +37,17 @@ class Between implements NodeInterface
     }
 
     /**
-     * @var string|NodeInterface|NodeInterface[]
+     * @var NodeInterface
      */
     private $minValueOperand;
 
     /**
-     * @var string|NodeInterface|NodeInterface[]
+     * @var NodeInterface
      */
     private $maxValueOperand;
 
     /**
-     * @return NodeInterface|NodeInterface[]|string
+     * @return NodeInterface
      */
     public function getMinValueOperand()
     {
@@ -55,15 +55,15 @@ class Between implements NodeInterface
     }
 
     /**
-     * @param NodeInterface|NodeInterface[]|string $minValueOperand
+     * @param NodeInterface $minValueOperand
      */
-    public function setMinValueOperand($minValueOperand)
+    public function setMinValueOperand(NodeInterface $minValueOperand)
     {
         $this->minValueOperand = $minValueOperand;
     }
 
     /**
-     * @return NodeInterface|NodeInterface[]|string
+     * @return NodeInterface
      */
     public function getMaxValueOperand()
     {
@@ -71,9 +71,9 @@ class Between implements NodeInterface
     }
 
     /**
-     * @param NodeInterface|NodeInterface[]|string $maxValueOperand
+     * @param NodeInterface $maxValueOperand
      */
-    public function setMaxValueOperand($maxValueOperand)
+    public function setMaxValueOperand(NodeInterface $maxValueOperand)
     {
         $this->maxValueOperand = $maxValueOperand;
     }
@@ -154,7 +154,7 @@ class Between implements NodeInterface
      * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $minBypass = false;
         $maxBypass = false;

@@ -1,6 +1,7 @@
 parameters:
-    level: 5
+    level: 6
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
         - "#Mouf\\\\MoufManager#"
         - "#Mouf\\\\MoufInstanceDescriptor#"
+        - '#Method Mouf\\Database\\QueryWriter\\Utils\\FindParametersService::findParameters\(\) should return array<string> but returns array<int, int\|string>#'

@@ -160,7 +160,7 @@ class Parameter implements NodeInterface, BypassableInterface
      * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         if ($extrapolateParameters && isset($parameters[$this->name])) {
             if ($parameters[$this->name] === null) {

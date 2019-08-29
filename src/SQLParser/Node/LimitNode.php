@@ -83,7 +83,7 @@ class LimitNode implements NodeInterface
      *
      * @param array $parameters
      * @param AbstractPlatform $platform
-     * @param int|number $indent
+     * @param int $indent
      * @param int $conditionsMode
      *
      * @param bool $extrapolateParameters
@@ -91,7 +91,7 @@ class LimitNode implements NodeInterface
      *
      * @throws \Exception
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         if ($this->value === null) {
             throw new \Exception('A limit parameter must be an integer');

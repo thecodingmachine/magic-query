@@ -192,7 +192,7 @@ class ColRef implements NodeInterface
      * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $sql = '';
         if ($this->database) {

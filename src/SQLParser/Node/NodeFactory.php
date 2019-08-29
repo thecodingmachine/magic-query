@@ -848,7 +848,7 @@ class NodeFactory
      * @param array       $parameters
      * @param string      $delimiter
      * @param bool|string $wrapInBrackets
-     * @param int|number  $indent
+     * @param int         $indent
      * @param int         $conditionsMode
      *
      * @return null|string
