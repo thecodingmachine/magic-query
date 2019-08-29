@@ -98,7 +98,7 @@ class LimitNode implements NodeInterface
         }
 
         if (is_numeric($this->value)) {
-            return (int) $this->value;
+            return (string) ((int) $this->value);
         } elseif (empty($this->value)) {
             return null;
         } else {

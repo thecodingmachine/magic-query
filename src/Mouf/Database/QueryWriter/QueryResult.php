@@ -133,9 +133,9 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      *
      * @param string $key
      *
-     * @return NodeInterface
+     * @return NodeInterface|null
      */
-    private function findColumnByKey($key)
+    private function findColumnByKey($key): ?NodeInterface
     {
         $columns = $this->select->getColumns();
         foreach ($columns as $column) {
@@ -152,6 +152,6 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
             }
         }
 
-        return;
+        return null;
     }
 }
