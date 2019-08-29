@@ -844,7 +844,7 @@ class NodeFactory
      * Tansforms the array of nodes (or the node) passed in parameter into a SQL string.
      *
      * @param mixed       $nodes          Recursive array of node interface
-     * @param Connection  $platform
+     * @param AbstractPlatform  $platform
      * @param array       $parameters
      * @param string      $delimiter
      * @param bool|string $wrapInBrackets
@@ -853,7 +853,7 @@ class NodeFactory
      *
      * @return null|string
      */
-    public static function toSql($nodes, AbstractPlatform $platform = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public static function toSql($nodes, AbstractPlatform $platform, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         if (is_array($nodes)) {
             $elems = array();

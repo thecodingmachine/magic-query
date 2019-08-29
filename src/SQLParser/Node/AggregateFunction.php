@@ -145,7 +145,7 @@ class AggregateFunction implements NodeInterface
      * Renders the object as a SQL string.
      *
      * @param array $parameters
-     * @param \SQLParser\Node\AbstractPlatform $platform
+     * @param AbstractPlatform $platform
      * @param int $indent
      * @param int $conditionsMode
      *
