@@ -1,10 +1,10 @@
 <?php
 namespace SQLParser\Node;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\Database\MagicQueryException;
 use Mouf\Database\MagicQueryParserException;
 use SQLParser\SqlRenderInterface;
-use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
 use SQLParser\Query\StatementFactory;
@@ -844,7 +844,7 @@ class NodeFactory
      * Tansforms the array of nodes (or the node) passed in parameter into a SQL string.
      *
      * @param mixed       $nodes          Recursive array of node interface
-     * @param Connection  $dbConnection
+     * @param Connection  $platform
      * @param array       $parameters
      * @param string      $delimiter
      * @param bool|string $wrapInBrackets
@@ -853,13 +853,13 @@ class NodeFactory
      *
      * @return null|string
      */
-    public static function toSql($nodes, Connection $dbConnection = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public static function toSql($nodes, AbstractPlatform $platform = null, array $parameters = array(), $delimiter = ',', $wrapInBrackets = true, $indent = 0, $conditionsMode = SqlRenderInterface::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         if (is_array($nodes)) {
             $elems = array();
-            array_walk_recursive($nodes, function ($item) use (&$elems, $dbConnection, $indent, $parameters, $conditionsMode, $extrapolateParameters) {
+            array_walk_recursive($nodes, function ($item) use (&$elems, $platform, $indent, $parameters, $conditionsMode, $extrapolateParameters) {
                 if ($item instanceof SqlRenderInterface) {
-                    $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
+                    $itemSql = $item->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
                     if ($itemSql !== null) {
                         $elems[] = str_repeat(' ', $indent).$itemSql;
                     }
@@ -873,7 +873,7 @@ class NodeFactory
         } else {
             $item = $nodes;
             if ($item instanceof SqlRenderInterface) {
-                $itemSql = $item->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
+                $itemSql = $item->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
                 if ($itemSql === null || $itemSql === '') {
                     return null;
                 }
@@ -890,21 +890,5 @@ class NodeFactory
         }
 
         return $sql;
-    }
-
-    /**
-     * Escapes a DB item (should not be used. Only used if no DBConnection is passed).
-     *
-     * @return string
-     *
-     * @param string $str
-     */
-    public static function escapeDBItem($str, Connection $dbConnection = null)
-    {
-        if ($dbConnection) {
-            return $dbConnection->quoteIdentifier($str);
-        } else {
-            return '`'.$str.'`';
-        }
     }
 }

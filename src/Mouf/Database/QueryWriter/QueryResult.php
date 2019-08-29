@@ -75,7 +75,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     public function val()
     {
         $parameters = ValueUtils::val($this->parameters);
-        $pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection).DbHelper::getFromLimitString($this->offset, $this->limit));
+        $pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection->getDatabasePlatform()).DbHelper::getFromLimitString($this->offset, $this->limit));
 
         return new ResultSet($pdoStatement);
     }
@@ -89,7 +89,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     {
         $parameters = ValueUtils::val($this->parameters);
 
-        return $this->select->toSql($parameters, $this->connection);
+        return $this->select->toSql($parameters, $this->connection->getDatabasePlatform());
     }
 
     /**

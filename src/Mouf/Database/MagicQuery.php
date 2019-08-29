@@ -2,6 +2,7 @@
 
 namespace Mouf\Database;
 
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use function array_filter;
 use function array_keys;
 use Doctrine\Common\Cache\VoidCache;
@@ -173,7 +174,8 @@ class MagicQuery
      */
     public function toSql(NodeInterface $sqlNode, array $parameters = array(), bool $extrapolateParameters = true)
     {
-        return $sqlNode->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
+        $platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySqlPlatform();
+        return $sqlNode->toSql($parameters, $platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
     }
 
     /**

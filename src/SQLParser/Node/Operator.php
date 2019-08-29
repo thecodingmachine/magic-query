@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
 use SQLParser\Node\Traverser\VisitorInterface;
@@ -81,14 +81,15 @@ class Operator implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         return $this->value;
     }

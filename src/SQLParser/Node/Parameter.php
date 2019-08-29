@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
 use SQLParser\Node\Traverser\VisitorInterface;
@@ -152,36 +152,25 @@ class Parameter implements NodeInterface, BypassableInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         if ($extrapolateParameters && isset($parameters[$this->name])) {
-            if ($dbConnection) {
-                if (is_array($parameters[$this->name])) {
-                    return '('.implode(',', array_map(function ($item) use ($dbConnection) {
-                            return $dbConnection->quote($this->autoPrepend.$item.$this->autoAppend);
-                        }, $parameters[$this->name])).')';
-                } else {
-                    return $dbConnection->quote($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
-                }
+            if ($parameters[$this->name] === null) {
+                return 'null';
+            } elseif (is_array($parameters[$this->name])) {
+                return implode(',', array_map(function ($item) use ($platform) {
+                        return $platform->quoteStringLiteral($this->autoPrepend.$item.$this->autoAppend);
+                    }, $parameters[$this->name]));
             } else {
-                if ($parameters[$this->name] === null) {
-                    return 'null';
-                } else {
-                    if (is_array($parameters[$this->name])) {
-                        return implode(',', array_map(function ($item) {
-                            return "'".addslashes($this->autoPrepend.$item.$this->autoAppend)."'";
-                        }, $parameters[$this->name]));
-                    } else {
-                        return "'".addslashes($this->autoPrepend.$parameters[$this->name].$this->autoAppend)."'";
-                    }
-                }
+                return $platform->quoteStringLiteral($this->autoPrepend.$parameters[$this->name].$this->autoAppend);
             }
         } elseif ($extrapolateParameters && !$this->isDiscardedOnNull()) {
             return 'null';

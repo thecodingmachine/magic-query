@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use SQLParser\Node\Traverser\NodeTraverser;
 use SQLParser\Node\Traverser\VisitorInterface;
 use SQLParser\Query\Select;
@@ -180,26 +180,27 @@ class SubQuery implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $sql = '';
         if ($this->refClause) {
             $sql .= "\n  ".$this->joinType.' ';
         }
-        $sql .= '('.$this->subQuery->toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters).')';
+        $sql .= '('.$this->subQuery->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters).')';
         if ($this->alias) {
-            $sql .= ' AS '.NodeFactory::escapeDBItem($this->alias, $dbConnection);
+            $sql .= ' AS '.$platform->quoteSingleIdentifier($this->alias);
         }
         if ($this->refClause) {
             $sql .= ' ON ';
-            $sql .= NodeFactory::toSql($this->refClause, $dbConnection, $parameters, ' ', true, $indent, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->refClause, $platform, $parameters, ' ', true, $indent, $conditionsMode, $extrapolateParameters);
         }
 
         return $sql;

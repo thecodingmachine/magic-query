@@ -120,7 +120,7 @@ class MagicQueryTest extends TestCase
 
         // Test strings with "
         $sql = 'SELECT * FROM users WHERE status = \'"\'';
-        $this->assertEquals('SELECT * FROM users WHERE status = \'\\"\'', self::simplifySql($magicQuery->build($sql)));
+        $this->assertEquals('SELECT * FROM users WHERE status = \'"\'', self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT 1+2 as toto FROM users';
         $this->assertEquals('SELECT 1 + 2 AS toto FROM users', self::simplifySql($magicQuery->build($sql)));

@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\Traverser\VisitorInterface;
@@ -81,16 +81,17 @@ class LimitNode implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param array      $parameters
-     * @param Connection $dbConnection
+     * @param array $parameters
+     * @param AbstractPlatform $platform
      * @param int|number $indent
-     * @param int        $conditionsMode
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      *
      * @throws \Exception
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         if ($this->value === null) {
             throw new \Exception('A limit parameter must be an integer');
@@ -98,10 +99,10 @@ class LimitNode implements NodeInterface
 
         if (is_numeric($this->value)) {
             return (int) $this->value;
-        } elseif ($dbConnection != null) {
-            return $dbConnection->quote($this->value);
+        } elseif (empty($this->value)) {
+            return null;
         } else {
-            return addslashes($this->value);
+            return $platform->quoteStringLiteral($this->value);
         }
     }
 

@@ -2,7 +2,8 @@
 
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 use Mouf\MoufManager;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\Utils\Common\ConditionInterface\ConditionInterface;
@@ -145,14 +146,15 @@ class Between implements NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $minBypass = false;
         $maxBypass = false;
@@ -182,19 +184,19 @@ class Between implements NodeInterface
         }
 
         if (!$minBypass && !$maxBypass) {
-            $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql = NodeFactory::toSql($this->leftOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
             $sql .= ' BETWEEN ';
-            $sql .= NodeFactory::toSql($this->minValueOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->minValueOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
             $sql .= ' AND ';
-            $sql .= NodeFactory::toSql($this->maxValueOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->maxValueOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         } elseif (!$minBypass && $maxBypass) {
-            $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql = NodeFactory::toSql($this->leftOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
             $sql .= ' >= ';
-            $sql .= NodeFactory::toSql($this->minValueOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->minValueOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         } elseif ($minBypass && !$maxBypass) {
-            $sql = NodeFactory::toSql($this->leftOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql = NodeFactory::toSql($this->leftOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
             $sql .= ' <= ';
-            $sql .= NodeFactory::toSql($this->maxValueOperand, $dbConnection, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->maxValueOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         } else {
             $sql = null;
         }

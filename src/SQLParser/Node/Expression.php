@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use function is_iterable;
 use Mouf\MoufInstanceDescriptor;
 use Mouf\MoufManager;
@@ -195,19 +195,20 @@ class Expression implements NodeInterface, BypassableInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param number     $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string|null
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         if (empty($this->subTree)) {
             return $this->getBaseExpression();
         }
-        $sql = NodeFactory::toSql($this->subTree, $dbConnection, $parameters, $this->delimiter, false, $indent, $conditionsMode, $extrapolateParameters);
+        $sql = NodeFactory::toSql($this->subTree, $platform, $parameters, $this->delimiter, false, $indent, $conditionsMode, $extrapolateParameters);
 
         if ($sql === null) {
             return null;

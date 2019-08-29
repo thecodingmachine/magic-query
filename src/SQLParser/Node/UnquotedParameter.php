@@ -32,7 +32,7 @@
  */
 namespace SQLParser\Node;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * This class represents a parameter (as in parameterized query).
@@ -44,16 +44,17 @@ class UnquotedParameter extends Parameter
     /**
      * Renders the object as a SQL string without quote if its a numeric.
      *
-     * @param array      $parameters
-     * @param Connection $dbConnection
+     * @param array $parameters
+     * @param AbstractPlatform $platform
      * @param int|number $indent
-     * @param int        $conditionsMode
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
-        $name = parent::toSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
+        $name = parent::toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
         $name = str_replace("'", '', $name);
 
         return $name;
