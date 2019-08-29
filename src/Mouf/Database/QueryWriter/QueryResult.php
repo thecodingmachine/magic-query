@@ -83,7 +83,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     /**
      * Returns the SQL for this query-result (without pagination, but with parameters accounted for).
      *
-     * @return string
+     * @return string|null
      */
     public function toSql()
     {

@@ -2,6 +2,7 @@
 
 namespace Mouf\Database;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use function array_filter;
 use function array_keys;
@@ -175,7 +176,7 @@ class MagicQuery
     public function toSql(NodeInterface $sqlNode, array $parameters = array(), bool $extrapolateParameters = true)
     {
         $platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySqlPlatform();
-        return $sqlNode->toSql($parameters, $platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
+        return (string) $sqlNode->toSql($parameters, $platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
     }
 
     /**
@@ -286,15 +287,15 @@ class MagicQuery
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
             }
 
-            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId());
+            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId($this->connection));
         }
 
         return $this->schemaAnalyzer;
     }
 
-    private function getConnectionUniqueId()
+    private function getConnectionUniqueId(Connection $connection)
     {
-        return hash('md4', $this->connection->getHost().'-'.$this->connection->getPort().'-'.$this->connection->getDatabase().'-'.$this->connection->getDriver()->getName());
+        return hash('md4', $connection->getHost().'-'.$connection->getPort().'-'.$connection->getDatabase().'-'.$connection->getDriver()->getName());
     }
 
     /**

@@ -377,7 +377,7 @@ class Select implements StatementInterface, NodeInterface
             throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
         } elseif (!empty($this->limit)) {
             $limit = NodeFactory::toSql($this->limit, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
-            if ($limit === '' || ($extrapolateParameters && substr(trim($limit), 0, 1) == ':')) {
+            if ($limit === '' || ($extrapolateParameters && substr(trim($limit ?? ''), 0, 1) == ':')) {
                 $limit = null;
             }
             if (!$extrapolateParameters && $this->limit instanceof UnquotedParameter && !isset($parameters[$this->limit->getName()])) {
@@ -385,7 +385,7 @@ class Select implements StatementInterface, NodeInterface
             }
             if (!empty($this->offset)) {
                 $offset = NodeFactory::toSql($this->offset, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
-                if ($offset === '' || ($extrapolateParameters && substr(trim($offset), 0, 1) == ':')) {
+                if ($offset === '' || ($extrapolateParameters && substr(trim($offset ?? ''), 0, 1) == ':')) {
                     $offset = null;
                 }
                 if (!$extrapolateParameters && $this->offset instanceof UnquotedParameter && !isset($parameters[$this->offset->getName()])) {
