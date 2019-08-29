@@ -2,6 +2,8 @@
 
 namespace Mouf\Database\QueryWriter;
 
+use Doctrine\DBAL\Statement;
+
 /**
  * Wraps the results of a PDOStatement.
  *
@@ -10,7 +12,7 @@ namespace Mouf\Database\QueryWriter;
 class ResultSet implements \Iterator
 {
     /**
-     * @var \PDOStatement
+     * @var \PDOStatement|Statement
      */
     private $statement;
     private $castToClass;
@@ -19,7 +21,7 @@ class ResultSet implements \Iterator
     private $fetched = false;
     private $rewindCalls = 0;
 
-    public function __construct(\PDOStatement $statement, $castToClass = '')
+    public function __construct($statement, $castToClass = '')
     {
         $this->statement = $statement;
         $this->castToClass = $castToClass;
