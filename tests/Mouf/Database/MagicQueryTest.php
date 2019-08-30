@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
 use PHPUnit\Framework\TestCase;
@@ -433,5 +434,14 @@ class MagicQueryTest extends TestCase
         // Let's check that MagicQuery is cleverly adding parenthesis if the user forgot those in the "IN" statement.
         $sql = 'SELECT id FROM users WHERE status IN :status';
         $this->assertEquals("SELECT id FROM users WHERE status IN (:status)", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['status' => [1,2]])));
+    }
+
+    public function testSetOutputDialect()
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+        $magicQuery->setOutputDialect(new PostgreSqlPlatform());
+
+        $sql = 'SELECT id FROM users';
+        $this->assertEquals('SELECT "id" FROM "users"', self::simplifySql($magicQuery->buildPreparedStatement($sql)));
     }
 }

@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use function array_filter;
 use function array_keys;
@@ -35,6 +36,10 @@ class MagicQuery
     private $cache;
     private $schemaAnalyzer;
     /**
+     * @var AbstractPlatform
+     */
+    private $platform;
+    /**
      * @var \Twig_Environment
      */
     private $twigEnvironment;
@@ -48,6 +53,7 @@ class MagicQuery
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
     {
         $this->connection = $connection;
+        $this->platform = $connection ? $connection->getDatabasePlatform() : new MySqlPlatform();
         if ($cache) {
             $this->cache = $cache;
         } else {
@@ -69,6 +75,19 @@ class MagicQuery
     public function setEnableTwig($enableTwig = true)
     {
         $this->enableTwig = $enableTwig;
+
+        return $this;
+    }
+
+    /**
+     * Overrides the output dialect used to generate SQL. By default, the dialect of the connection is used.
+     * If no connection is used, MySQL platform is used by default.
+     *
+     * @param AbstractPlatform $platform
+     */
+    public function setOutputDialect(AbstractPlatform $platform): self
+    {
+        $this->platform = $platform;
 
         return $this;
     }
@@ -175,8 +194,7 @@ class MagicQuery
      */
     public function toSql(NodeInterface $sqlNode, array $parameters = array(), bool $extrapolateParameters = true)
     {
-        $platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySqlPlatform();
-        return (string) $sqlNode->toSql($parameters, $platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
+        return (string) $sqlNode->toSql($parameters, $this->platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
     }
 
     /**
