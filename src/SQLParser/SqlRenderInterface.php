@@ -3,6 +3,7 @@
 namespace SQLParser;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * Objects implementing SqlRenderInterface can be rendered with the toSql method.
@@ -19,13 +20,13 @@ interface SqlRenderInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param Connection $dbConnection
-     * @param array      $parameters
-     * @param int        $indent
-     * @param int        $conditionsMode
-     * @param bool       $extrapolateParameters Whether the parameters should be fed into the returned SQL query
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
+     * @param bool $extrapolateParameters Whether the parameters should be fed into the returned SQL query
      *
-     * @return string
+     * @return string|null
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true);
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string;
 }

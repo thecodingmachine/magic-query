@@ -75,7 +75,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     public function val()
     {
         $parameters = ValueUtils::val($this->parameters);
-        $pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection).DbHelper::getFromLimitString($this->offset, $this->limit));
+        $pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection->getDatabasePlatform()).DbHelper::getFromLimitString($this->offset, $this->limit));
 
         return new ResultSet($pdoStatement);
     }
@@ -83,13 +83,13 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     /**
      * Returns the SQL for this query-result (without pagination, but with parameters accounted for).
      *
-     * @return string
+     * @return string|null
      */
     public function toSql()
     {
         $parameters = ValueUtils::val($this->parameters);
 
-        return $this->select->toSql($parameters, $this->connection);
+        return $this->select->toSql($parameters, $this->connection->getDatabasePlatform());
     }
 
     /**
@@ -133,9 +133,9 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      *
      * @param string $key
      *
-     * @return NodeInterface
+     * @return NodeInterface|null
      */
-    private function findColumnByKey($key)
+    private function findColumnByKey($key): ?NodeInterface
     {
         $columns = $this->select->getColumns();
         foreach ($columns as $column) {
@@ -152,6 +152,6 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
             }
         }
 
-        return;
+        return null;
     }
 }

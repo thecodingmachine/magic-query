@@ -33,6 +33,7 @@
 namespace SQLParser\Query;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\MoufInstanceDescriptor;
 use SQLParser\Node\NodeFactory;
 use Mouf\MoufManager;
@@ -315,14 +316,15 @@ class Select implements StatementInterface, NodeInterface
     /**
      * Renders the object as a SQL string.
      *
-     * @param array      $parameters
-     * @param Connection $dbConnection
-     * @param int|number $indent
-     * @param int        $conditionsMode
+     * @param array $parameters
+     * @param AbstractPlatform $platform
+     * @param int $indent
+     * @param int $conditionsMode
      *
+     * @param bool $extrapolateParameters
      * @return string
      */
-    public function toSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    public function toSql(array $parameters, AbstractPlatform $platform, int $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): ?string
     {
         $sql = 'SELECT ';
         if ($this->distinct) {
@@ -333,39 +335,39 @@ class Select implements StatementInterface, NodeInterface
         }
 
         if (!empty($this->columns)) {
-            $sql .= NodeFactory::toSql($this->columns, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $sql .= NodeFactory::toSql($this->columns, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
         }
 
         if (!empty($this->from)) {
-            $from = NodeFactory::toSql($this->from, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $from = NodeFactory::toSql($this->from, $platform, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($from) {
                 $sql .= "\nFROM ".$from;
             }
         }
 
         if (!empty($this->where)) {
-            $where = NodeFactory::toSql($this->where, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $where = NodeFactory::toSql($this->where, $platform, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($where) {
                 $sql .= "\nWHERE ".$where;
             }
         }
 
         if (!empty($this->group)) {
-            $groupBy = NodeFactory::toSql($this->group, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $groupBy = NodeFactory::toSql($this->group, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($groupBy) {
                 $sql .= "\nGROUP BY ".$groupBy;
             }
         }
 
         if (!empty($this->having)) {
-            $having = NodeFactory::toSql($this->having, $dbConnection, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $having = NodeFactory::toSql($this->having, $platform, $parameters, ' ', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($having) {
                 $sql .= "\nHAVING ".$having;
             }
         }
 
         if (!empty($this->order)) {
-            $order = NodeFactory::toSql($this->order, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            $order = NodeFactory::toSql($this->order, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
             if ($order) {
                 $sql .= "\nORDER BY ".$order;
             }
@@ -374,16 +376,16 @@ class Select implements StatementInterface, NodeInterface
         if (!empty($this->offset) && empty($this->limit)) {
             throw new \Exception('There is no offset if no limit is provided. An error may have occurred during SQLParsing.');
         } elseif (!empty($this->limit)) {
-            $limit = NodeFactory::toSql($this->limit, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
-            if ($limit === '' || ($extrapolateParameters && substr(trim($limit), 0, 1) == ':')) {
+            $limit = NodeFactory::toSql($this->limit, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            if ($limit === '' || ($extrapolateParameters && substr(trim($limit ?? ''), 0, 1) == ':')) {
                 $limit = null;
             }
             if (!$extrapolateParameters && $this->limit instanceof UnquotedParameter && !isset($parameters[$this->limit->getName()])) {
                 $limit = null;
             }
             if (!empty($this->offset)) {
-                $offset = NodeFactory::toSql($this->offset, $dbConnection, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
-                if ($offset === '' || ($extrapolateParameters && substr(trim($offset), 0, 1) == ':')) {
+                $offset = NodeFactory::toSql($this->offset, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+                if ($offset === '' || ($extrapolateParameters && substr(trim($offset ?? ''), 0, 1) == ':')) {
                     $offset = null;
                 }
                 if (!$extrapolateParameters && $this->offset instanceof UnquotedParameter && !isset($parameters[$this->offset->getName()])) {

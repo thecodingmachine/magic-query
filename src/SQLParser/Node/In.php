@@ -1,7 +1,7 @@
 <?php
 
 namespace SQLParser\Node;
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mouf\Database\MagicQueryException;
 
 /**
@@ -21,7 +21,7 @@ class In extends AbstractTwoOperandsOperator
         return 'IN';
     }
 
-    protected function getSql(array $parameters = array(), Connection $dbConnection = null, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    protected function getSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
     {
         $rightOperand = $this->getRightOperand();
 
@@ -40,7 +40,7 @@ class In extends AbstractTwoOperandsOperator
             }
         }
 
-        return parent::getSql($parameters, $dbConnection, $indent, $conditionsMode, $extrapolateParameters);
+        return parent::getSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
     }
 
     protected function refactorParameterToExpression(NodeInterface $rightOperand): NodeInterface

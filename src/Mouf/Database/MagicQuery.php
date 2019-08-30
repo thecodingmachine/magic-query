@@ -2,6 +2,9 @@
 
 namespace Mouf\Database;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use function array_filter;
 use function array_keys;
 use Doctrine\Common\Cache\VoidCache;
@@ -33,6 +36,10 @@ class MagicQuery
     private $cache;
     private $schemaAnalyzer;
     /**
+     * @var AbstractPlatform
+     */
+    private $platform;
+    /**
      * @var \Twig_Environment
      */
     private $twigEnvironment;
@@ -46,6 +53,7 @@ class MagicQuery
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
     {
         $this->connection = $connection;
+        $this->platform = $connection ? $connection->getDatabasePlatform() : new MySqlPlatform();
         if ($cache) {
             $this->cache = $cache;
         } else {
@@ -67,6 +75,19 @@ class MagicQuery
     public function setEnableTwig($enableTwig = true)
     {
         $this->enableTwig = $enableTwig;
+
+        return $this;
+    }
+
+    /**
+     * Overrides the output dialect used to generate SQL. By default, the dialect of the connection is used.
+     * If no connection is used, MySQL platform is used by default.
+     *
+     * @param AbstractPlatform $platform
+     */
+    public function setOutputDialect(AbstractPlatform $platform): self
+    {
+        $this->platform = $platform;
 
         return $this;
     }
@@ -173,7 +194,7 @@ class MagicQuery
      */
     public function toSql(NodeInterface $sqlNode, array $parameters = array(), bool $extrapolateParameters = true)
     {
-        return $sqlNode->toSql($parameters, $this->connection, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
+        return (string) $sqlNode->toSql($parameters, $this->platform, 0, SqlRenderInterface::CONDITION_GUESS, $extrapolateParameters);
     }
 
     /**
@@ -284,15 +305,15 @@ class MagicQuery
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
             }
 
-            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId());
+            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId($this->connection));
         }
 
         return $this->schemaAnalyzer;
     }
 
-    private function getConnectionUniqueId()
+    private function getConnectionUniqueId(Connection $connection)
     {
-        return hash('md4', $this->connection->getHost().'-'.$this->connection->getPort().'-'.$this->connection->getDatabase().'-'.$this->connection->getDriver()->getName());
+        return hash('md4', $connection->getHost().'-'.$connection->getPort().'-'.$connection->getDatabase().'-'.$connection->getDriver()->getName());
     }
 
     /**
