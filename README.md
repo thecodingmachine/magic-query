@@ -154,6 +154,15 @@ $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 $magicQuery = new \Mouf\Database\MagicQuery($conn);
 ```
 
+Also, if you have no connection to your database configured but you want to generate SQL in some specific dialect, you can
+instead set the DBAL database platform used:
+
+```php
+$magicQuery->setOutputDialect(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform());
+$magicQuery = new \Mouf\Database\MagicQuery();
+```
+
+
 What about performances?
 ------------------------
 
