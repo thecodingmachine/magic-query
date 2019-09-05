@@ -443,5 +443,11 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT id FROM users';
         $this->assertEquals('SELECT "id" FROM "users"', self::simplifySql($magicQuery->buildPreparedStatement($sql)));
+
+        $magicQuery->setOutputDialect(null);
+
+        $sql = 'SELECT id FROM users';
+        $this->assertEquals('SELECT id FROM users', self::simplifySql($magicQuery->buildPreparedStatement($sql)));
+
     }
 }

@@ -80,14 +80,18 @@ class MagicQuery
     }
 
     /**
-     * Overrides the output dialect used to generate SQL. By default, the dialect of the connection is used.
+     * Overrides the output dialect used to generate SQL. By default (or is you set this explicitly to null), the dialect of the connection is used.
      * If no connection is used, MySQL platform is used by default.
      *
      * @param AbstractPlatform $platform
      */
-    public function setOutputDialect(AbstractPlatform $platform): self
+    public function setOutputDialect(?AbstractPlatform $platform): self
     {
-        $this->platform = $platform;
+        if ($platform !== null) {
+            $this->platform = $platform;
+        } else {
+            $this->platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySqlPlatform();
+        }
 
         return $this;
     }
@@ -134,7 +138,7 @@ class MagicQuery
 
         $availableParameterKeys = array_keys(array_filter($parameters, static function($param) { return $param !== null;}));
         // We choose md4 because it is fast.
-        $cacheKey = 'request_build_'.hash('md4', $sql.'__'.implode('_/_', $availableParameterKeys));
+        $cacheKey = 'request_build_'.hash('md4', get_class($this->platform).'__'.$sql.'__'.implode('_/_', $availableParameterKeys));
         $newSql = $this->cache->fetch($cacheKey);
         if ($newSql === false) {
             $select = $this->parse($sql);
