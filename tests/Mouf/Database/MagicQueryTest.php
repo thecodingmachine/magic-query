@@ -79,6 +79,12 @@ class MagicQueryTest extends TestCase
         $sql = 'SELECT * FROM users WHERE status IN :statuses';
         $this->assertEquals('SELECT * FROM users WHERE status IN (\'1\',\'2\')', self::simplifySql($magicQuery->build($sql, ['statuses' => [1, 2]])));
 
+        $sql = 'SELECT * FROM users WHERE status not in :status';
+        $this->assertEquals("SELECT * FROM users WHERE status NOT IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2, 4]])));
+
+        $sql = 'SELECT * FROM users WHERE status not in (:status)';
+        $this->assertEquals("SELECT * FROM users WHERE status NOT IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2, 4]])));
+
         $sql = 'SELECT * FROM myTable where someField BETWEEN :value1 AND :value2';
         $this->assertEquals("SELECT * FROM myTable WHERE someField BETWEEN '2' AND '4'", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4])));
         $this->assertEquals("SELECT * FROM myTable WHERE someField >= '2'", self::simplifySql($magicQuery->build($sql, ['value1' => 2])));
@@ -434,6 +440,10 @@ class MagicQueryTest extends TestCase
         // Let's check that MagicQuery is cleverly adding parenthesis if the user forgot those in the "IN" statement.
         $sql = 'SELECT id FROM users WHERE status IN :status';
         $this->assertEquals("SELECT id FROM users WHERE status IN (:status)", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['status' => [1,2]])));
+
+        // Let's check that MagicQuery is cleverly adding parenthesis if the user forgot those in the "NOT IN" statement.
+        $sql = 'SELECT id FROM users WHERE status NOT IN :status';
+        $this->assertEquals("SELECT id FROM users WHERE status NOT IN (:status)", self::simplifySql($magicQuery->buildPreparedStatement($sql, ['status' => [1,2]])));
     }
 
     public function testSetOutputDialect()
