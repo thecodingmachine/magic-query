@@ -7,7 +7,7 @@ namespace SQLParser\Node;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class NotIn extends AbstractTwoOperandsOperator
+class NotIn extends AbstractInListOperator
 {
     /**
      * Returns the symbol for this operator.
