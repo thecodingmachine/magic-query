@@ -35,3 +35,10 @@ jobs:
      - *composerupdate
     script:
      - *phpunit
+  - stage: test
+    php: 7.3
+    env: PREFER_LOWEST=""
+    before_script:
+      - *composerupdate
+    script:
+      - *phpunit

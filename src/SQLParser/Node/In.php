@@ -9,7 +9,7 @@ use Mouf\Database\MagicQueryException;
  *
  * @author David Négrier <d.negrier@thecodingmachine.com>
  */
-class In extends AbstractTwoOperandsOperator
+class In extends AbstractInListOperator
 {
     /**
      * Returns the symbol for this operator.
@@ -19,53 +19,5 @@ class In extends AbstractTwoOperandsOperator
     protected function getOperatorSymbol()
     {
         return 'IN';
-    }
-
-    protected function getSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
-    {
-        $rightOperand = $this->getRightOperand();
-
-        $rightOperand = $this->refactorParameterToExpression($rightOperand);
-
-        $this->setRightOperand($rightOperand);
-
-        $parameterNode = $this->getParameter($rightOperand);
-
-        if ($parameterNode !== null) {
-            if (!isset($parameters[$parameterNode->getName()])) {
-                throw new MagicQueryException("Missing parameter '" . $parameterNode->getName() . "' for 'IN' operand.");
-            }
-            if ($parameters[$parameterNode->getName()] === []) {
-                return "FALSE";
-            }
-        }
-
-        return parent::getSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
-    }
-
-    protected function refactorParameterToExpression(NodeInterface $rightOperand): NodeInterface
-    {
-        if ($rightOperand instanceof Parameter) {
-            $expression = new Expression();
-            $expression->setSubTree([$rightOperand]);
-            $expression->setBrackets(true);
-            return $expression;
-        }
-        return $rightOperand;
-    }
-
-    protected function getParameter(NodeInterface $operand): ?Parameter
-    {
-        if (!$operand instanceof Expression) {
-            return null;
-        }
-        $subtree = $operand->getSubTree();
-        if (!isset($subtree[0])) {
-            return null;
-        }
-        if ($subtree[0] instanceof Parameter) {
-            return $subtree[0];
-        }
-        return null;
     }
 }
