@@ -183,7 +183,7 @@ class NodeFactory
                 }
                 $expr->setJoinType($joinType);
 
-                if (isset($desc['alias'])) {
+                if (isset($desc['alias']['name'])) {
                     $expr->setAlias($desc['alias']['name']);
                 }
                 $subTreeNodes = self::buildFromSubtree($desc['ref_clause']);
@@ -366,7 +366,7 @@ class NodeFactory
                     $expr->setSubTree(self::buildFromSubtree($desc['sub_tree']));
                 }
 
-                if (isset($desc['alias'])) {
+                if (isset($desc['alias']['name'])) {
                     $expr->setAlias($desc['alias']['name']);
                 }
                 if (isset($desc['direction'])) {
