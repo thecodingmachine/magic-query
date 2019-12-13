@@ -5,6 +5,7 @@ namespace Mouf\Database;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Twig\Environment;
 use function array_filter;
 use function array_keys;
 use Doctrine\Common\Cache\VoidCache;
@@ -40,7 +41,7 @@ class MagicQuery
      */
     private $platform;
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     private $twigEnvironment;
     private $enableTwig = false;
@@ -321,7 +322,7 @@ class MagicQuery
     }
 
     /**
-     * @return \Twig_Environment
+     * @return Environment
      */
     private function getTwigEnvironment()
     {

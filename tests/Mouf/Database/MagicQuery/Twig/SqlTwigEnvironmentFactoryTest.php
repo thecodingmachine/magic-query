@@ -18,7 +18,7 @@ class SqlTwigEnvironmentFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException Twig_Error_Runtime
+     * @expectedException \Twig\Error\RuntimeError
      */
     public function testException()
     {
