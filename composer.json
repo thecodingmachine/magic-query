@@ -19,7 +19,7 @@
     	"mouf/utils.common.paginable-interface": "~1.0",
     	"mouf/utils.common.sortable-interface": "~1.0",
         "mouf/schema-analyzer": "~1.0",
-        "twig/twig": "^2 || ^3",
+        "twig/twig": "^2.4 || ^3",
         "greenlion/php-sql-parser": "^4.1.2",
         "doctrine/cache": "^1.5"
     },
