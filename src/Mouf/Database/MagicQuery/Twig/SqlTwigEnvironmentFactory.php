@@ -2,6 +2,9 @@
 
 namespace Mouf\Database\MagicQuery\Twig;
 
+use Twig\Environment;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\EscaperExtension;
 use Twig_Extension_Core;
 
 /**
@@ -26,14 +29,14 @@ class SqlTwigEnvironmentFactory
             'autoescape' => 'sql' // Default autoescape mode: sql
         );
 
-        $twig = new \Twig_Environment($stringLoader, $options);
+        $twig = new Environment($stringLoader, $options);
 
         // Default escaper will throw an exception. This is because we want to use SQL parameters instead of Twig.
         // This has a number of advantages, especially in terms of caching.
 
-        /** @var Twig_Extension_Core $twigExtensionCore */
-        $twigExtensionCore = $twig->getExtension('Twig_Extension_Core');
-        $twigExtensionCore->setEscaper('sql', function () {
+        /** @var EscaperExtension $twigExtensionEscaper */
+        $twigExtensionEscaper = $twig->getExtension(EscaperExtension::class);
+        $twigExtensionEscaper->setEscaper('sql', function () {
             throw new ForbiddenTwigParameterInSqlException('You cannot use Twig expressions (like "{{ id }}"). Instead, you should use SQL parameters (like ":id"). Twig integration is limited to Twig statements (like "{% for .... %}"');
         });
 

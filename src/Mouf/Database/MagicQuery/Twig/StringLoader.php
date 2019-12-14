@@ -1,6 +1,9 @@
 <?php
 
 namespace Mouf\Database\MagicQuery\Twig;
+use Twig\Error\LoaderError;
+use Twig\Loader\LoaderInterface;
+use Twig\Source;
 use Twig_Error_Loader;
 use Twig_Source;
 
@@ -12,7 +15,7 @@ use Twig_Source;
  * We enable it back in our case because there won't be a million of different cache keys.
  * And yes, we know what we are doing :)
  */
-class StringLoader implements \Twig_LoaderInterface
+class StringLoader implements LoaderInterface
 {
     /**
      * {@inheritdoc}
@@ -24,14 +27,14 @@ class StringLoader implements \Twig_LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function getCacheKey($name)
+    public function getCacheKey($name): string
     {
         return $name;
     }
     /**
      * {@inheritdoc}
      */
-    public function isFresh($name, $time)
+    public function isFresh($name, $time): bool
     {
         return true;
     }
@@ -41,13 +44,11 @@ class StringLoader implements \Twig_LoaderInterface
      *
      * @param string $name The template logical name
      *
-     * @return Twig_Source
-     *
-     * @throws Twig_Error_Loader When $name is not found
+     * @return Source
      */
-    public function getSourceContext($name)
+    public function getSourceContext($name): Source
     {
-        return new Twig_Source($name, $name);
+        return new Source($name, $name);
     }
 
     /**
