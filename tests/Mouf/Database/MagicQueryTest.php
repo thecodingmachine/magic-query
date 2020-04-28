@@ -196,6 +196,12 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT 42 as fooalias FROM bar HAVING fooalias = 24';
         $this->assertEquals('SELECT 42 AS fooalias FROM bar HAVING fooalias = 24', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT bar.foo FROM bar ORDER BY (bar.foo IS NULL) DESC, (bar.baz = 0) DESC, bar.id DESC';
+        $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT (id + 2) AS foo FROM bar';
+        $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
     /**

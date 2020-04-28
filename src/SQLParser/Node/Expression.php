@@ -214,16 +214,15 @@ class Expression implements NodeInterface, BypassableInterface
             return null;
         }
 
+        if ($this->brackets) {
+            $sql = '('.$sql.')';
+        }
         if ($this->alias) {
             $sql .= ' AS '.$this->alias;
         }
         if ($this->direction) {
             $sql .= ' '.$this->direction;
         }
-        if ($this->brackets) {
-            $sql = '('.$sql.')';
-        }
-
 
         return $sql;
     }
