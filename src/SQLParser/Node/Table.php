@@ -164,6 +164,31 @@ class Table implements NodeInterface
     }
 
     /**
+     * @var Hint[]
+     */
+    private $hints;
+
+    /**
+     * Return the list of table hints
+     *
+     * @return Hint[]
+     */
+    public function getHints(): array
+    {
+        return $this->hints;
+    }
+
+    /**
+     * Set a list of table hints
+     *
+     * @param Hint[] $hints
+     */
+    public function setHints(array $hints): void
+    {
+        $this->hints = $hints;
+    }
+
+    /**
      * Returns a Mouf instance descriptor describing this object.
      *
      * @param MoufManager $moufManager
@@ -205,6 +230,11 @@ class Table implements NodeInterface
         $sql .= $platform->quoteSingleIdentifier($this->table);
         if ($this->alias) {
             $sql .= ' AS '.$platform->quoteSingleIdentifier($this->alias);
+        }
+        if ($this->hints) {
+            foreach ($this->hints as $hint) {
+                $sql .= ' ' . $hint->getType() . ' ' . $hint->getList();
+            }
         }
         if ($this->refClause) {
             $sql .= ' ON ';

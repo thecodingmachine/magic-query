@@ -191,6 +191,12 @@ class NodeFactory
                     $expr->setRefClause(self::simplify($subTreeNodes));
                 }
 
+                if (isset($desc['hints']) && $desc['hints']) {
+                    $expr->setHints(array_map(static function (array $hint) {
+                        return new Hint($hint['hint_type'], $hint['hint_list']);
+                    }, $desc['hints']));
+                }
+
                 // Debug:
                 unset($desc['base_expr']);
                 unset($desc['expr_type']);
