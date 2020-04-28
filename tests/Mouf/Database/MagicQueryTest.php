@@ -85,6 +85,9 @@ class MagicQueryTest extends TestCase
         $sql = 'SELECT * FROM users WHERE status not in (:status)';
         $this->assertEquals("SELECT * FROM users WHERE status NOT IN ('2','4')", self::simplifySql($magicQuery->build($sql, ['status' => [2, 4]])));
 
+        $sql = 'SELECT * FROM users WHERE email not like :email';
+        $this->assertEquals("SELECT * FROM users WHERE email NOT LIKE '%@example.com'", self::simplifySql($magicQuery->build($sql, ['email' => '%@example.com'])));
+
         $sql = 'SELECT * FROM myTable where someField BETWEEN :value1 AND :value2';
         $this->assertEquals("SELECT * FROM myTable WHERE someField BETWEEN '2' AND '4'", self::simplifySql($magicQuery->build($sql, ['value1' => 2, 'value2' => 4])));
         $this->assertEquals("SELECT * FROM myTable WHERE someField >= '2'", self::simplifySql($magicQuery->build($sql, ['value1' => 2])));

@@ -497,7 +497,7 @@ class NodeFactory
             array('<<', '>>'),
             array('&'),
             array('|'),
-            array('=' /*(comparison)*/, '<=>', '>=', '>', '<=', '<', '<>', '!=', 'IS', 'LIKE', 'REGEXP', 'IN', 'IS NOT', 'NOT IN'),
+            array('=' /*(comparison)*/, '<=>', '>=', '>', '<=', '<', '<>', '!=', 'IS', 'LIKE', 'REGEXP', 'IN', 'IS NOT', 'NOT IN', 'NOT LIKE'),
             array('AND_FROM_BETWEEN'),
             array('THEN'),
             array('WHEN'),
@@ -520,6 +520,7 @@ class NodeFactory
             'IS' => 'SQLParser\Node\Is',
             'IS NOT' => 'SQLParser\Node\IsNot',
             'LIKE' => 'SQLParser\Node\Like',
+            'NOT LIKE' => 'SQLParser\Node\NotLike',
             'REGEXP' => 'SQLParser\Node\Regexp',
             'IN' => 'SQLParser\Node\In',
             'NOT IN' => 'SQLParser\Node\NotIn',
@@ -577,6 +578,12 @@ class NodeFactory
                 $notIn = new Operator();
                 $notIn->setValue('NOT IN');
                 $newNodes[] = $notIn;
+                ++$i;
+            } elseif ($node instanceof Operator && isset($nodes[$i + 1]) && $nodes[$i + 1] instanceof Operator
+                    && strtoupper($node->getValue()) == 'NOT' && strtoupper($nodes[$i + 1]->getValue()) == 'LIKE') {
+                $notLike = new Operator();
+                $notLike->setValue('NOT LIKE');
+                $newNodes[] = $notLike;
                 ++$i;
             } else {
                 $newNodes[] = $node;
