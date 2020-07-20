@@ -129,7 +129,7 @@ class MagicQueryTest extends TestCase
         $this->assertEquals("SELECT CASE status WHEN 'on' THEN '1' WHEN 'off' THEN '0' ELSE '-1' END AS my_case FROM users", self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT * FROM users WHERE status IN :statuses!';
-        $this->assertEquals('SELECT * FROM users WHERE FALSE', self::simplifySql($magicQuery->build($sql, ['statuses' => []])));
+        $this->assertEquals('SELECT * FROM users WHERE 0 <> 0', self::simplifySql($magicQuery->build($sql, ['statuses' => []])));
 
         // Test strings with "
         $sql = 'SELECT * FROM users WHERE status = \'"\'';
