@@ -27,7 +27,7 @@ abstract class AbstractInListOperator extends AbstractTwoOperandsOperator
                 throw new MagicQueryException("Missing parameter '" . $parameterNode->getName() . "' for 'IN' operand.");
             }
             if ($parameters[$parameterNode->getName()] === []) {
-                return "FALSE";
+                return "0 <> 0";
             }
         }
 
