@@ -146,7 +146,7 @@ class MagicQueryTest extends TestCase
 
         $sql = "SELECT Substring_index(ee.`data`, ':', -1) as foo FROM users";
         $this->assertEquals("SELECT Substring_index(ee.data, ':', -1) AS foo FROM users", self::simplifySql($magicQuery->build($sql)));
-        
+
         $sql = 'SELECT * FROM users GROUP BY id, login';
         $this->assertEquals('SELECT * FROM users GROUP BY id, login', self::simplifySql($magicQuery->build($sql)));
 
@@ -201,6 +201,9 @@ class MagicQueryTest extends TestCase
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT (id + 2) AS foo FROM bar';
+        $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT `states`.`country_id`, `states`.`code` FROM states)';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
@@ -380,9 +383,9 @@ class MagicQueryTest extends TestCase
             ORDER BY MATCH(column) AGAINST(:searchTerm IN BOOLEAN MODE) DESC
         ";
         $expectedSql = "SELECT MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) AS rang FROM table WHERE MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) ORDER BY MATCH(column) AGAINST('searchString' IN BOOLEAN MODE) DESC";
-        
+
         $params["searchTerm"] = "searchString";
-        
+
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql, $params)));
     }
 
