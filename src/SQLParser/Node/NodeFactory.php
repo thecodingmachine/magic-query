@@ -42,7 +42,7 @@ class NodeFactory
 
                 // If the constant has an alias, it is declared in the columns section.
                 // If this is the case, let's wrap it in an "expression"
-                if (isset($desc['alias'])) {
+                if (isset($desc['alias']['name'])) {
                     $expression = new Expression();
                     $expression->setBaseExpression($desc['base_expr']);
                     $expression->setSubTree($const);
@@ -108,7 +108,7 @@ class NodeFactory
                         $instance->setDatabase($baseName);
                     }
 
-                    if (!empty($desc['alias'])) {
+                    if (!empty($desc['alias']['name'])) {
                         $instance->setAlias($desc['alias']['name']);
                     }
 
@@ -225,7 +225,7 @@ class NodeFactory
                     $expr->setJoinType($desc['join_type']);
                 }
 
-                if (isset($desc['alias'])) {
+                if (isset($desc['alias']['name'])) {
                     $expr->setAlias($desc['alias']['name']);
                 }
 
@@ -285,7 +285,7 @@ class NodeFactory
                     $expr->setSubTree(self::buildFromSubtree($desc['sub_tree']));
                 }
 
-                if (isset($desc['alias'])) {
+                if (isset($desc['alias']['name'])) {
                     $expr->setAlias($desc['alias']['name']);
                 }
                 if (isset($desc['direction'])) {
