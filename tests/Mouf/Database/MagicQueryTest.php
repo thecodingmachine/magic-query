@@ -475,4 +475,12 @@ class MagicQueryTest extends TestCase
         $this->assertEquals('SELECT id FROM users', self::simplifySql($magicQuery->buildPreparedStatement($sql)));
 
     }
+
+    public function testPrepareStatementCache(): void
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+
+        $this->assertEquals('SELECT * FROM users WHERE 0 <> 0', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => []])));
+        $this->assertEquals('SELECT * FROM users WHERE id IN (:users)', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => [1]])));
+    }
 }

@@ -137,7 +137,7 @@ class MagicQuery
             $sql = $this->getTwigEnvironment()->render($sql, $parameters);
         }
 
-        $availableParameterKeys = array_keys(array_filter($parameters, static function($param) { return $param !== null;}));
+        $availableParameterKeys = array_keys(array_filter($parameters, static function($param) { return $param !== null && $param !== [];}));
         // We choose md4 because it is fast.
         $cacheKey = 'request_build_'.hash('md4', get_class($this->platform).'__'.$sql.'__'.implode('_/_', $availableParameterKeys));
         $newSql = $this->cache->fetch($cacheKey);
