@@ -196,7 +196,7 @@ class SubQuery implements NodeInterface
         }
         $sql .= '('.$this->subQuery->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters).')';
         if ($this->alias) {
-            $sql .= ' AS '.$platform->quoteSingleIdentifier($this->alias);
+            $sql .= ' '.$platform->quoteSingleIdentifier($this->alias);
         }
         if ($this->refClause) {
             $sql .= ' ON ';
