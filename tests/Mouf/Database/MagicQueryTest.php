@@ -205,6 +205,9 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT COUNT(*) FROM (SELECT DISTINCT states.country_id, states.code FROM states)';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT COUNT(*) AS cnt FROM (SELECT id FROM country) subquery';
+        $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
     /**
