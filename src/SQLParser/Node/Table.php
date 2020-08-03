@@ -229,7 +229,7 @@ class Table implements NodeInterface
         }
         $sql .= $platform->quoteSingleIdentifier($this->table);
         if ($this->alias) {
-            $sql .= ' AS '.$platform->quoteSingleIdentifier($this->alias);
+            $sql .= ' '.$platform->quoteSingleIdentifier($this->alias);
         }
         if ($this->hints) {
             foreach ($this->hints as $hint) {
