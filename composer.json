@@ -67,6 +67,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon src"
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon"
     }
 }
