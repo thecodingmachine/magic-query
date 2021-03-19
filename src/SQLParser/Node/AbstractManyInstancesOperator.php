@@ -15,9 +15,10 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 abstract class AbstractManyInstancesOperator implements NodeInterface
 {
+    /** @var array */
     private $operands;
 
-    public function getOperands()
+    public function getOperands(): array
     {
         return $this->operands;
     }
@@ -30,7 +31,7 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
      *
      * @param array<NodeInterface> $operands
      */
-    public function setOperands($operands)
+    public function setOperands($operands): void
     {
         if (!is_array($operands)) {
             $operands = array($operands);
@@ -108,5 +109,5 @@ abstract class AbstractManyInstancesOperator implements NodeInterface
      *
      * @return string
      */
-    abstract protected function getOperatorSymbol();
+    abstract protected function getOperatorSymbol(): string;
 }

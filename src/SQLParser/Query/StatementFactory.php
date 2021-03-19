@@ -2,6 +2,7 @@
 
 namespace SQLParser\Query;
 
+use Mouf\Database\MagicQueryException;
 use SQLParser\Node\NodeFactory;
 use SQLParser\Node\Operator;
 use SQLParser\Node\Reserved;
@@ -13,6 +14,10 @@ use SQLParser\Node\Reserved;
  */
 class StatementFactory
 {
+    /**
+     * @return Select|Union
+     * @throws MagicQueryException
+     */
     public static function toObject(array $desc)
     {
         if (isset($desc['SELECT'])) {
@@ -88,6 +93,7 @@ class StatementFactory
 
             return $select;
         } elseif (isset($desc['UNION'])) {
+            /** @var Select[] $selects */
             $selects = array_map([self::class, 'toObject'], $desc['UNION']);
 
             return new Union($selects);

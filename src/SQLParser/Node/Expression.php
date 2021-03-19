@@ -46,6 +46,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Expression implements NodeInterface, BypassableInterface
 {
+    /** @var string */
     private $baseExpression;
 
     /**
@@ -63,13 +64,17 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param string $baseExpression
      */
-    public function setBaseExpression($baseExpression)
+    public function setBaseExpression($baseExpression): void
     {
         $this->baseExpression = $baseExpression;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $subTree;
 
+    /**
+     * @return NodeInterface|NodeInterface[]
+     */
     public function getSubTree()
     {
         return $this->subTree;
@@ -82,14 +87,17 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param array<NodeInterface>|NodeInterface $subTree
      */
-    public function setSubTree($subTree)
+    public function setSubTree($subTree): void
     {
-        $this->subTree = $subTree;
-        $this->subTree = NodeFactory::simplify($this->subTree);
+        $this->subTree = NodeFactory::simplify($subTree);
     }
 
+    /** @var string */
     private $alias;
 
+    /**
+     * @return string
+     */
     public function getAlias()
     {
         return $this->alias;
@@ -102,13 +110,17 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param string $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
     }
 
+    /** @var string */
     private $direction;
 
+    /**
+     * @return string
+     */
     public function getDiretion()
     {
         return $this->direction;
@@ -121,11 +133,12 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param string $direction
      */
-    public function setDirection($direction)
+    public function setDirection($direction): void
     {
         $this->direction = $direction;
     }
 
+    /** @var bool */
     private $brackets = false;
 
     /**
@@ -145,11 +158,12 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param bool $brackets
      */
-    public function setBrackets($brackets)
+    public function setBrackets($brackets): void
     {
         $this->brackets = $brackets;
     }
 
+    /** @var string */
     private $delimiter = ' ';
 
     /**
@@ -165,7 +179,7 @@ class Expression implements NodeInterface, BypassableInterface
      *
      * @param string $delimiter
      */
-    public function setDelimiter($delimiter)
+    public function setDelimiter($delimiter): void
     {
         $this->delimiter = $delimiter;
     }

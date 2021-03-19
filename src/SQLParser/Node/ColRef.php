@@ -44,6 +44,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class ColRef implements NodeInterface
 {
+    /** @var mixed */
     private $database;
 
     /**
@@ -61,11 +62,12 @@ class ColRef implements NodeInterface
      *
      * @param mixed $database
      */
-    public function setDatabase($database)
+    public function setDatabase($database): void
     {
         $this->database = $database;
     }
 
+    /** @var string */
     private $table;
 
     /**
@@ -85,11 +87,12 @@ class ColRef implements NodeInterface
      *
      * @param string $table
      */
-    public function setTable($table)
+    public function setTable($table): void
     {
         $this->table = $table;
     }
 
+    /** @var string */
     private $column;
 
     /**
@@ -109,11 +112,12 @@ class ColRef implements NodeInterface
      *
      * @param string $column
      */
-    public function setColumn($column)
+    public function setColumn($column): void
     {
         $this->column = $column;
     }
 
+    /** @var string */
     private $alias;
 
     /**
@@ -133,11 +137,12 @@ class ColRef implements NodeInterface
      *
      * @param string $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
     }
 
+    /** @var string */
     private $direction;
 
     /**
@@ -157,7 +162,7 @@ class ColRef implements NodeInterface
      *
      * @param string $direction
      */
-    public function setDirection($direction)
+    public function setDirection($direction): void
     {
         $this->direction = $direction;
     }

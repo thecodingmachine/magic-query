@@ -39,9 +39,13 @@ namespace SQLParser\Node;
  */
 class Operation extends AbstractManyInstancesOperator
 {
+    /** @var string */
     private $operator;
 
-    public function getOperatorSymbol()
+    /**
+     * @return string
+     */
+    public function getOperatorSymbol(): string
     {
         return $this->operator;
     }
@@ -51,7 +55,7 @@ class Operation extends AbstractManyInstancesOperator
      *
      * @param string $operator
      */
-    public function setOperatorSymbol($operator)
+    public function setOperatorSymbol($operator): void
     {
         $this->operator = $operator;
     }

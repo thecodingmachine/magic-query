@@ -1,0 +1,197 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Mouf\\\\Database\\\\QueryWriter\\\\QueryResult\\:\\:val\\(\\) should return array but returns Mouf\\\\Database\\\\QueryWriter\\\\ResultSet\\.$#"
+			count: 1
+			path: src/Mouf/Database/QueryWriter/QueryResult.php
+
+		-
+			message: "#^Method Mouf\\\\Database\\\\QueryWriter\\\\Utils\\\\DbHelper\\:\\:getAll\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/Mouf/Database/QueryWriter/Utils/DbHelper.php
+
+		-
+			message: "#^Parameter \\#1 \\$rightOperand of method SQLParser\\\\Node\\\\AbstractInListOperator\\:\\:refactorParameterToExpression\\(\\) expects SQLParser\\\\Node\\\\NodeInterface, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\|string given\\.$#"
+			count: 1
+			path: src/SQLParser/Node/AbstractInListOperator.php
+
+		-
+			message: "#^Cannot access offset 0 on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\.$#"
+			count: 1
+			path: src/SQLParser/Node/AbstractInListOperator.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\AbstractTwoOperandsOperator\\:\\:setLeftOperand\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/AbstractTwoOperandsOperator.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\AbstractTwoOperandsOperator\\:\\:setRightOperand\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/AbstractTwoOperandsOperator.php
+
+		-
+			message: "#^Cannot call method walk\\(\\) on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\|string\\.$#"
+			count: 2
+			path: src/SQLParser/Node/AbstractTwoOperandsOperator.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\Between\\:\\:setLeftOperand\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Between.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\Between\\:\\:setMinValueOperand\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Between.php
+
+		-
+			message: "#^Cannot call method walk\\(\\) on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\|string\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Between.php
+
+		-
+			message: "#^Cannot call method walk\\(\\) on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\|string\\.$#"
+			count: 1
+			path: src/SQLParser/Node/CaseOperation.php
+
+		-
+			message: "#^Cannot access offset mixed on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\.$#"
+			count: 2
+			path: src/SQLParser/Node/Expression.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:toObject\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$refClause of method SQLParser\\\\Node\\\\SubQuery\\:\\:setRefClause\\(\\) expects array\\<SQLParser\\\\Node\\\\NodeInterface\\>, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:buildFromSubtree\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:buildFromSubtree\\(\\) has parameter \\$subTree with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:mapArrayToNodeObjectList\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Property SQLParser\\\\Node\\\\NodeFactory\\:\\:\\$PRECEDENCE has no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Property SQLParser\\\\Node\\\\NodeFactory\\:\\:\\$OPERATOR_TO_CLASS has no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$args of function array_merge expects array, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:array_map_deep\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:array_map_deep\\(\\) has parameter \\$array with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\NodeFactory\\:\\:array_map_deep\\(\\) has parameter \\$callback with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/NodeFactory.php
+
+		-
+			message: "#^Property SQLParser\\\\Node\\\\Operator\\:\\:\\$value has no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Operator.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\Operator\\:\\:getValue\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Operator.php
+
+		-
+			message: "#^Method SQLParser\\\\Node\\\\Operator\\:\\:setValue\\(\\) has no return typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Operator.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between mixed and null will always evaluate to false\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Parameter.php
+
+		-
+			message: "#^Argument of an invalid type array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/SQLParser/Node/SimpleFunction.php
+
+		-
+			message: "#^Cannot access offset mixed on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\.$#"
+			count: 2
+			path: src/SQLParser/Node/SimpleFunction.php
+
+		-
+			message: "#^Cannot access offset mixed on array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\.$#"
+			count: 2
+			path: src/SQLParser/Node/Table.php
+
+		-
+			message: "#^Elseif condition is always true\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Table.php
+
+		-
+			message: "#^Property SQLParser\\\\Node\\\\Table\\:\\:\\$refClause \\(array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface\\) does not accept null\\.$#"
+			count: 1
+			path: src/SQLParser/Node/Table.php
+
+		-
+			message: "#^Method SQLParser\\\\Query\\\\Select\\:\\:overwriteInstanceDescriptor\\(\\) has parameter \\$name with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Query/Select.php
+
+		-
+			message: "#^Method SQLParser\\\\Query\\\\Select\\:\\:walkChildren\\(\\) has parameter \\$children with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Query/Select.php
+
+		-
+			message: "#^Argument of an invalid type array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/SQLParser/Query/StatementFactory.php
+
+		-
+			message: "#^Cannot access offset mixed on \\(array\\<SQLParser\\\\Node\\\\NodeInterface\\>&nonEmpty\\)\\|SQLParser\\\\Node\\\\NodeInterface\\.$#"
+			count: 1
+			path: src/SQLParser/Query/StatementFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$columns of method SQLParser\\\\Query\\\\Select\\:\\:setColumns\\(\\) expects array\\<SQLParser\\\\Node\\\\NodeInterface\\>, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
+			count: 1
+			path: src/SQLParser/Query/StatementFactory.php
+
+		-
+			message: "#^Method SQLParser\\\\Query\\\\Union\\:\\:overwriteInstanceDescriptor\\(\\) has parameter \\$name with no typehint specified\\.$#"
+			count: 1
+			path: src/SQLParser/Query/Union.php
+

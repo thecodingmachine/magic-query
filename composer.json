@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-    	"php": ">=7.1.0",
+    	"php": ">=7.2.0",
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
@@ -27,7 +27,7 @@
         "phpunit/phpunit": "^7.5.10",
         "satooshi/php-coveralls": "~1.0",
         "doctrine/dbal": "~2.5",
-        "phpstan/phpstan": "^0.11.7"
+        "phpstan/phpstan": "^0.12.82"
     },
     "suggest": {
       "doctrine/dbal": "To support more databases than just MySQL and to use MagicJoin feature",

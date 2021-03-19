@@ -232,11 +232,11 @@ class MagicQueryTest extends TestCase
 
     public function testWithCache()
     {
-        global $db_url;
         $connectionParams = array(
             'user' => $GLOBALS['db_username'],
             'password' => $GLOBALS['db_password'],
             'host' => $GLOBALS['db_host'],
+            'port' => $GLOBALS['db_port'],
             'driver' => $GLOBALS['db_driver'],
         );
         $conn = \Doctrine\DBAL\DriverManager::getConnection($connectionParams);

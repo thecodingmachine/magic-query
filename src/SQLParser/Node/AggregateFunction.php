@@ -45,6 +45,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class AggregateFunction implements NodeInterface
 {
+    /** @var string */
     private $functionName;
 
     /**
@@ -64,13 +65,17 @@ class AggregateFunction implements NodeInterface
      *
      * @param string $functionName
      */
-    public function setFunctionName($functionName)
+    public function setFunctionName($functionName): void
     {
         $this->functionName = $functionName;
     }
 
+    /** @var NodeInterface[] */
     private $subTree;
 
+    /**
+     * @return NodeInterface[]
+     */
     public function getSubTree()
     {
         return $this->subTree;
@@ -83,13 +88,17 @@ class AggregateFunction implements NodeInterface
      *
      * @param array<NodeInterface> $subTree
      */
-    public function setSubTree($subTree)
+    public function setSubTree($subTree): void
     {
         $this->subTree = $subTree;
     }
 
+    /** @var string */
     private $alias;
 
+    /**
+     * @return string
+     */
     public function getAlias()
     {
         return $this->alias;
@@ -98,15 +107,19 @@ class AggregateFunction implements NodeInterface
     /**
      * Sets the alias.
      *
-     * @param string $alias
+     * @param string|array $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
-        $this->alias = $alias;
+        $this->alias = is_array($alias) ? $alias['name'] : $alias;
     }
 
+    /** @var string */
     private $direction;
 
+    /**
+     * @return string
+     */
     public function getDirection()
     {
         return $this->direction;
@@ -119,7 +132,7 @@ class AggregateFunction implements NodeInterface
      *
      * @param string $direction
      */
-    public function setDirection($direction)
+    public function setDirection($direction): void
     {
         $this->direction = $direction;
     }
@@ -160,10 +173,7 @@ class AggregateFunction implements NodeInterface
             $sql .= $subTreeSql;
             $sql .= ')';
             if ($this->alias) {
-                // defensive fix:
-                $alias = is_array($this->alias) ? $this->alias['name'] : $this->alias;
-
-                $sql .= ' AS '.$alias;
+                $sql .= ' AS '.$this->alias;
             }
             if ($this->direction) {
                 $sql .= ' '.$this->direction;

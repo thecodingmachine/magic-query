@@ -54,6 +54,7 @@ use SQLParser\Node\UnquotedParameter;
  */
 class Select implements StatementInterface, NodeInterface
 {
+    /** @var bool */
     private $distinct;
 
     /**
@@ -71,11 +72,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param bool $distinct
      */
-    public function setDistinct($distinct)
+    public function setDistinct($distinct): void
     {
         $this->distinct = $distinct;
     }
 
+    /** @var NodeInterface[] */
     private $columns;
 
     /**
@@ -93,11 +95,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[] $columns
      */
-    public function setColumns($columns)
+    public function setColumns($columns): void
     {
         $this->columns = $columns;
     }
 
+    /** @var NodeInterface[] */
     private $from;
 
     /**
@@ -115,17 +118,18 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[] $from
      */
-    public function setFrom($from)
+    public function setFrom($from): void
     {
         $this->from = $from;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $where;
 
     /**
      * Returns the list of where statements.
      *
-     * @return NodeInterface[]
+     * @return NodeInterface[]|NodeInterface
      */
     public function getWhere()
     {
@@ -137,17 +141,18 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[]|NodeInterface $where
      */
-    public function setWhere($where)
+    public function setWhere($where): void
     {
         $this->where = $where;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $group;
 
     /**
      * Returns the list of group statements.
      *
-     * @return NodeInterface[]
+     * @return NodeInterface[]|NodeInterface
      */
     public function getGroup()
     {
@@ -159,11 +164,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[]|NodeInterface $group
      */
-    public function setGroup($group)
+    public function setGroup($group): void
     {
         $this->group = $group;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $having;
 
     /**
@@ -181,11 +187,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[]|NodeInterface $having
      */
-    public function setHaving($having)
+    public function setHaving($having): void
     {
         $this->having = $having;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $order;
 
     /**
@@ -203,11 +210,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param NodeInterface[]|NodeInterface $order
      */
-    public function setOrder($order)
+    public function setOrder($order): void
     {
         $this->order = $order;
     }
 
+    /** @var string[] */
     private $options;
 
     /**
@@ -225,11 +233,12 @@ class Select implements StatementInterface, NodeInterface
      *
      * @param string[] $options
      */
-    public function setOptions($options)
+    public function setOptions($options): void
     {
         $this->options = $options;
     }
 
+    /** @var NodeInterface */
     private $limit;
 
     /**
@@ -243,11 +252,12 @@ class Select implements StatementInterface, NodeInterface
     /**
      * @param NodeInterface $limit
      */
-    public function setLimit($limit)
+    public function setLimit($limit): void
     {
         $this->limit = $limit;
     }
 
+    /** @var NodeInterface */
     private $offset;
 
     /**
@@ -261,7 +271,7 @@ class Select implements StatementInterface, NodeInterface
     /**
      * @param NodeInterface $offset
      */
-    public function setOffset($offset)
+    public function setOffset($offset): void
     {
         $this->offset = $offset;
     }
@@ -435,7 +445,7 @@ class Select implements StatementInterface, NodeInterface
         return $visitor->leaveNode($node);
     }
 
-    private function walkChildren(&$children, VisitorInterface $visitor)
+    private function walkChildren(&$children, VisitorInterface $visitor): void
     {
         if ($children) {
             if (is_array($children)) {

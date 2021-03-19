@@ -44,7 +44,9 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Parameter implements NodeInterface, BypassableInterface
 {
+    /** @var string */
     protected $name;
+    /** @var bool */
     protected $discardedOnNull = true;
 
     /**
@@ -65,7 +67,7 @@ class Parameter implements NodeInterface, BypassableInterface
      *
      * @param string $name
      */
-    public function setName($name)
+    public function setName($name): void
     {
         if (strrpos($name, '!') === strlen($name) - 1) {
             $this->name = substr($name, 0, strlen($name) - 1);
@@ -102,7 +104,7 @@ class Parameter implements NodeInterface, BypassableInterface
      *
      * @param string $autoPrepend
      */
-    public function setAutoPrepend($autoPrepend)
+    public function setAutoPrepend($autoPrepend): self
     {
         $this->autoPrepend = $autoPrepend;
 
@@ -125,7 +127,7 @@ class Parameter implements NodeInterface, BypassableInterface
      *
      * @param string $autoAppend
      */
-    public function setAutoAppend($autoAppend)
+    public function setAutoAppend($autoAppend): self
     {
         $this->autoAppend = $autoAppend;
 

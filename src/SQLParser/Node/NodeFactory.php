@@ -556,6 +556,8 @@ class NodeFactory
      * Takes an array of nodes (including operators) and try to build a tree from it.
      *
      * @param NodeInterface[]|NodeInterface $nodes
+     *
+     * @return NodeInterface[]|NodeInterface
      */
     public static function simplify($nodes)
     {
@@ -571,7 +573,8 @@ class NodeFactory
 
         // Let's transform "NOT" + "IN" into "NOT IN"
         $newNodes = array();
-        for ($i = 0; $i < count($nodes); ++$i) {
+        $nodesCount = count($nodes);
+        for ($i = 0; $i < $nodesCount; ++$i) {
             $node = $nodes[$i];
             if ($node instanceof Operator && isset($nodes[$i + 1]) && $nodes[$i + 1] instanceof Operator
                     && strtoupper($node->getValue()) == 'IS' && strtoupper($nodes[$i + 1]->getValue()) == 'NOT') {
@@ -599,7 +602,8 @@ class NodeFactory
 
         // Handle AGAINST function. Without this patch params will be placed after AGAINST() and not inside the brackets
         $newNodes = array();
-        for ($i = 0; $i < count($nodes); ++$i) {
+        $nodesCount = count($nodes);
+        for ($i = 0; $i < $nodesCount; ++$i) {
             $node = $nodes[$i];
             if ($node instanceof SimpleFunction && $node->getBaseExpression() === 'AGAINST' && isset($nodes[$i + 1])) {
                 $node->setSubTree($nodes[$i + 1]);
@@ -648,7 +652,7 @@ class NodeFactory
                 if ($operand instanceof Expression) {
                     if (empty($operand->getBaseExpression())) {
                         $subTree = $operand->getSubTree();
-                        if (count($subTree) == 1) {
+                        if (count($subTree) === 1) {
                             $newNodes = array_merge($newNodes, self::simplify($subTree));
                         } else {
                             $newNodes[] = $operand;

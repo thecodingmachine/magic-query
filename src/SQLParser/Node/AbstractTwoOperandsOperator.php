@@ -18,8 +18,12 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
 {
     use ConditionTrait;
 
+    /** @var NodeInterface|NodeInterface[]|string */
     private $leftOperand;
 
+    /**
+     * @return NodeInterface|NodeInterface[]|string
+     */
     public function getLeftOperand()
     {
         return $this->leftOperand;
@@ -37,8 +41,12 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
         $this->leftOperand = $leftOperand;
     }
 
+    /** @var NodeInterface|NodeInterface[]|string */
     private $rightOperand;
 
+    /**
+     * @return NodeInterface|NodeInterface[]|string
+     */
     public function getRightOperand()
     {
         return $this->rightOperand;
@@ -122,7 +130,7 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
         return $sql;
     }
 
-    protected function getSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    protected function getSql(array $parameters, AbstractPlatform $platform, int $indent = 0, int $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): string
     {
         $sql = NodeFactory::toSql($this->leftOperand, $platform, $parameters, ' ', false, $indent, $conditionsMode, $extrapolateParameters);
         $sql .= ' '.$this->getOperatorSymbol().' ';
@@ -165,5 +173,5 @@ abstract class AbstractTwoOperandsOperator implements NodeInterface
     /**
      * Returns the symbol for this operator.
      */
-    abstract protected function getOperatorSymbol();
+    abstract protected function getOperatorSymbol(): string;
 }

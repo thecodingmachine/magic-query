@@ -24,7 +24,7 @@ class CompositeVisitor implements VisitorInterface
      *
      * @param VisitorInterface $visitor
      */
-    public function addVisitor(VisitorInterface $visitor)
+    public function addVisitor(VisitorInterface $visitor): void
     {
         $this->visitors[] = $visitor;
         array_unshift($this->reverseVisitors, $visitor);
@@ -57,12 +57,7 @@ class CompositeVisitor implements VisitorInterface
     }
 
     /**
-     * Called on every node when the traverser leaves the node.
-     * The leaveNode() method can return a changed node, or null if nothing is changed.
-     * The leaveNode() method can also return the value NodeTraverser::REMOVE_NODE,
-     * which instructs the traverser to remove the current node.
-     *
-     * @param NodeInterface $node
+     * {@inheritDoc}
      */
     public function leaveNode(NodeInterface $node)
     {

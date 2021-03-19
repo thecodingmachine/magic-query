@@ -12,7 +12,7 @@ use Mouf\Database\MagicQueryException;
  */
 abstract class AbstractInListOperator extends AbstractTwoOperandsOperator
 {
-    protected function getSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    protected function getSql(array $parameters, AbstractPlatform $platform, int $indent = 0, int $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): string
     {
         $rightOperand = $this->getRightOperand();
 

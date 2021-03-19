@@ -44,9 +44,14 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class ConstNode implements NodeInterface
 {
+    /** @var string */
     private $value;
+    /** @var bool */
     private $isString = true;
 
+    /**
+     * @return string
+     */
     public function getValue()
     {
         return $this->value;
@@ -59,13 +64,13 @@ class ConstNode implements NodeInterface
      *
      * @param string $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getIsString()
     {
@@ -73,9 +78,9 @@ class ConstNode implements NodeInterface
     }
 
     /**
-     * @param mixed $isString
+     * @param bool $isString
      */
-    public function setIsString($isString)
+    public function setIsString($isString): void
     {
         $this->isString = $isString;
     }
