@@ -210,23 +210,19 @@ class MagicQueryTest extends TestCase
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
-    /**
-     * @expectedException \Mouf\Database\MagicQueryException
-     */
     public function testInNullException() {
         $magicQuery = new MagicQuery();
 
         $sql = 'SELECT * FROM users WHERE status IN :statuses!';
+        $this->expectException(MagicQueryException::class);
         $magicQuery->build($sql, ['statuses' => NULL]);
     }
 
-    /**
-     * @expectedException \Mouf\Database\MagicQueryException
-     */
     public function testInvalidSql() {
         $magicQuery = new MagicQuery();
 
         $sql = 'SELECT * FROM users WHERE date_end => :startDate';
+        $this->expectException(MagicQueryException::class);
         $this->assertEquals('SELECT * FROM users WHERE date_end => \'2014-06-06\'', self::simplifySql($magicQuery->build($sql, ['startDate' => '2014-06-06'])));
     }
 
@@ -252,14 +248,12 @@ class MagicQueryTest extends TestCase
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
-    /**
-     * @expectedException \Mouf\Database\MagicQueryParserException
-     */
     public function testParseError()
     {
         $magicQuery = new MagicQuery();
 
         $sql = '';
+        $this->expectException(MagicQueryParserException::class);
         $magicQuery->build($sql);
     }
 
@@ -392,20 +386,15 @@ class MagicQueryTest extends TestCase
         $this->assertEquals($expectedSql, self::simplifySql($magicQuery->build($sql, $params)));
     }
 
-    /**
-     * @expectedException \Mouf\Database\MagicQueryMissingConnectionException
-     */
     public function testMisconfiguration()
     {
         $magicQuery = new MagicQuery();
 
         $sql = "SELECT role.* FROM magicjoin(role) WHERE right.label = 'my_right'";
+        $this->expectException(MagicQueryMissingConnectionException::class);
         $magicQuery->build($sql);
     }
 
-    /**
-     *
-     */
     public function testTwig()
     {
         $magicQuery = new MagicQuery();
