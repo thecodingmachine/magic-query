@@ -12,9 +12,10 @@ use Twig_Extension_Core;
  */
 class SqlTwigEnvironmentFactory
 {
+    /** @var Environment|null */
     private static $twig;
 
-    public static function getTwigEnvironment()
+    public static function getTwigEnvironment(): Environment
     {
         if (self::$twig) {
             return self::$twig;
@@ -45,7 +46,7 @@ class SqlTwigEnvironmentFactory
         return $twig;
     }
 
-    private static function getCacheDirectory()
+    private static function getCacheDirectory(): string
     {
         // If we are running on a Unix environment, let's prepend the cache with the user id of the PHP process.
         // This way, we can avoid rights conflicts.

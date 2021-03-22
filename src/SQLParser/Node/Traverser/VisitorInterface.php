@@ -29,6 +29,8 @@ interface VisitorInterface
      * which instructs the traverser to remove the current node.
      *
      * @param NodeInterface $node
+     *
+     * @return NodeInterface|string|null
      */
     public function leaveNode(NodeInterface $node);
 }

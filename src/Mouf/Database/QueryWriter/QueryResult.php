@@ -44,8 +44,10 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      */
     private $parameters = array();
 
-    private $limit;
+    /** @var int|null */
     private $offset;
+    /** @var int|null */
+    private $limit;
 
     /**
      * @param Select     $select
@@ -62,7 +64,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      *
      * @param array<string, string>|array<string, ValueInterface>|ArrayValueInterface $parameters
      */
-    public function setParameters($parameters)
+    public function setParameters($parameters): void
     {
         $this->parameters = $parameters;
     }
@@ -98,7 +100,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      * @param int $limit
      * @param int $offset
      */
-    public function paginate($limit, $offset = 0)
+    public function paginate($limit, $offset = 0): void
     {
         $this->limit = $limit;
         $this->offset = $offset;
@@ -107,7 +109,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     /* (non-PHPdoc)
      * @see \Mouf\Utils\Common\SortableInterface::sort()
      */
-    public function sort($key, $direction = SortableInterface::ASC)
+    public function sort($key, $direction = SortableInterface::ASC): void
     {
         $result = $this->findColumnByKey($key);
         if ($result != null) {

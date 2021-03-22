@@ -14,12 +14,12 @@ class Equal extends AbstractTwoOperandsOperator
     /**
      * Returns the symbol for this operator.
      */
-    protected function getOperatorSymbol()
+    protected function getOperatorSymbol(): string
     {
         return '=';
     }
 
-    protected function getSql(array $parameters, AbstractPlatform $platform, $indent = 0, $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true)
+    protected function getSql(array $parameters, AbstractPlatform $platform, int $indent = 0, int $conditionsMode = self::CONDITION_APPLY, bool $extrapolateParameters = true): string
     {
         $rightOperand = $this->getRightOperand();
         if ($rightOperand instanceof Parameter && !isset($parameters[$rightOperand->getName()])) {

@@ -4,12 +4,10 @@ namespace Mouf\Database;
 
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use PHPUnit\Framework\TestCase;
+use Twig\Error\RuntimeError;
 
 class SqlTwigEnvironmentFactoryTest extends TestCase
 {
-    /**
-     *
-     */
     public function testIf()
     {
         $twig = SqlTwigEnvironmentFactory::getTwigEnvironment();
@@ -17,12 +15,10 @@ class SqlTwigEnvironmentFactoryTest extends TestCase
         $this->assertEquals('SELECT * FROM toto WHERE id = :id', $sql);
     }
 
-    /**
-     * @expectedException \Twig\Error\RuntimeError
-     */
     public function testException()
     {
         $twig = SqlTwigEnvironmentFactory::getTwigEnvironment();
+        $this->expectException(RuntimeError::class);
         $twig->render('SELECT * FROM toto WHERE id = {{ id }}', ['id' => 'hello']);
     }
 }

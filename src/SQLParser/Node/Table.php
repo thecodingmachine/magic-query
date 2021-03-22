@@ -45,6 +45,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Table implements NodeInterface
 {
+    /** @var mixed */
     private $database;
 
     /**
@@ -62,11 +63,12 @@ class Table implements NodeInterface
      *
      * @param mixed $database
      */
-    public function setDatabase($database)
+    public function setDatabase($database): void
     {
         $this->database = $database;
     }
 
+    /** @var string */
     private $table;
 
     /**
@@ -86,11 +88,12 @@ class Table implements NodeInterface
      *
      * @param string $table
      */
-    public function setTable($table)
+    public function setTable($table): void
     {
         $this->table = $table;
     }
 
+    /** @var string */
     private $alias;
 
     /**
@@ -110,11 +113,12 @@ class Table implements NodeInterface
      *
      * @param string $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
     }
 
+    /** @var string */
     private $joinType;
 
     /**
@@ -134,11 +138,12 @@ class Table implements NodeInterface
      *
      * @param string $joinType
      */
-    public function setJoinType($joinType)
+    public function setJoinType($joinType): void
     {
         $this->joinType = $joinType;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
     private $refClause;
 
     /**
@@ -158,7 +163,7 @@ class Table implements NodeInterface
      *
      * @param NodeInterface[]|NodeInterface $refClause
      */
-    public function setRefClause($refClause)
+    public function setRefClause($refClause): void
     {
         $this->refClause = $refClause;
     }

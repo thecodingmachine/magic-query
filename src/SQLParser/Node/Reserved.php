@@ -44,6 +44,7 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Reserved implements NodeInterface
 {
+    /** @var string */
     private $baseExpression;
 
     /**
@@ -61,11 +62,12 @@ class Reserved implements NodeInterface
      *
      * @param string $baseExpression
      */
-    public function setBaseExpression($baseExpression)
+    public function setBaseExpression($baseExpression): void
     {
         $this->baseExpression = $baseExpression;
     }
 
+    /** @var bool */
     private $brackets = false;
 
     /**
@@ -85,7 +87,7 @@ class Reserved implements NodeInterface
      *
      * @param bool $brackets
      */
-    public function setBrackets($brackets)
+    public function setBrackets($brackets): void
     {
         $this->brackets = $brackets;
     }

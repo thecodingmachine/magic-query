@@ -12,8 +12,10 @@ use SQLParser\Query\Select;
  */
 class DetectTablesVisitor implements VisitorInterface
 {
+    /** @var bool */
     private $isSelectVisited = false;
 
+    /** @var array<string, string> */
     private $tables = array();
 
     private $defaultTable;
@@ -22,7 +24,7 @@ class DetectTablesVisitor implements VisitorInterface
      * Removes all detected magic join selects.
      * Useful for reusing the visitor instance on another node traversal.
      */
-    public function resetVisitor()
+    public function resetVisitor(): void
     {
         $this->tables = array();
         $this->isSelectVisited = false;
@@ -75,15 +77,10 @@ class DetectTablesVisitor implements VisitorInterface
     }
 
     /**
-     * Called on every node when the traverser leaves the node.
-     * The leaveNode() method can return a changed node, or null if nothing is changed.
-     * The leaveNode() method can also return the value NodeTraverser::REMOVE_NODE,
-     * which instructs the traverser to remove the current node.
-     *
-     * @param NodeInterface $node
+     * {@inheritDoc}
      */
     public function leaveNode(NodeInterface $node)
     {
-        return;
+        return null;
     }
 }

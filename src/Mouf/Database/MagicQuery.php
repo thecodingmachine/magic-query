@@ -2,6 +2,7 @@
 
 namespace Mouf\Database;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
@@ -34,21 +35,20 @@ use SQLParser\SqlRenderInterface;
 class MagicQuery
 {
     private $connection;
+    /** @var Cache */
     private $cache;
+    /** @var SchemaAnalyzer */
     private $schemaAnalyzer;
-    /**
-     * @var AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $platform;
-    /**
-     * @var Environment
-     */
+    /** @var Environment */
     private $twigEnvironment;
+    /** @var bool */
     private $enableTwig = false;
 
     /**
      * @param \Doctrine\DBAL\Connection    $connection
-     * @param \Doctrine\Common\Cache\Cache $cache
+     * @param Cache $cache
      * @param SchemaAnalyzer               $schemaAnalyzer (optional). If not set, it is initialized from the connection.
      */
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
@@ -205,11 +205,9 @@ class MagicQuery
     /**
      * Scans the SQL statement and replaces the "magicjoin" part with the correct joins.
      *
-     * @param NodeInterface $select
-     *
      * @throws MagicQueryMissingConnectionException
      */
-    private function magicJoin(NodeInterface $select)
+    private function magicJoin(NodeInterface $select): void
     {
         // Let's find if this is a MagicJoin query.
         $magicJoinDetector = new DetectMagicJoinSelectVisitor();
@@ -227,12 +225,8 @@ class MagicQuery
 
     /**
      * For one given MagicJoin select, let's apply MagicJoin.
-     *
-     * @param MagicJoinSelect $magicJoinSelect
-     *
-     * @return Select
      */
-    private function magicJoinOnOneQuery(MagicJoinSelect $magicJoinSelect)
+    private function magicJoinOnOneQuery(MagicJoinSelect $magicJoinSelect): void
     {
         $tableSearchNodeTraverser = new NodeTraverser();
         $detectTableVisitor = new DetectTablesVisitor($magicJoinSelect->getMainTable());
@@ -316,7 +310,7 @@ class MagicQuery
         return $this->schemaAnalyzer;
     }
 
-    private function getConnectionUniqueId(Connection $connection)
+    private function getConnectionUniqueId(Connection $connection): string
     {
         return hash('md4', $connection->getHost().'-'.$connection->getPort().'-'.$connection->getDatabase().'-'.$connection->getDriver()->getName());
     }

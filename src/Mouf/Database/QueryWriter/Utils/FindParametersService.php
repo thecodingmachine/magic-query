@@ -25,7 +25,7 @@ class FindParametersService
      * @param MoufInstanceDescriptor $instanceDescriptor
      * @param array<string>          $visitedInstances   The list of names of visited instances.
      */
-    private static function recursiveFindParameters(MoufInstanceDescriptor $instanceDescriptor, array $visitedInstances = array(), array $foundParameters = array())
+    private static function recursiveFindParameters(MoufInstanceDescriptor $instanceDescriptor, array $visitedInstances = array(), array $foundParameters = array()): array
     {
         if (isset($visitedInstances[$instanceDescriptor->getIdentifierName()])) {
             return array($visitedInstances, $foundParameters);

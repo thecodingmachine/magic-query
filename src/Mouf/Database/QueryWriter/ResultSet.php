@@ -2,7 +2,8 @@
 
 namespace Mouf\Database\QueryWriter;
 
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Wraps the results of a PDOStatement.
@@ -11,20 +12,20 @@ use Doctrine\DBAL\Statement;
  */
 class ResultSet implements \Iterator
 {
-    /**
-     * @var \PDOStatement|Statement
-     */
+    /** @var Statement */
     private $statement;
-    private $castToClass;
+    /** @var int */
     private $key = 0;
+    /** @var array|false */
     private $result;
+    /** @var bool */
     private $fetched = false;
+    /** @var int */
     private $rewindCalls = 0;
 
-    public function __construct($statement, $castToClass = '')
+    public function __construct(Statement $statement)
     {
         $this->statement = $statement;
-        $this->castToClass = $castToClass;
     }
 
     public function rewind()
@@ -35,6 +36,9 @@ class ResultSet implements \Iterator
         }
     }
 
+    /**
+     * @return array|false
+     */
     public function current()
     {
         if (!$this->fetched) {
@@ -44,6 +48,9 @@ class ResultSet implements \Iterator
         return $this->result;
     }
 
+    /**
+     * @return int
+     */
     public function key()
     {
         return $this->key;
@@ -56,9 +63,9 @@ class ResultSet implements \Iterator
         $this->fetch();
     }
 
-    private function fetch()
+    private function fetch(): void
     {
-        $this->result = $this->statement->fetch(\PDO::FETCH_ASSOC);
+        $this->result = $this->statement->fetch(FetchMode::ASSOCIATIVE);
         $this->fetched = true;
     }
 

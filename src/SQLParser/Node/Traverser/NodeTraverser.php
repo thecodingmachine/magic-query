@@ -24,7 +24,7 @@ class NodeTraverser
      *
      * @param VisitorInterface $visitor
      */
-    public function addVisitor(VisitorInterface $visitor)
+    public function addVisitor(VisitorInterface $visitor): void
     {
         $this->visitor->addVisitor($visitor);
     }
@@ -34,7 +34,7 @@ class NodeTraverser
      *
      * @param NodeInterface $node
      */
-    public function walk(NodeInterface $node)
+    public function walk(NodeInterface $node): void
     {
         $node->walk($this->visitor);
     }

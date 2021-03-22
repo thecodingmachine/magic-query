@@ -2,14 +2,15 @@
 
 namespace Mouf\Database\QueryWriter\Utils;
 
+use Doctrine\DBAL\Connection;
 use Mouf\MoufManager;
 
 class DbHelper
 {
-    public static function getAll($sql, $offset, $limit)
+    public static function getAll(string $sql, ?int $offset, ?int $limit)
     {
+        /** @var Connection $dbalConnection */
         $dbalConnection = MoufManager::getMoufManager()->get('dbalConnection');
-        /* @var $dbalConnection \Doctrine\DBAL\Connection */
         $sql .= self::getFromLimitString($offset, $limit);
         $statement = $dbalConnection->executeQuery($sql);
         $results = $statement->fetchAll();
@@ -23,15 +24,13 @@ class DbHelper
         return $array;
     }
 
-    public static function getFromLimitString($from = null, $limit = null)
+    public static function getFromLimitString(?int $from = null, ?int $limit = null): string
     {
         if ($limit !== null) {
-            $limitInt = (int) $limit;
-            $queryStr = ' LIMIT '.$limitInt;
+            $queryStr = ' LIMIT '.$limit;
 
             if ($from !== null) {
-                $fromInt = (int) $from;
-                $queryStr .= ' OFFSET '.$fromInt;
+                $queryStr .= ' OFFSET '.$from;
             }
 
             return $queryStr;

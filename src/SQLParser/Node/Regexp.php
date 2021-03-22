@@ -14,7 +14,7 @@ class Regexp extends AbstractTwoOperandsOperator
      *
      * @return string
      */
-    protected function getOperatorSymbol()
+    protected function getOperatorSymbol(): string
     {
         return 'REGEXP';
     }

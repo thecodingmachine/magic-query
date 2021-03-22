@@ -15,8 +15,12 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class CaseOperation implements NodeInterface
 {
+    /** @var NodeInterface|NodeInterface[]|string */
     private $operation;
 
+    /**
+     * @return NodeInterface|NodeInterface[]|string
+     */
     public function getOperation()
     {
         return $this->operation;
@@ -29,7 +33,7 @@ class CaseOperation implements NodeInterface
      *
      * @param NodeInterface|NodeInterface[]|string $operation
      */
-    public function setOperation($operation)
+    public function setOperation($operation): void
     {
         $this->operation = $operation;
     }

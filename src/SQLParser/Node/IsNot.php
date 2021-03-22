@@ -14,7 +14,7 @@ class IsNot extends AbstractTwoOperandsOperator
      *
      * @return string
      */
-    protected function getOperatorSymbol()
+    protected function getOperatorSymbol(): string
     {
         return 'IS NOT';
     }

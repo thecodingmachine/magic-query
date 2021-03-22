@@ -47,12 +47,13 @@ use SQLParser\Query\Union;
  */
 class SubQuery implements NodeInterface
 {
+    /** @var Select|Union|NodeInterface */
     private $subQuery;
 
     /**
      * Returns the list of subQuery statements.
      *
-     * @return Select|Union
+     * @return Select|Union|NodeInterface
      */
     public function getSubQuery()
     {
@@ -64,11 +65,12 @@ class SubQuery implements NodeInterface
      *
      * @param Select|Union $subQuery
      */
-    public function setSubQuery($subQuery)
+    public function setSubQuery($subQuery): void
     {
         $this->subQuery = $subQuery;
     }
 
+    /** @var string */
     private $alias;
 
     /**
@@ -86,11 +88,12 @@ class SubQuery implements NodeInterface
      *
      * @param string $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
     }
 
+    /** @var string */
     private $joinType;
 
     /**
@@ -108,11 +111,12 @@ class SubQuery implements NodeInterface
      *
      * @param string $joinType
      */
-    public function setJoinType($joinType)
+    public function setJoinType($joinType): void
     {
         $this->joinType = $joinType;
     }
 
+    /** @var NodeInterface[] */
     private $refClause;
 
     /**
@@ -130,7 +134,7 @@ class SubQuery implements NodeInterface
      *
      * @param NodeInterface[] $refClause
      */
-    public function setRefClause($refClause)
+    public function setRefClause($refClause): void
     {
         $this->refClause = $refClause;
     }

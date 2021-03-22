@@ -11,8 +11,12 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class WhenConditions extends AbstractManyInstancesOperator
 {
+    /** @var NodeInterface|NodeInterface[]|string */
     private $value;
 
+    /**
+     * @return NodeInterface|NodeInterface[]|string
+     */
     public function getValue()
     {
         return $this->value;
@@ -25,7 +29,7 @@ class WhenConditions extends AbstractManyInstancesOperator
      *
      * @param NodeInterface|NodeInterface[]|string $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
@@ -64,7 +68,7 @@ class WhenConditions extends AbstractManyInstancesOperator
      *
      * @return string
      */
-    protected function getOperatorSymbol()
+    protected function getOperatorSymbol(): string
     {
         return 'WHEN';
     }

@@ -44,7 +44,7 @@ class AndOp extends AbstractManyInstancesOperator
      *
      * @return string
      */
-    protected function getOperatorSymbol()
+    protected function getOperatorSymbol(): string
     {
         return 'AND';
     }

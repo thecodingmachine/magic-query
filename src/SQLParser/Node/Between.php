@@ -17,8 +17,12 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class Between implements NodeInterface
 {
+    /** @var NodeInterface|NodeInterface[]|string */
     private $leftOperand;
 
+    /**
+     * @return NodeInterface|NodeInterface[]|string
+     */
     public function getLeftOperand()
     {
         return $this->leftOperand;
@@ -73,7 +77,7 @@ class Between implements NodeInterface
     /**
      * @param NodeInterface $maxValueOperand
      */
-    public function setMaxValueOperand(NodeInterface $maxValueOperand)
+    public function setMaxValueOperand(NodeInterface $maxValueOperand): void
     {
         $this->maxValueOperand = $maxValueOperand;
     }
@@ -88,9 +92,9 @@ class Between implements NodeInterface
      *
      * @Important IfSet
      *
-     * @param ConditionInterface $minValueCondition
+     * @param ConditionInterface|null $minValueCondition
      */
-    public function setMinValueCondition(ConditionInterface $minValueCondition = null)
+    public function setMinValueCondition(ConditionInterface $minValueCondition = null): void
     {
         $this->minValueCondition = $minValueCondition;
     }
@@ -105,9 +109,9 @@ class Between implements NodeInterface
      *
      * @Important IfSet
      *
-     * @param ConditionInterface $maxValueCondition
+     * @param ConditionInterface|null $maxValueCondition
      */
-    public function setMaxValueCondition(ConditionInterface $maxValueCondition = null)
+    public function setMaxValueCondition(ConditionInterface $maxValueCondition = null): void
     {
         $this->maxValueCondition = $maxValueCondition;
     }

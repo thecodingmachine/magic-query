@@ -19,13 +19,8 @@ class StringLoader implements LoaderInterface
 {
     /**
      * {@inheritdoc}
-     */
-    public function getSource($name)
-    {
-        return $name;
-    }
-    /**
-     * {@inheritdoc}
+     *
+     * @param string $name
      */
     public function getCacheKey($name): string
     {
@@ -33,6 +28,9 @@ class StringLoader implements LoaderInterface
     }
     /**
      * {@inheritdoc}
+     *
+     * @param string $name
+     * @param int $time
      */
     public function isFresh($name, $time): bool
     {

@@ -44,8 +44,12 @@ use SQLParser\Node\Traverser\VisitorInterface;
  */
 class LimitNode implements NodeInterface
 {
+    /** @var string */
     private $value;
 
+    /**
+     * @return string
+     */
     public function getValue()
     {
         return $this->value;
@@ -58,7 +62,7 @@ class LimitNode implements NodeInterface
      *
      * @param string $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
