@@ -208,6 +208,9 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT COUNT(*) AS cnt FROM (SELECT id FROM country) subquery';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT * FROM A, (SELECT * FROM B) B';
+        $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
     }
 
     public function testInNullException() {
