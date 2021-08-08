@@ -2,6 +2,7 @@
 
 namespace Mouf\Database\QueryWriter;
 
+use SQLParser\SqlRenderInterface;
 use function method_exists;
 use Mouf\Database\QueryWriter\Utils\DbHelper;
 use Mouf\Utils\Value\ValueUtils;
@@ -48,15 +49,25 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     private $offset;
     /** @var int|null */
     private $limit;
+    private int $conditionsMode;
+    private bool $extrapolateParameters;
 
     /**
      * @param Select     $select
      * @param Connection $connection
+     * @param int        $conditionsMode
+     * @param bool       $extrapolateParameters
      */
-    public function __construct(Select $select, Connection $connection)
-    {
+    public function __construct(
+        Select $select,
+        Connection $connection,
+        int $conditionsMode = SqlRenderInterface::CONDITION_APPLY,
+        bool $extrapolateParameters = true
+    ) {
         $this->select = $select;
         $this->connection = $connection;
+        $this->conditionsMode = $conditionsMode;
+        $this->extrapolateParameters = $extrapolateParameters;
     }
 
     /**
@@ -76,8 +87,7 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
      */
     public function val()
     {
-        $parameters = ValueUtils::val($this->parameters);
-        $pdoStatement = $this->connection->query($this->select->toSql($parameters, $this->connection->getDatabasePlatform()).DbHelper::getFromLimitString($this->offset, $this->limit));
+        $pdoStatement = $this->connection->query($this->toSql().DbHelper::getFromLimitString($this->offset, $this->limit));
 
         return new ResultSet($pdoStatement);
     }
@@ -91,7 +101,13 @@ class QueryResult implements ArrayValueInterface, PaginableInterface, SortableIn
     {
         $parameters = ValueUtils::val($this->parameters);
 
-        return $this->select->toSql($parameters, $this->connection->getDatabasePlatform());
+        return $this->select->toSql(
+            $parameters,
+            $this->connection->getDatabasePlatform(),
+            0,
+            $this->conditionsMode,
+            $this->extrapolateParameters
+        );
     }
 
     /**
