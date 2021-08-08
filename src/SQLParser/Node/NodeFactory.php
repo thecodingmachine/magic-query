@@ -150,9 +150,6 @@ class NodeFactory
                     $expr->setTable($desc['table']);
                 }
 
-
-
-                $expr->setTable(str_replace('`', '', $desc['table']));
                 switch ($desc['join_type']) {
                     case 'CROSS':
                         $joinType = 'CROSS JOIN';
