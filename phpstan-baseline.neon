@@ -96,11 +96,6 @@ parameters:
 			path: src/SQLParser/Node/NodeFactory.php
 
 		-
-			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
-			count: 1
-			path: src/SQLParser/Node/NodeFactory.php
-
-		-
 			message: "#^Parameter \\#2 \\.\\.\\.\\$args of function array_merge expects array, array\\<SQLParser\\\\Node\\\\NodeInterface\\>\\|SQLParser\\\\Node\\\\NodeInterface given\\.$#"
 			count: 1
 			path: src/SQLParser/Node/NodeFactory.php
