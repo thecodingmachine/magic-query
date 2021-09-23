@@ -69,11 +69,11 @@ class Expression implements NodeInterface, BypassableInterface
         $this->baseExpression = $baseExpression;
     }
 
-    /** @var NodeInterface[]|NodeInterface */
+    /** @var NodeInterface[]|NodeInterface|null */
     private $subTree;
 
     /**
-     * @return NodeInterface|NodeInterface[]
+     * @return NodeInterface|NodeInterface[]|null
      */
     public function getSubTree()
     {
@@ -263,7 +263,7 @@ class Expression implements NodeInterface, BypassableInterface
                         $this->subTree[$key] = $result2;
                     }
                 }
-            } else {
+            } elseif ($this->subTree instanceof NodeInterface) {
                 $result2 = $this->subTree->walk($visitor);
                 if ($result2 === NodeTraverser::REMOVE_NODE) {
                     $this->subTree = [];

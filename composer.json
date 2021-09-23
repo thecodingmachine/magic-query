@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-    	"php": ">=7.4.0 || ^8.0",
+    	"php": "^7.4 || ^8.0",
     	"mouf/utils.common.conditioninterface": "~2.0",
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
