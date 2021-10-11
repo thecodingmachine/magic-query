@@ -411,11 +411,13 @@ class MagicQueryTest extends TestCase
     /**
      * Removes all artifacts.
      */
-    private static function simplifySql($sql)
+    private static function simplifySql($sql, bool $stripBacktick = true)
     {
         $sql = str_replace("\n", ' ', $sql);
         $sql = str_replace("\t", ' ', $sql);
-        $sql = str_replace('`', '', $sql);
+        if ($stripBacktick) {
+            $sql = str_replace('`', '', $sql);
+        }
         $sql = str_replace('  ', ' ', $sql);
         $sql = str_replace('  ', ' ', $sql);
         $sql = str_replace('  ', ' ', $sql);
@@ -477,5 +479,16 @@ class MagicQueryTest extends TestCase
 
         $this->assertEquals('SELECT * FROM users WHERE 0 <> 0', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => []])));
         $this->assertEquals('SELECT * FROM users WHERE id IN (:users)', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => [1]])));
+    }
+
+    public function testBacktick(): void
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+
+        $sql = "SELECT TIMESTAMPDIFF(SQL_TSI_SECOND, created_at, ended_at) FROM dual";
+        $this->assertEquals("SELECT TIMESTAMPDIFF(SQL_TSI_SECOND , `created_at`, `ended_at`) FROM `dual`", self::simplifySql($magicQuery->build($sql), false));
+
+        $sql = "SELECT TIMESTAMPDIFF(SECOND, created_at, ended_at) FROM dual";
+        $this->assertEquals("SELECT TIMESTAMPDIFF(SECOND , `created_at`, `ended_at`) FROM `dual`", self::simplifySql($magicQuery->build($sql), false));
     }
 }
