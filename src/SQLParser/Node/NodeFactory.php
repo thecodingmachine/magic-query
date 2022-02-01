@@ -150,38 +150,7 @@ class NodeFactory
                     $expr->setTable($desc['table']);
                 }
 
-
-
-                $expr->setTable(str_replace('`', '', $desc['table']));
-                switch ($desc['join_type']) {
-                    case 'CROSS':
-                        $joinType = 'CROSS JOIN';
-                        break;
-                    case 'JOIN':
-                        $joinType = 'JOIN';
-                        break;
-                    case 'LEFT':
-                        $joinType = 'LEFT JOIN';
-                        break;
-                    case 'RIGHT':
-                        $joinType = 'RIGHT JOIN';
-                        break;
-                    case 'INNER':
-                        $joinType = 'INNER JOIN';
-                        break;
-                    case 'OUTER':
-                        $joinType = 'OUTER JOIN';
-                        break;
-                    case 'NATURAL':
-                        $joinType = 'NATURAL JOIN';
-                        break;
-                    case ',':
-                        $joinType = ',';
-                        break;
-                    default:
-                        throw new \Exception("Unexpected join type: '".$desc['join_type']."'");
-                }
-                $expr->setJoinType($joinType);
+                $expr->setJoinType(self::mapJoinType($desc['join_type']));
 
                 if (isset($desc['alias']['name'])) {
                     $expr->setAlias($desc['alias']['name']);
@@ -222,7 +191,7 @@ class NodeFactory
                 $expr->setSubQuery(self::buildFromSubtree($desc['sub_tree']));
 
                 if (isset($desc['join_type'])) {
-                    $expr->setJoinType($desc['join_type']);
+                    $expr->setJoinType(self::mapJoinType($desc['join_type']));
                 }
 
                 if (isset($desc['alias']['name'])) {
@@ -907,5 +876,29 @@ class NodeFactory
         }
 
         return $sql;
+    }
+
+    private static function mapJoinType(string $originalJoinType): string
+    {
+        switch ($originalJoinType) {
+            case 'CROSS':
+                return 'CROSS JOIN';
+            case 'JOIN':
+                return 'JOIN';
+            case 'LEFT':
+                return 'LEFT JOIN';
+            case 'RIGHT':
+                return 'RIGHT JOIN';
+            case 'INNER':
+                return 'INNER JOIN';
+            case 'OUTER':
+                return 'OUTER JOIN';
+            case 'NATURAL':
+                return 'NATURAL JOIN';
+            case ',':
+                return ',';
+            default:
+                throw new \Exception("Unexpected join type: '".$originalJoinType."'");
+        }
     }
 }
