@@ -208,6 +208,9 @@ class MagicQueryTest extends TestCase
 
         $sql = 'SELECT COUNT(*) AS cnt FROM (SELECT id FROM country) subquery';
         $this->assertEquals($sql, self::simplifySql($magicQuery->build($sql)));
+
+        $sql = "SELECT YEAR(register_date) AS year FROM users GROUP BY year";
+        $this->assertEquals("SELECT YEAR(register_date) AS year FROM users GROUP BY year", self::simplifySql($magicQuery->build($sql)));
     }
 
     public function testInNullException() {
