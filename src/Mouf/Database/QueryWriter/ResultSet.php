@@ -28,7 +28,7 @@ class ResultSet implements \Iterator
         $this->statement = $statement;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         ++$this->rewindCalls;
         if ($this->rewindCalls == 2) {
@@ -39,7 +39,7 @@ class ResultSet implements \Iterator
     /**
      * @return array|false
      */
-    public function current()
+    public function current(): mixed
     {
         if (!$this->fetched) {
             $this->fetch();
@@ -51,12 +51,12 @@ class ResultSet implements \Iterator
     /**
      * @return int
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->key;
         $this->fetched = false;
@@ -69,7 +69,7 @@ class ResultSet implements \Iterator
         $this->fetched = true;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         if (!$this->fetched) {
             $this->fetch();
