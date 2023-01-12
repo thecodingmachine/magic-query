@@ -18,7 +18,7 @@
     	"mouf/utils.value.value-interface": "~1.0",
     	"mouf/utils.common.paginable-interface": "~1.0",
     	"mouf/utils.common.sortable-interface": "~1.0",
-        "mouf/schema-analyzer": "~1.0",
+        "mouf/schema-analyzer": "^2.0",
         "twig/twig": "^2.11 || ^3",
         "greenlion/php-sql-parser": "^4.3",
         "doctrine/cache": "^1.5"
