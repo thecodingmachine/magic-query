@@ -478,4 +478,16 @@ class MagicQueryTest extends TestCase
         $this->assertEquals('SELECT * FROM users WHERE 0 <> 0', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => []])));
         $this->assertEquals('SELECT * FROM users WHERE id IN (:users)', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => [1]])));
     }
+
+    public function testUnionAndOrderBy(): void
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+
+        $query = '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC';
+
+        $this->assertEquals(
+            'SELECT id FROM users UNION SELECT id FROM users ORDER BY users.id ASC',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+    }
 }

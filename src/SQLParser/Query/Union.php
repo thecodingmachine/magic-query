@@ -34,6 +34,29 @@ class Union implements StatementInterface, NodeInterface
         $this->selects = $selects;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
+    private $order;
+
+    /**
+     * Returns the list of order statements.
+     *
+     * @return NodeInterface[]|NodeInterface
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Sets the list of order statements.
+     *
+     * @param NodeInterface[]|NodeInterface $order
+     */
+    public function setOrder($order): void
+    {
+        $this->order = $order;
+    }
+
     /**
      * @param MoufManager $moufManager
      *
@@ -43,6 +66,7 @@ class Union implements StatementInterface, NodeInterface
     {
         $instanceDescriptor = $moufManager->createInstance(get_called_class());
         $instanceDescriptor->getProperty('selects')->setValue(NodeFactory::nodeToInstanceDescriptor($this->selects, $moufManager));
+        $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -59,6 +83,7 @@ class Union implements StatementInterface, NodeInterface
         //$name = $moufManager->findInstanceName($this);
         $instanceDescriptor = $moufManager->getInstanceDescriptor($name);
         $instanceDescriptor->getProperty('selects')->setValue(NodeFactory::nodeToInstanceDescriptor($this->selects, $moufManager));
+        $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -82,6 +107,13 @@ class Union implements StatementInterface, NodeInterface
 
         $sql = implode(' UNION ', $selectsSql);
 
+        if (!empty($this->order)) {
+            $order = NodeFactory::toSql($this->order, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            if ($order) {
+                $sql .= "\nORDER BY ".$order;
+            }
+        }
+
         return $sql;
     }
 
@@ -99,6 +131,7 @@ class Union implements StatementInterface, NodeInterface
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
             $this->walkChildren($this->selects, $visitor);
+            $this->walkChildren($this->order, $visitor);
         }
 
         return $visitor->leaveNode($node);
