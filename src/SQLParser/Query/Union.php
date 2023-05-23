@@ -137,21 +137,26 @@ class Union implements StatementInterface, NodeInterface
         return $visitor->leaveNode($node);
     }
 
-    /**
-     * @param array<Select|null> $children
-     * @param VisitorInterface $visitor
-     */
-    private function walkChildren(array &$children, VisitorInterface $visitor): void
+    private function walkChildren(&$children, VisitorInterface $visitor): void
     {
         if ($children) {
-            foreach ($children as $key => $operand) {
-                if ($operand) {
-                    $result2 = $operand->walk($visitor);
-                    if ($result2 === NodeTraverser::REMOVE_NODE) {
-                        unset($children[$key]);
-                    } elseif ($result2 instanceof NodeInterface) {
-                        $children[$key] = $result2;
+            if (is_array($children)) {
+                foreach ($children as $key => $operand) {
+                    if ($operand) {
+                        $result2 = $operand->walk($visitor);
+                        if ($result2 === NodeTraverser::REMOVE_NODE) {
+                            unset($children[$key]);
+                        } elseif ($result2 instanceof NodeInterface) {
+                            $children[$key] = $result2;
+                        }
                     }
+                }
+            } else {
+                $result2 = $children->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
+                    $children = null;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $children = $result2;
                 }
             }
         }
