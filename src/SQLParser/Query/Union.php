@@ -105,7 +105,7 @@ class Union implements StatementInterface, NodeInterface
             return $select->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
         }, $this->selects);
 
-        $sql = implode(' UNION ', $selectsSql);
+        $sql = '(' . implode(') UNION (', $selectsSql) . ')';
 
         if (!empty($this->order)) {
             $order = NodeFactory::toSql($this->order, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
@@ -137,6 +137,10 @@ class Union implements StatementInterface, NodeInterface
         return $visitor->leaveNode($node);
     }
 
+    /**
+     * @param array<Select|NodeInterface|null>|NodeInterface|null $children
+     * @param VisitorInterface $visitor
+     */
     private function walkChildren(&$children, VisitorInterface $visitor): void
     {
         if ($children) {

@@ -186,7 +186,7 @@ class MagicQueryTest extends TestCase
         $this->assertEquals('SELECT COUNT(DISTINCT a, b) FROM users', self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT a FROM users UNION SELECT a FROM users';
-        $this->assertEquals('SELECT a FROM users UNION SELECT a FROM users', self::simplifySql($magicQuery->build($sql)));
+        $this->assertEquals('(SELECT a FROM users) UNION (SELECT a FROM users)', self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT a FROM users u, users u2';
         $this->assertEquals('SELECT a FROM users u CROSS JOIN users u2', self::simplifySql($magicQuery->build($sql)));
@@ -486,7 +486,25 @@ class MagicQueryTest extends TestCase
         $query = '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC';
 
         $this->assertEquals(
-            'SELECT id FROM users UNION SELECT id FROM users ORDER BY users.id ASC',
+            '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = '(SELECT id FROM users) UNION (SELECT id FROM users ORDER BY users.id ASC)';
+        $this->assertEquals(
+            '(SELECT id FROM users) UNION (SELECT id FROM users ORDER BY users.id ASC)',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = '(SELECT id FROM users ORDER BY users.id ASC) UNION (SELECT id FROM users)';
+        $this->assertEquals(
+            '(SELECT id FROM users ORDER BY users.id ASC) UNION (SELECT id FROM users)',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = 'SELECT id FROM users UNION SELECT id FROM users ORDER BY users.id ASC';
+        $this->assertEquals(
+            '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC',
             self::simplifySql($magicQuery->buildPreparedStatement($query))
         );
     }
