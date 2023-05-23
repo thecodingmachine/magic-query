@@ -186,7 +186,7 @@ class MagicQueryTest extends TestCase
         $this->assertEquals('SELECT COUNT(DISTINCT a, b) FROM users', self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT a FROM users UNION SELECT a FROM users';
-        $this->assertEquals('SELECT a FROM users UNION SELECT a FROM users', self::simplifySql($magicQuery->build($sql)));
+        $this->assertEquals('(SELECT a FROM users) UNION (SELECT a FROM users)', self::simplifySql($magicQuery->build($sql)));
 
         $sql = 'SELECT a FROM users u, users u2';
         $this->assertEquals('SELECT a FROM users u CROSS JOIN users u2', self::simplifySql($magicQuery->build($sql)));
@@ -477,5 +477,35 @@ class MagicQueryTest extends TestCase
 
         $this->assertEquals('SELECT * FROM users WHERE 0 <> 0', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => []])));
         $this->assertEquals('SELECT * FROM users WHERE id IN (:users)', self::simplifySql($magicQuery->buildPreparedStatement('SELECT * FROM users WHERE id IN :users', ['users' => [1]])));
+    }
+
+    public function testUnionAndOrderBy(): void
+    {
+        $magicQuery = new MagicQuery(null, new ArrayCache());
+
+        $query = '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC';
+
+        $this->assertEquals(
+            '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = '(SELECT id FROM users) UNION (SELECT id FROM users ORDER BY users.id ASC)';
+        $this->assertEquals(
+            '(SELECT id FROM users) UNION (SELECT id FROM users ORDER BY users.id ASC)',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = '(SELECT id FROM users ORDER BY users.id ASC) UNION (SELECT id FROM users)';
+        $this->assertEquals(
+            '(SELECT id FROM users ORDER BY users.id ASC) UNION (SELECT id FROM users)',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
+
+        $query = 'SELECT id FROM users UNION SELECT id FROM users ORDER BY users.id ASC';
+        $this->assertEquals(
+            '(SELECT id FROM users) UNION (SELECT id FROM users) ORDER BY users.id ASC',
+            self::simplifySql($magicQuery->buildPreparedStatement($query))
+        );
     }
 }

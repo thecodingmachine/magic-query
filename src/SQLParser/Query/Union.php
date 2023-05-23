@@ -34,6 +34,29 @@ class Union implements StatementInterface, NodeInterface
         $this->selects = $selects;
     }
 
+    /** @var NodeInterface[]|NodeInterface */
+    private $order;
+
+    /**
+     * Returns the list of order statements.
+     *
+     * @return NodeInterface[]|NodeInterface
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * Sets the list of order statements.
+     *
+     * @param NodeInterface[]|NodeInterface $order
+     */
+    public function setOrder($order): void
+    {
+        $this->order = $order;
+    }
+
     /**
      * @param MoufManager $moufManager
      *
@@ -43,6 +66,7 @@ class Union implements StatementInterface, NodeInterface
     {
         $instanceDescriptor = $moufManager->createInstance(get_called_class());
         $instanceDescriptor->getProperty('selects')->setValue(NodeFactory::nodeToInstanceDescriptor($this->selects, $moufManager));
+        $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -59,6 +83,7 @@ class Union implements StatementInterface, NodeInterface
         //$name = $moufManager->findInstanceName($this);
         $instanceDescriptor = $moufManager->getInstanceDescriptor($name);
         $instanceDescriptor->getProperty('selects')->setValue(NodeFactory::nodeToInstanceDescriptor($this->selects, $moufManager));
+        $instanceDescriptor->getProperty('order')->setValue(NodeFactory::nodeToInstanceDescriptor($this->order, $moufManager));
 
         return $instanceDescriptor;
     }
@@ -80,7 +105,14 @@ class Union implements StatementInterface, NodeInterface
             return $select->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
         }, $this->selects);
 
-        $sql = implode(' UNION ', $selectsSql);
+        $sql = '(' . implode(') UNION (', $selectsSql) . ')';
+
+        if (!empty($this->order)) {
+            $order = NodeFactory::toSql($this->order, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
+            if ($order) {
+                $sql .= "\nORDER BY ".$order;
+            }
+        }
 
         return $sql;
     }
@@ -99,26 +131,36 @@ class Union implements StatementInterface, NodeInterface
         }
         if ($result !== NodeTraverser::DONT_TRAVERSE_CHILDREN) {
             $this->walkChildren($this->selects, $visitor);
+            $this->walkChildren($this->order, $visitor);
         }
 
         return $visitor->leaveNode($node);
     }
 
     /**
-     * @param array<Select|null> $children
+     * @param array<Select|NodeInterface|null>|NodeInterface|null $children
      * @param VisitorInterface $visitor
      */
-    private function walkChildren(array &$children, VisitorInterface $visitor): void
+    private function walkChildren(&$children, VisitorInterface $visitor): void
     {
         if ($children) {
-            foreach ($children as $key => $operand) {
-                if ($operand) {
-                    $result2 = $operand->walk($visitor);
-                    if ($result2 === NodeTraverser::REMOVE_NODE) {
-                        unset($children[$key]);
-                    } elseif ($result2 instanceof NodeInterface) {
-                        $children[$key] = $result2;
+            if (is_array($children)) {
+                foreach ($children as $key => $operand) {
+                    if ($operand) {
+                        $result2 = $operand->walk($visitor);
+                        if ($result2 === NodeTraverser::REMOVE_NODE) {
+                            unset($children[$key]);
+                        } elseif ($result2 instanceof NodeInterface) {
+                            $children[$key] = $result2;
+                        }
                     }
+                }
+            } else {
+                $result2 = $children->walk($visitor);
+                if ($result2 === NodeTraverser::REMOVE_NODE) {
+                    $children = null;
+                } elseif ($result2 instanceof NodeInterface) {
+                    $children = $result2;
                 }
             }
         }
