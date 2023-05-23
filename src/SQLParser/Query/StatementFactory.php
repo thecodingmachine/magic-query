@@ -96,7 +96,15 @@ class StatementFactory
             /** @var Select[] $selects */
             $selects = array_map([self::class, 'toObject'], $desc['UNION']);
 
-            return new Union($selects);
+            $union = new Union($selects);
+
+            if (isset($desc['0']) && isset($desc['0']['ORDER'])) {
+                $order = NodeFactory::mapArrayToNodeObjectList($desc['0']['ORDER']);
+                $order = NodeFactory::simplify($order);
+                $union->setOrder($order);
+            }
+
+            return $union;
         } else {
             throw new \BadMethodCallException('Unknown query');
         }
