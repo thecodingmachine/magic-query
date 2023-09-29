@@ -3,7 +3,7 @@
 namespace Mouf\Database\QueryWriter;
 
 use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Result;
 
 /**
  * Wraps the results of a PDOStatement.
@@ -12,7 +12,7 @@ use Doctrine\DBAL\Driver\Statement;
  */
 class ResultSet implements \Iterator
 {
-    /** @var Statement */
+    /** @var Result */
     private $statement;
     /** @var int */
     private $key = 0;
@@ -23,12 +23,12 @@ class ResultSet implements \Iterator
     /** @var int */
     private $rewindCalls = 0;
 
-    public function __construct(Statement $statement)
+    public function __construct(Result $statement)
     {
         $this->statement = $statement;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         ++$this->rewindCalls;
         if ($this->rewindCalls == 2) {
@@ -39,7 +39,7 @@ class ResultSet implements \Iterator
     /**
      * @return array|false
      */
-    public function current()
+    public function current(): mixed
     {
         if (!$this->fetched) {
             $this->fetch();
@@ -51,12 +51,12 @@ class ResultSet implements \Iterator
     /**
      * @return int
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->key;
         $this->fetched = false;
@@ -65,11 +65,11 @@ class ResultSet implements \Iterator
 
     private function fetch(): void
     {
-        $this->result = $this->statement->fetch(FetchMode::ASSOCIATIVE);
+        $this->result = $this->statement->fetchAssociative();
         $this->fetched = true;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         if (!$this->fetched) {
             $this->fetch();
