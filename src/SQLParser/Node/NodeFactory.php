@@ -895,6 +895,8 @@ class NodeFactory
                 return 'OUTER JOIN';
             case 'NATURAL':
                 return 'NATURAL JOIN';
+            case 'STRAIGHT_JOIN':
+                return 'STRAIGHT_JOIN';
             case ',':
                 return ',';
             default:
