@@ -8,6 +8,7 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - "#Mouf\\\\MoufManager#"
         - "#Mouf\\\\MoufInstanceDescriptor#"
