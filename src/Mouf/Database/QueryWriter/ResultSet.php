@@ -2,7 +2,6 @@
 
 namespace Mouf\Database\QueryWriter;
 
-use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Driver\Statement;
 
 /**
@@ -16,7 +15,7 @@ class ResultSet implements \Iterator
     private $statement;
     /** @var int */
     private $key = 0;
-    /** @var array|false */
+    /** @var array */
     private $result;
     /** @var bool */
     private $fetched = false;
@@ -28,7 +27,7 @@ class ResultSet implements \Iterator
         $this->statement = $statement;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         ++$this->rewindCalls;
         if ($this->rewindCalls == 2) {
@@ -36,10 +35,7 @@ class ResultSet implements \Iterator
         }
     }
 
-    /**
-     * @return array|false
-     */
-    public function current()
+    public function current(): array
     {
         if (!$this->fetched) {
             $this->fetch();
@@ -48,15 +44,12 @@ class ResultSet implements \Iterator
         return $this->result;
     }
 
-    /**
-     * @return int
-     */
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->key;
         $this->fetched = false;
@@ -65,11 +58,11 @@ class ResultSet implements \Iterator
 
     private function fetch(): void
     {
-        $this->result = $this->statement->fetch(FetchMode::ASSOCIATIVE);
+        $this->result = $this->statement->execute()->fetchAllAssociative();
         $this->fetched = true;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         if (!$this->fetched) {
             $this->fetch();
