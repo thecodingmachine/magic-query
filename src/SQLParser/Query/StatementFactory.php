@@ -92,11 +92,16 @@ class StatementFactory
             }
 
             return $select;
-        } elseif (isset($desc['UNION'])) {
-            /** @var Select[] $selects */
-            $selects = array_map([self::class, 'toObject'], $desc['UNION']);
+        }
+        // UNION and UNION DISTINCT have similar behavior
+        if (isset($desc['UNION']) || isset($desc['UNION ALL']) || isset($desc['UNION DISTINCT'])) {
+            $isUnionAll = isset($desc['UNION ALL']);
+            $unionStatement =  $desc['UNION'] ?? ($desc['UNION ALL'] ?? $desc['UNION DISTINCT']);
 
-            $union = new Union($selects);
+            /** @var Select[] $selects */
+            $selects = array_map([self::class, 'toObject'], $unionStatement);
+
+            $union = new Union($selects, $isUnionAll);
 
             if (isset($desc['0']) && isset($desc['0']['ORDER'])) {
                 $order = NodeFactory::mapArrayToNodeObjectList($desc['0']['ORDER']);
@@ -105,9 +110,9 @@ class StatementFactory
             }
 
             return $union;
-        } else {
-            throw new \BadMethodCallException('Unknown query');
         }
+
+        throw new \BadMethodCallException('Unknown query');
     }
 
     /**

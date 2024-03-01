@@ -26,12 +26,18 @@ class Union implements StatementInterface, NodeInterface
     private $selects;
 
     /**
+     * @var bool
+     */
+    private $isUnionAll;
+
+    /**
      * Union constructor.
      * @param Select[] $selects
      */
-    public function __construct(array $selects)
+    public function __construct(array $selects, bool $isUnionAll)
     {
         $this->selects = $selects;
+        $this->isUnionAll = $isUnionAll;
     }
 
     /** @var NodeInterface[]|NodeInterface */
@@ -105,7 +111,9 @@ class Union implements StatementInterface, NodeInterface
             return $select->toSql($parameters, $platform, $indent, $conditionsMode, $extrapolateParameters);
         }, $this->selects);
 
-        $sql = '(' . implode(') UNION (', $selectsSql) . ')';
+        $unionStatement = $this->isUnionAll ? 'UNION ALL' : 'UNION';
+
+        $sql = '(' . implode(') ' . $unionStatement . ' (', $selectsSql) . ')';
 
         if (!empty($this->order)) {
             $order = NodeFactory::toSql($this->order, $platform, $parameters, ',', false, $indent + 2, $conditionsMode, $extrapolateParameters);
