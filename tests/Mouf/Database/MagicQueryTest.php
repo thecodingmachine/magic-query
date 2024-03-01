@@ -188,6 +188,12 @@ class MagicQueryTest extends TestCase
         $sql = 'SELECT a FROM users UNION SELECT a FROM users';
         $this->assertEquals('(SELECT a FROM users) UNION (SELECT a FROM users)', self::simplifySql($magicQuery->build($sql)));
 
+        $sql = 'SELECT a FROM users UNION ALL SELECT a FROM users';
+        $this->assertEquals('(SELECT a FROM users) UNION ALL (SELECT a FROM users)', self::simplifySql($magicQuery->build($sql)));
+
+        $sql = 'SELECT a FROM users UNION DISTINCT SELECT a FROM users';
+        $this->assertEquals('(SELECT a FROM users) UNION (SELECT a FROM users)', self::simplifySql($magicQuery->build($sql)));
+
         $sql = 'SELECT a FROM users u, users u2';
         $this->assertEquals('SELECT a FROM users u CROSS JOIN users u2', self::simplifySql($magicQuery->build($sql)));
 
