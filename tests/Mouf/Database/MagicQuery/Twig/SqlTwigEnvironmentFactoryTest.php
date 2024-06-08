@@ -1,6 +1,6 @@
 <?php
 
-namespace Mouf\Database;
+namespace Mouf\Database\MagicQuery\Twig;
 
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
 use PHPUnit\Framework\TestCase;

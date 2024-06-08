@@ -3,6 +3,7 @@
 namespace Mouf\Database;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Mouf\Database\SchemaAnalyzer\SchemaAnalyzer;
@@ -459,7 +460,7 @@ class MagicQueryTest extends TestCase
     public function testSetOutputDialect()
     {
         $magicQuery = new MagicQuery(null, new ArrayCache());
-        $magicQuery->setOutputDialect(new PostgreSqlPlatform());
+        $magicQuery->setOutputDialect(new PostgreSQL100Platform());
 
         $sql = 'SELECT id FROM users';
         $this->assertEquals('SELECT "id" FROM "users"', self::simplifySql($magicQuery->buildPreparedStatement($sql)));

@@ -50,6 +50,6 @@ class CountNbResult implements IntValueInterface
     {
         $sql = 'SELECT count(*) as cnt FROM ('.$this->queryResult->toSql().') tmp';
 
-        return $this->connection->fetchColumn($sql);
+        return $this->connection->fetchOne($sql);
     }
 }

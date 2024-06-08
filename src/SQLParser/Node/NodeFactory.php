@@ -653,7 +653,9 @@ class NodeFactory
                     if (empty($operand->getBaseExpression())) {
                         $subTree = $operand->getSubTree();
                         if (is_array($subTree) && count($subTree) === 1) {
-                            $newNodes = array_merge($newNodes, self::simplify($subTree));
+                            $simplifiedSubTree = self::simplify($subTree);
+                            \assert(is_array($simplifiedSubTree));
+                            $newNodes = array_merge($newNodes, $simplifiedSubTree);
                         } else {
                             $newNodes[] = $operand;
                         }

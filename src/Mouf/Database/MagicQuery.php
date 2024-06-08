@@ -10,6 +10,7 @@ use Twig\Environment;
 use function array_filter;
 use function array_keys;
 use Doctrine\Common\Cache\VoidCache;
+use Doctrine\DBAL\Platforms\MySQL80Platform;
 use function hash;
 use function implode;
 use Mouf\Database\MagicQuery\Twig\SqlTwigEnvironmentFactory;
@@ -54,7 +55,7 @@ class MagicQuery
     public function __construct($connection = null, $cache = null, SchemaAnalyzer $schemaAnalyzer = null)
     {
         $this->connection = $connection;
-        $this->platform = $connection ? $connection->getDatabasePlatform() : new MySqlPlatform();
+        $this->platform = $connection ? $connection->getDatabasePlatform() : new MySQL80Platform();
         if ($cache) {
             $this->cache = $cache;
         } else {
@@ -91,7 +92,7 @@ class MagicQuery
         if ($platform !== null) {
             $this->platform = $platform;
         } else {
-            $this->platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySqlPlatform();
+            $this->platform = $this->connection ? $this->connection->getDatabasePlatform() : new MySQL80Platform();
         }
 
         return $this;
@@ -304,7 +305,7 @@ class MagicQuery
                 throw new MagicQueryMissingConnectionException('In order to use MagicJoin, you need to configure a DBAL connection.');
             }
 
-            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->getSchemaManager(), $this->cache, $this->getConnectionUniqueId($this->connection));
+            $this->schemaAnalyzer = new SchemaAnalyzer($this->connection->createSchemaManager(), $this->cache, $this->getConnectionUniqueId($this->connection));
         }
 
         return $this->schemaAnalyzer;
@@ -312,7 +313,10 @@ class MagicQuery
 
     private function getConnectionUniqueId(Connection $connection): string
     {
-        return hash('md4', $connection->getHost().'-'.$connection->getPort().'-'.$connection->getDatabase().'-'.$connection->getDriver()->getName());
+        $connectionParams = $connection->getParams();
+        \assert(\array_key_exists('host', $connectionParams));
+        \assert(\array_key_exists('port', $connectionParams));
+        return hash('md4', $connectionParams['host'].'-'.$connectionParams['port'].'-'.$connection->getDatabase().'-'.$connection->getDriver()->getDatabasePlatform()->getName());
     }
 
     /**
