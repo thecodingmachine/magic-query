@@ -17,8 +17,8 @@ class MagicQueryTest extends TestCase
         $sql = "SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users";
         $this->assertEquals("SELECT GROUP_CONCAT(id SEPARATOR ', ') AS ids FROM users", self::simplifySql($magicQuery->build($sql)));
 
-        $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT :offset, :limit';
-        $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
+        $sql = 'SELECT id FROM mysql.users WHERE name LIKE :name LIMIT :offset, :limit';
+        $this->assertEquals("SELECT id FROM mysql.users WHERE name LIKE 'foo'", self::simplifySql($magicQuery->build($sql, ['name' => 'foo'])));
 
         $sql = 'SELECT id FROM users WHERE name LIKE :name LIMIT 2, :limit';
         $this->assertEquals("SELECT id FROM users WHERE name LIKE 'foo' LIMIT 2, 10", self::simplifySql($magicQuery->build($sql, ['name' => 'foo', 'limit' => 10])));
